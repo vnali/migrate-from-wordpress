@@ -1,6 +1,7 @@
 # Migrate From WordPress plugin
 this Craft CMS plugin helps you to migrate data from WordPress to Craft CMS -Craft 4-
-This plugin is in the development phase, so make sure you double-check migrated data before using it on production.
+
+This plugin is in the development phase, so double-check migrated data before using it on production.
 
 ## Documentation
 Please visit [Documentation page](https://github.com/vnali/migrate-from-wordpress-plugin-docs/blob/main/README.md).
