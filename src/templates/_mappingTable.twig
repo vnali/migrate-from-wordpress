@@ -1,0 +1,111 @@
+{% import "_includes/forms" as forms %}
+
+{{ forms.lightSwitchField({
+        label: 'Fill field/column handle automatically'|t('migrate-from-wordpress'),
+        instructions: 'When option is enabled, we suggest field/column handle based on Wordpress names',
+        id: 'fillHandle',
+        name: 'fillHandle',
+        on: 0,
+        value: 1,
+}) }}
+
+{% set fieldRows = [] %}
+{% set fieldErrors = [] %}
+
+{% for fieldDefinition in fieldDefinitions %}
+	{% set lightswitchAttributes = {
+            class: [
+                'lightswitchConvert',
+                'lightswitchConvert'~loop.index
+            ]|filter,
+    } %}
+
+    {% set fieldModel = fields[fieldDefinition.handle] ?? null %}
+    {% if fieldModel %}
+        {% for attribute, errors in fieldModel.getErrors() %}
+            {% set fieldErrors = fieldErrors|merge(errors) %}
+        {% endfor %}
+    {% endif %}
+
+	{% set fieldRows = fieldRows|merge({
+        (fieldDefinition.handle): {
+            heading: fieldDefinition.label|t('site'),
+            heading: include('migrate-from-wordpress/_label', {
+            }),
+            convert: include('_includes/forms/lightswitch', {
+                name: 'fields['~fieldDefinition.handle~'][convert]',
+                on: fieldModel ? fieldModel.convert : '0',
+                value: 1,
+                containerAttributes: lightswitchAttributes,
+                errors: fieldModel ? fieldModel.getErrors('convert'),
+                disabled: fieldDefinition.disabledConvert
+            }),
+            type: {
+                value: fieldDefinition.type,
+            },       
+            convertTo: include('_includes/forms/select', {
+                name: 'fields['~fieldDefinition.handle~'][convertTo]',
+                options: fieldDefinition.convertTo,
+                value: fieldModel ? fieldModel.convertTo,
+                id: 'convertTo'~loop.index,
+                class: 'convertTo',
+                errors: fieldModel ? fieldModel.getErrors('convertTo')
+            }),
+            container: include('migrate-from-wordpress/_container', {
+                uniqueId: loop.index,
+                handle: fieldDefinition.handle,
+            }),
+            field: include('migrate-from-wordpress/_field', {
+                handle: fieldDefinition.handle,
+                wordpressHandle: fieldDefinition.wordpressHandle,
+                uniqueId: loop.index,
+            }),
+            info: include('migrate-from-wordpress/_info', {
+                wordpressFieldType: fieldDefinition.type,
+                originalWordPressHandle: fieldDefinition.originalWordPressHandle
+            }),
+        }|filter
+    }) %}
+{% endfor %}
+
+{{ forms.editableTableField({
+    label: "Field Mapping"|t('migrate-from-wordpress'),
+    instructions: "Choose fields to convert"|t('migrate-from-wordpress'),
+    id: 'fields',
+    name: 'fields',
+    cols: {
+        heading: {
+            type: 'heading',
+            heading: "WordPress Field/Attribute Name"|t('migrate-from-wordpress'),
+            thin: true
+        },
+        convert: {
+            type: 'html',
+            thin: true,
+        },
+        type: {
+            type: 'singleline',
+            heading: "Type"|t('migrate-from-wordpress'),
+            info: "What entry URIs should look like for the site. Leave blank if entries don’t have URLs."|t('migrate-from-wordpress'),
+            thin: true
+        },
+        convertTo: {
+            type: 'html',
+            heading: 'Craft Field/Column Type',
+            thin: true,
+        },
+        container: {
+            type: 'html',
+            heading: 'Craft Field/Column Container',
+            thin: false
+        },
+        field: {
+            type: 'html',
+            heading: 'Craft Field/Column Handle',
+            thin: false
+        }
+    }|filter,
+    rows: fieldRows,
+    staticRows: true,
+    errors: fieldErrors|unique
+}) }}

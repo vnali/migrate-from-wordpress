@@ -1,0 +1,26 @@
+includes:
+    - %currentWorkingDirectory%/vendor/craftcms/phpstan/phpstan.neon
+
+parameters:
+    level: 1
+    paths:
+        - src
+    ignoreErrors:
+    -   '#Access to static property \$plugin on an unknown class verbb\\supertable\\SuperTable.#'
+    -   '#Instantiated class craft\\redactor\\Field not found.#'
+    -   '#Instantiated class craft\\ckeditor\\Field not found.#'
+    -   '#Instantiated class verbb\\supertable\\fields\\SuperTableField not found.#'
+    -   '#Instantiated class verbb\\supertable\\models\\SuperTableBlockTypeModel not found.#'
+    -   '#Call to method getErrors\(\) on an unknown class craft\\redactor\\Field.#'
+    -   '#Access to property \$errors on an unknown class craft\\redactor\\Field.#'
+    -   '#Access to property \$handle on an unknown class craft\\redactor\\Field.#'
+    -   '#Access to property \$errors on an unknown class craft\\ckeditor\\Field.#'
+    -   '#Access to property \$handle on an unknown class craft\\ckeditor\\Field.#'
+    -   '#Call to method getErrors\(\) on an unknown class craft\\ckeditor\\Field.#'
+    -   '#Access to property \$fieldId on an unknown class verbb\\supertable\\models\\SuperTableBlockTypeModel.#'
+    -   '#Access to property \$uid on an unknown class verbb\\supertable\\models\\SuperTableBlockTypeModel.#'
+    -   '#Call to method getErrors\(\) on an unknown class verbb\\supertable\\fields\\SuperTableField.#'
+    -   '#Access to property \$handle on an unknown class verbb\\supertable\\fields\\SuperTableField#'
+    -   '#Access to property \$id on an unknown class verbb\\supertable\\fields\\SuperTableField.#'
+    -   '#Access to property \$name on an unknown class verbb\\supertable\\fields\\SuperTableField.#'
+    reportUnmatchedIgnoredErrors: false

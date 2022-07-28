@@ -1,0 +1,276 @@
+{% extends '_layouts/cp' %}
+{% import "_includes/forms" as forms %}
+
+{% set title = 'WordPress to Craft CMS'|t('migrate-from-wordpress') %}
+
+{% block content %}
+	<div class="pr-5 pl-5 pt-5">
+		<div class="bg-teal-100 border-l-4 border-teal-500 border-solid text-teal-700 p-4" role="alert">
+			<div class="flex">
+				<div class="py-1">
+					<p class="text-sm">Selected option here can be different for migarting posts and pages</p>
+				</div>
+				<div>
+					{{ forms.lightSwitchField({
+                        label: 'Migrate Gutenberg blocks to Matrix blocks'|t('migrate-from-wordpress'),
+                        id: 'migrateGutenbergBlocks',
+                        on : 1,
+                        value: '1',
+                        required: true,
+                        tip: 'Disable this option, if you want to migrate all Gutenberg content to one Matrix block in Craft'
+                    }) }}
+				</div>
+                {#
+				<div class="pt-6">
+					{{ forms.lightSwitchField({
+                        label: 'Merge consecutive same block types'|t('migrate-from-wordpress'),
+                        id: 'mergeSameBlockTypes',
+                        on : 1,
+                        value: '1',
+                        required: true,
+                        tip: 'When this option is enabled, multiple consecutive same blocks convert to one matrix block in Craft.
+                        It works only if \'Migrate Gutenberg blocks.. \' option is enabled'|t('migrate-from-wordpress'),
+                    }) }}
+				</div>
+                #}
+			</div>
+		</div>
+	</div>
+	{#
+    // TODO: when multi lingual is supported
+    <div class="pr-5 pl-5 pt-5">
+        <b>
+            {{ 'Check migration progress for this WordPress language'|t('migrate-from-wordpress') }}
+        </b>
+        <p>
+            {{ forms.selectField({
+                options: languages,
+                value: selectedLanguage,
+                id: "language-switch-feed-status"
+            }) }}
+        </p>
+    </div>
+	#}
+	{% set cpTriggerUrl =  alias('@web') ~ '/' ~ craft.app.config.general.cpTrigger %}
+	<div class="p-5">
+		<div class="bg-teal-100 border-l-4 border-teal-500 border-solid text-teal-700 p-4" role="alert">
+			<p class="font-bold">{{ 'Feed status'|t('migrate-from-wordpress') }}</p>
+			<span class="inline-block rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 bg-red-300">
+				{{ 'not checked yet'|t('migrate-from-wordpress') }}
+			</span>
+			<span class="inline-block rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 bg-blue-300">
+				{{ 'has no data'|t('migrate-from-wordpress') }}
+			</span>
+			<span class="inline-block  rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 bg-orange-300">
+				{{ 'some related feeds are not processed'|t('migrate-from-drupal') }}
+			</span>
+			<span class="inline-block rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 bg-yellow-300">
+				{{ 'feed is not processed'|t('migrate-from-wordpress') }}
+			</span>
+			<span class="inline-block rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 bg-green-300">
+				{{ 'converted'|t('migrate-from-wordpress') }}
+			</span>
+		</div>
+	</div>
+	<div id="migration-grid" class="grid grid-cols-3 gap-2 p-5 pt-1">
+		<div class="max-w-sm rounded overflow-hidden bg-gray-100 border border-solid border-gray-500">
+			<div class="px-6 py-3">
+				<div class="font-bold text-xl mb-2">{{ 'Users'|t('migrate-from-wordpress') }}</div>
+			</div>
+			<div class="px-6 pt-1 pb-2">
+				{% if craft.app.cache.get('migrate-from-wordpress-convert-status-user') == 'process' %}
+					{% set color = 'bg-green-300' %}
+				{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-user') == 'feed' %}
+					{% set color = 'bg-yellow-300' %}
+				{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-user') == 'no-data' %}
+					{% set color = 'bg-blue-300' %}
+				{% else %}
+					{% set color = 'bg-red-300' %}
+				{% endif %}
+				<span class="inline-block  rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 {{ color }}">
+					<a href="{{ cpTriggerUrl }}/migrate-from-wordpress/users/migrate">{{ 'Migrate users'|t('migrate-from-wordpress') }}</a>
+				</span>
+			</div>
+		</div>
+		<div class="max-w-sm rounded overflow-hidden bg-gray-100 border border-solid border-gray-500">
+			<div class="px-6 py-3">
+				<div class="font-bold text-xl mb-2">{{ 'Files'|t('migrate-from-wordpress') }}</div>
+			</div>
+			<div class="px-6 pt-1 pb-2">
+				{% if craft.app.cache.get('migrate-from-wordpress-convert-status-file') == 'process' %}
+					{% set color = 'bg-green-300' %}
+				{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-file') == 'feed' %}
+					{% set color = 'bg-yellow-300' %}
+				{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-file') == 'no-data' %}
+					{% set color = 'bg-blue-300' %}
+				{% else %}
+					{% set color = 'bg-red-300' %}
+				{% endif %}
+				<span class="inline-block  rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 {{ color }}">
+					<a href="{{ cpTriggerUrl }}/migrate-from-wordpress/files/migrate">{{ 'Migrate files now'|t('migrate-from-wordpress') }}</a>
+				</span>
+			</div>
+		</div>
+		<div class="max-w-sm rounded overflow-hidden bg-gray-100 border border-solid border-gray-500">
+			<div class="px-6 py-3">
+				<div class="font-bold text-xl mb-2">{{ 'Taxonomies'|t('migrate-from-wordpress') }}</div>
+			</div>
+			<div class="px-6 pt-1 pb-2">
+				{% for vocab in taxonomies %}
+					{% if craft.app.cache.get('migrate-from-wordpress-convert-status-taxonomy-' ~ selectedLanguage ~ '-' ~ vocab.value) == 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-taxonomy-' ~ selectedLanguage ~ '-' ~ vocab.value ~ '-' ~ 'update') == 'process'
+                    %}
+						{% set color = 'bg-green-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-taxonomy-' ~ selectedLanguage ~ '-' ~ vocab.value) == 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-taxonomy-' ~ selectedLanguage ~ '-' ~ vocab.value ~ '-' ~ 'update') != 'process'
+                    %}
+						{% set color = 'bg-orange-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-taxonomy-' ~ selectedLanguage ~ '-' ~ vocab.value) != 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-taxonomy-' ~ selectedLanguage ~ '-' ~ vocab.value ~ '-' ~ 'update') == 'process'
+                    %}
+						{% set color = 'bg-orange-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-taxonomy-' ~ selectedLanguage ~ '-' ~ vocab.value) == 'feed' %}
+						{% set color = 'bg-yellow-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-taxonomy-' ~ selectedLanguage ~ '-'  ~ vocab.value) == 'no feed' %}
+						{% set color = 'bg-gray-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-taxonomy-' ~ vocab.value) == 'no-data' %}
+						{% set color = 'bg-blue-300' %}
+					{% else %}
+						{% set color = 'bg-red-300' %}
+					{% endif %}
+					<span class="inline-block  rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 {{ color }}">
+						<a href="{{ cpTriggerUrl }}/migrate-from-wordpress/taxonomies/migrate?taxonomyId={{ vocab.value }}">{{vocab.label}}</a>
+					</span>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="max-w-sm rounded overflow-hidden bg-gray-100 border border-solid border-gray-500">
+			<div class="px-6 py-3">
+				<div class="font-bold text-xl mb-2">{{ 'Page Types'|t('migrate-from-wordpress') }}</div>
+			</div>
+			<div class="px-6 pt-1 pb-2">
+				{% for type in pageTypes %}
+					{% if craft.app.cache.get('migrate-from-wordpress-convert-status-page-' ~ selectedLanguage ~ '-' ~ type.value) == 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-page-' ~ selectedLanguage ~ '-' ~ type.value ~ '-' ~ 'update') == 'process'
+                    %}
+						{% set color = 'bg-green-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-page-' ~ selectedLanguage ~ '-' ~ type.value) == 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-page-' ~ selectedLanguage ~ '-' ~ type.value ~ '-' ~ 'update') != 'process'
+                    %}
+						{% set color = 'bg-orange-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-page-' ~ selectedLanguage ~ '-' ~ type.value) != 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-page-' ~ selectedLanguage ~ '-' ~ type.value ~ '-' ~ 'update') == 'process'
+                    %}
+						{% set color = 'bg-orange-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-page-' ~ selectedLanguage ~ '-' ~ type.value) == 'feed' %}
+						{% set color = 'bg-yellow-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-page-' ~ selectedLanguage ~ '-'  ~ type.value) == 'no feed' %}
+						{% set color = 'bg-gray-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-page-' ~ type.value) == 'no-data' %}
+						{% set color = 'bg-blue-300' %}
+					{% else %}
+						{% set color = 'bg-red-300' %}
+					{% endif %}
+					<span class="inline-block  rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 {{ color }}">
+						<a class="page" href="{{ cpTriggerUrl }}/migrate-from-wordpress/pages/migrate">{{type.label}}</a>
+					</span>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="max-w-sm rounded overflow-hidden bg-gray-100 border border-solid border-gray-500">
+			<div class="px-6 py-3">
+				<div class="font-bold text-xl mb-2">{{ 'Post Types'|t('migrate-from-wordpress') }}</div>
+			</div>
+			<div class="px-6 pt-1 pb-2">
+				{% for type in postTypes %}
+					{% if craft.app.cache.get('migrate-from-wordpress-convert-status-post-' ~ selectedLanguage ~ '-' ~ type.value) == 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-post-' ~ selectedLanguage ~ '-' ~ type.value ~ '-' ~ 'update') == 'process'
+                    %}
+						{% set color = 'bg-green-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-post-' ~ selectedLanguage ~ '-' ~ type.value) == 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-post-' ~ selectedLanguage ~ '-' ~ type.value ~ '-' ~ 'update') != 'process'
+                    %}
+						{% set color = 'bg-orange-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-post-' ~ selectedLanguage ~ '-' ~ type.value) != 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-post-' ~ selectedLanguage ~ '-' ~ type.value ~ '-' ~ 'update') == 'process'
+                    %}
+						{% set color = 'bg-orange-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-post-' ~ selectedLanguage ~ '-' ~ type.value) == 'feed' %}
+						{% set color = 'bg-yellow-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-post-' ~ selectedLanguage ~ '-'  ~ type.value) == 'no feed' %}
+						{% set color = 'bg-gray-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-post-' ~ type.value) == 'no-data' %}
+						{% set color = 'bg-blue-300' %}
+					{% else %}
+						{% set color = 'bg-red-300' %}
+					{% endif %}
+					<span class="inline-block  rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 {{ color }}">
+						<a class="post" href="{{ cpTriggerUrl }}/migrate-from-wordpress/posts/migrate">{{type.label}}</a>
+					</span>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="max-w-sm rounded overflow-hidden bg-gray-100 border border-solid border-gray-500">
+			<div class="px-6 py-3">
+				<div class="font-bold text-xl mb-2">{{ 'Menus'|t('migrate-from-wordpress') }}</div>
+			</div>
+			<div class="px-6 pt-1 pb-2">
+				{% for type in menus %}
+					{% if craft.app.cache.get('migrate-from-wordpress-convert-status-menu-' ~ selectedLanguage ~ '-' ~ type.value) == 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-menu-' ~ selectedLanguage ~ '-' ~ type.value ~ '-' ~ 'update') == 'process'
+                    %}
+						{% set color = 'bg-green-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-menu-' ~ selectedLanguage ~ '-' ~ type.value) == 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-menu-' ~ selectedLanguage ~ '-' ~ type.value ~ '-' ~ 'update') != 'process'
+                    %}
+						{% set color = 'bg-orange-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-menu-' ~ selectedLanguage ~ '-' ~ type.value) != 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-menu-' ~ selectedLanguage ~ '-' ~ type.value ~ '-' ~ 'update') == 'process'
+                    %}
+						{% set color = 'bg-orange-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-menu-' ~ selectedLanguage ~ '-' ~ type.value) == 'feed' %}
+						{% set color = 'bg-yellow-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-menu-' ~ selectedLanguage ~ '-'  ~ type.value) == 'no feed' %}
+						{% set color = 'bg-gray-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-menu-' ~ type.value) == 'no-data' %}
+						{% set color = 'bg-blue-300' %}
+					{% else %}
+						{% set color = 'bg-red-300' %}
+					{% endif %}
+					<span class="inline-block  rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 {{ color }}">
+						<a href="{{ cpTriggerUrl }}/migrate-from-wordpress/menus/migrate?menuId={{ type.value }}">{{type.label}}</a>
+					</span>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	<div class="px-5 py-2">
+		<form action="" method="post" accept-charset="UTF-8">
+			{{ redirectInput('migrate-from-wordpress') }}
+			{{ csrfInput() }}
+			<input type="hidden" name="action" value="migrate-from-wordpress/default/clear-cache">
+			<input type="hidden" name="item" value="migrate-from-wordpress-items">
+			<div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+				<p class="font-bold">{{ 'Attention!'|t('migrate-from-wordpress') }}</p>
+				<p style="color:red">
+					{{ 'Clear cache if you can not see latest items of WordPress site in this page'|t('migrate-from-wordpress') }}
+				</p>
+				<input type="submit" class="btn submit" value="{{ 'Clear WordPress item list cache'|t('migrate-from-wordpress') }}">
+			</div>
+		</form>
+		<form action="" method="post" accept-charset="UTF-8">
+			{{ redirectInput('migrate-from-wordpress') }}
+			{{ csrfInput() }}
+			<input type="hidden" name="action" value="migrate-from-wordpress/default/clear-cache">
+			<input type="hidden" name="item" value="all">
+			<div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+				<p style="color:red">
+					{{ 'Use this option if you want to start migration process again (if there is a problem with migration process or if you updated this plugin).'|t('migrate-from-wordpress') }}
+				</p>
+				<input type="submit" class="btn submit" value="{{ 'Clear all cache'|t('migrate-from-wordpress') }}">
+			</div>
+		</form>
+	</div>
+{% endblock %}
+
+{% do view.registerAssetBundle("vnali\\migratefromwordpress\\assetbundles\\MainPageAsset") %}

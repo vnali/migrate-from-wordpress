@@ -1,0 +1,121 @@
+{% macro tableSelect(selectParams, modalHeading, html, js) %}
+
+{% from "_includes/forms" import selectField %}
+{{ selectField(selectParams) }}
+
+{% js %}
+    (function() {
+        //set table
+        var $select = $('#{{ selectParams.id }}').selectize({
+            dropdownParent: 'body',
+        });
+        var selectize = $select.get(0).selectize;
+        selectize.on('change', function(value, $item) {
+            if (value == 'new table'){
+                selectize.clear(true);
+
+                var $form = $(
+                '<form  class="modal fitted lazy-create-modal">' +
+                    '<div class="header">' +
+                        '<h1 class="centeralign">{{ modalHeading }}</h1>' +
+                        '</div>' +
+                    '<div class="body">' +
+                        '{{ html|e("js") }}' +
+                        '</div>' +
+                    '<div class="footer">' +
+                        '<div class="buttons right">' +
+                            '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+                            '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+                            '<div class="spinner hidden"/>' +
+                        '</div>' +
+                    '</div>' +
+                '</form>');
+
+                var modal = new Garnish.Modal($form, {
+                    onHide: function() {
+                        modal.destroy();
+                        delete modal;
+                    },
+                });
+
+                setTimeout(function() {
+                    $form.find('.text:first').focus();
+                    modal.updateSizeAndPosition();
+
+                    $form.find('.body:first').on('resize', function() {
+                        modal.updateSizeAndPosition();
+                    });
+
+                    eval('{{ js|e("js") }}');
+                }, 100);
+
+                $form.on('submit', function(ev) {
+                    ev.preventDefault();
+                    $form.find('.spinner').removeClass('hidden');
+                    selectize.addOption({
+                        value: $('#tableHandle').val(),
+                        text: $('#tableHandle').val(),
+                    });
+                    selectize.setValue($('#tableHandle').val());
+                    modal.hide();
+                });
+
+                $form.find('.cancel-btn').on('click', function() {
+                    modal.hide();
+                });
+            }
+        });
+
+        var data = {
+            'containerTypes' : 'craft\\fields\\Table',
+            'limitFieldsToLayout': $('.lightswitchLimitFields').hasClass('on'),
+            'onlyContainer' : 1,
+            'item' : $('#formType').val(),
+            'entryTypeId' : $('#entrytype').val()
+        };
+        $.ajax({
+            method: "GET",
+            url: Craft.getUrl("migrate-from-wordpress/default/get-container-fields" + "?=_" + new Date().getTime()),
+            data: data,
+            dataType: 'json',
+            success: function (data) {
+                var length = data.length;
+                var selected = "";
+                $.each(data, function(i, item) {
+                    if (length == i+1){
+                        selected = item.value;
+                    }
+                    selectize.addOption({
+                        value: item.value,
+                        text: item.label
+                    });
+                });
+                selectize.addOption({
+                    value: 'new table',
+                    text: 'new table'
+                });
+                selectize.setValue(selected);
+            }
+        });
+    })();
+{% endjs %}
+
+{% endmacro %}
+
+<div>
+    {% from _self import tableSelect %}
+
+    {% set selectParams = {
+        id: 'tableContainer',
+        class: 'selectize fullwidth',
+        options: null,
+        name: 'tableField',
+    } %}
+    
+    {{ tableSelect(
+        selectParams,
+        'Create a new table',
+        createTable,
+        createTableJs
+    ) }}
+</div>

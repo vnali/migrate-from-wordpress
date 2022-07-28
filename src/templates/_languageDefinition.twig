@@ -1,0 +1,93 @@
+{% set siteRows = [] %}
+{% set siteErrors = [] %}
+{% for wordpressLanguage in wordpressLanguages %}
+	{% set lightswitchAttributes = {
+        class: [
+            'lightswitchSite',
+            'lightswitchSite'~loop.index
+        ]|filter,
+    }
+    %}
+
+	{% if settings.wordpressURL == settings.oldWordPressURL and settings.wordpressLanguageSettings and settings.wordpressLanguageSettings[wordpressLanguage.id] is defined  %}
+		{% if settings.wordpressLanguageSettings[wordpressLanguage.id].wordpressURL is defined  %}
+			{% set wordpressLanguageURL = settings.wordpressLanguageSettings[wordpressLanguage.id].wordpressURL %}
+		{% else %}
+			{% set wordpressLanguageURL = null %}
+		{% endif %}
+	{% else %}
+		{% set wordpressLanguageURL = null %}
+	{% endif %}
+
+	{% if settings.wordpressURL == settings.oldWordPressURL and settings.wordpressLanguageSettings and settings.wordpressLanguageSettings[wordpressLanguage.id] is defined  %}
+		{% if settings.wordpressLanguageSettings[wordpressLanguage.id].enableForMigration is defined  %}
+			{% set enableForMigration = settings.wordpressLanguageSettings[wordpressLanguage.id].enableForMigration %}
+		{% else %}
+			{% set enableForMigration = null %}
+		{% endif %}
+	{% else %}
+		{% set enableForMigration = null %}
+	{% endif %}
+
+	{% set siteRows = siteRows|merge({
+        (wordpressLanguage.id): {
+        heading: wordpressLanguage.label|t('site')|e,
+        enableForMigration: {
+            value: enableForMigration,
+            hasErrors: settings.wordpressLanguageSettings[wordpressLanguage.id].error.enableForMigration is defined          
+        },
+        wordpressURL: {
+            value: wordpressLanguageURL,
+            hasErrors: settings.wordpressLanguageSettings[wordpressLanguage.id].error.wordpressURL is defined
+        },
+        }|filter
+    }) %}
+{% endfor %}
+
+{% if settings.getErrors('wordpressLanguageSettings') %}
+	{% set siteErrors = settings.getErrors('wordpressLanguageSettings') %}
+{% endif %}
+
+{% import "_includes/forms" as forms %}
+
+{% if siteErrors or (settings.wordpressURL != settings.oldWordPressURL) %}
+	{% set staticTable = false %}
+{% else %}
+	{% set staticTable = false %}
+{% endif %}
+
+<div class="bg-blue-100 border-l-4 border-blue-500 border-solid text-blue-700 p-4" role="alert">
+	<p class="font-bold">Tip:</p>
+	<p style="color: blue">
+		{% set wordpressURL = craft.app.getPlugins().getPlugin('migrate-from-wordpress').getSettings().wordpressURL %}
+		{{ "We are going to add support for multi-language WordPress in the next releases. Until then, please enable migration for the default language and use WordPress URL"|t('migrate-from-wordpress') }}
+	</p>
+</div>
+
+<p>
+	{{"Update WordPress URL field and click save to see that WordPress site languages"|t('migrate-from-wordpress')}}
+</p>
+{{ forms.editableTableField({
+    id: 'language-settings',
+    name: 'wordpressLanguageSettings',
+    cols: {
+        heading: {
+            type: 'heading',
+            heading: "WordPress Site Language"|t('migrate-from-wordpress'),
+            thin: true
+        },
+        enableForMigration: {
+            type: 'lightswitch',
+            heading: 'Enable for migration',
+            thin: true,
+        },
+        wordpressURL: {
+            type: 'singleline',
+            heading: 'URL',
+        },
+    }|filter,
+    rows: siteRows,
+    staticRows: true,
+    errors: siteErrors|unique,
+    static: staticTable
+}) }}

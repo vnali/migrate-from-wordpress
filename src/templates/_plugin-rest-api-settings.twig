@@ -1,0 +1,81 @@
+{% import "_includes/forms" as forms %}
+
+<div id="rest-api">
+    
+    {% if not craft.app.plugins.isPluginEnabled('feed-me') %}
+        <br>
+        <div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+            <p class="font-bold">{{ 'Attention!'|t('migrate-from-wordpress') }}</p>
+            <p style="color:red">
+                {{ 'You should enable Feedme plugin first.'|t('migrate-from-wordpress') }}
+            </p>
+        </div>
+    {% else %}
+        
+        {% namespace "settings" %}
+
+        {{ forms.textField({
+            label: 'WordPress URL'|t('migrate-from-wordpress'),
+            instructions: 'e.g. https://wordpress.test'|t('migrate-from-wordpress'),
+            id: 'wordpressURL',
+            name: 'wordpressURL',
+            value: settings.wordpressURL,
+            errors: settings.getErrors('wordpressURL'),
+            required: true
+        }) }}
+
+        {{ hiddenInput('oldWordPressURL', settings.oldWordPressURL) }}
+
+        {{ hiddenInput('step', settings.step) }}
+
+        {{ forms.textField({
+            label: 'WordPress REST API Endpoint'|t('migrate-from-wordpress'),
+            instructions: 'Default is wp-json/wp/v2'|t('migrate-from-wordpress'),
+            id: 'wordpressRestApiEndpoint',
+            name: 'wordpressRestApiEndpoint',
+            value: settings.wordpressRestApiEndpoint,
+            errors: settings.getErrors('wordpressRestApiEndpoint'),
+            required: true
+        }) }}
+
+        {#
+        {{ forms.textField({
+            label: 'WordPress System Path'|t('migrate-from-wordpress'),
+            instructions: 'e.g. /var/www/html/wordpress'|t('migrate-from-wordpress'),
+            id: 'wordpressSystemPath',
+            name: 'wordpressSystemPath',
+            value: settings.wordpressSystemPath,
+            errors: settings.getErrors('wordpressSystemPath'),
+            required: true     
+        }) }}
+        #}
+
+        {{ forms.textField({
+            label: 'WordPress account username'|t('migrate-from-wordpress'),
+            instructions: 'e.g. admin'|t('migrate-from-wordpress'),
+            id: 'wordpressAccountUsername',
+            name: 'wordpressAccountUsername',
+            value: settings.wordpressAccountUsername,
+            errors: settings.getErrors('wordpressAccountUsername'),
+            required: true 
+        }) }}
+
+        {{ forms.passwordField({
+            label: 'WordPress account password'|t('migrate-from-wordpress'),
+            instructions: 'e.g. password'|t('migrate-from-wordpress'),
+            id: 'wordpressAccountPassword',
+            name: 'wordpressAccountPassword',
+            value: settings.wordpressAccountPassword,
+            errors: settings.getErrors('wordpressAccountPassword'),
+            required: true          
+        }) }}
+
+        <hr>
+        <h3>{{ 'Language settings'|t('migrate-from-wordpress') }}</h3>
+
+        {% include 'migrate-from-wordpress/_languageDefinition.twig' %}
+        
+        {% endnamespace %}
+    {% endif %}
+
+</div>

@@ -1,0 +1,44 @@
+body .selectize-dropdown-content>div[data-value="new matrix"]:before {
+    font-family: 'Craft';
+    content: 'plus';
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+body .selectize-dropdown-content>div[data-value="new super table"]:before {
+    font-family: 'Craft';
+    content: 'plus';
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+body .selectize-dropdown-content>div[data-value="new table"]:before {
+    font-family: 'Craft';
+    content: 'plus';
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+body .selectize-dropdown-content>div[data-value="new block type"]:before {
+    font-family: 'Craft';
+    content: 'plus';
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+body .selectize-dropdown-content>div[data-value="new field"]:before {
+    font-family: 'Craft';
+    content: 'plus';
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.triangle {
+    border-right: 2px solid; 
+    border-bottom: 2px solid;
+    height: 5px;
+    width: 5px;
+    margin-right: 3px; 
+    transform: rotate(-45deg);
+    display: inline-block;
+}

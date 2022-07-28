@@ -1,0 +1,26 @@
+{% from 'migrate-from-wordpress/_containerFieldSelect' import containerFieldSelect %}
+
+{% set containerParams = {
+    id: 'containerId'~uniqueId,
+    name: 'fields['~handle~'][containerField]',
+    value: "",
+    required: false,
+    options: containers,
+    class: 'selectize fullwidth container',
+} %}
+
+{{ containerFieldSelect(
+    containerParams,
+    newMatrix,
+    newMatrixJs,
+    'Matrix Container'|t('migrate-from-wordpress'),
+    newSuperTable,
+    newSuperTableJs,
+    'Super Table Container'|t('migrate-from-wordpress'),
+    newTable,
+    newTableJs,
+    'Table Container'|t('migrate-from-wordpress')
+) }}
+
+
+

@@ -1,0 +1,105 @@
+{% import "_includes/forms" as forms %}
+
+<div id="reset" class="hidden">
+
+    {% namespace "settings" %}
+
+    {{ forms.lightSwitchField({
+        label: 'Clear all cache'|t('migrate-from-wordpress'),
+        instructions: "You can clear all caches related to this plugin -used for migration process-"|t('migrate-from-wordpress'),
+        id: 'clearAllCache',
+        name: 'clearAllCache',
+        on : '0',
+        value: '1',
+        errors: settings.getErrors('clearAllCache'),
+        tip: 'Tip: Use this option if you want to start the migration process again (if there is a problem with the migration process or if you updated this plugin)'|t('migrate-from-wordpress'),
+        required: true
+    }) }}
+
+    {{ forms.lightSwitchField({
+        label: 'Clear feeds created by this plugin'|t('migrate-from-wordpress'),
+        instructions: "By enabling this option, feeds created by this plugin -their name is started with 'Migrate from WordPress'- will be deleted from here: admin/feed-me/feeds."|t('migrate-from-wordpress'),
+        id: 'clearFeedsCreatedByPlugin',
+        name: 'clearFeedsCreatedByPlugin',
+        on : '0',
+        value: '1',
+        errors: settings.getErrors('clearFeedsCreatedByPlugin'),
+        required: true
+    }) }}
+
+    {{ forms.lightSwitchField({
+        label: 'Clear Feed me logs'|t('migrate-from-wordpress'),
+        instructions: "Clear Feed me logs in this address admin/feed-me/logs."|t('migrate-from-wordpress'),
+        id: 'clearFeedmeLogs',
+        name: 'clearFeedmeLogs',
+        on : '0',
+        value: '1',
+        errors: settings.getErrors('clearFeedmeLogs'),
+        required: true
+    }) }}
+
+    {% set env = craft.app.config.env %}
+
+    {% if env == 'dev' %}
+        <div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+            <p class="font-bold">{{ 'Attention!'|t('migrate-from-wordpress') }}</p>
+            <p class="font-bold">{{ 'You can delete data related to your Craft CMS site here.'|t('migrate-from-wordpress') }}</p>
+            {{ forms.lightSwitchField({
+                label: 'Delete all fields'|t('migrate-from-wordpress'),
+                id: 'deleteAllFields',
+                name: 'deleteAllFields',
+                on : '0',
+                value: '1',
+                errors: settings.getErrors('deleteAllFields'),
+                required: true
+            }) }}
+            {{ forms.lightSwitchField({
+                label: 'Delete all sections'|t('migrate-from-wordpress'),
+                id: 'deleteAllSections',
+                name: 'deleteAllSections',
+                on : '0',
+                value: '1',
+                errors: settings.getErrors('deleteAllSections'),
+                required: true
+            }) }}
+            {{ forms.lightSwitchField({
+                label: 'Delete all volumes'|t('migrate-from-wordpress'),
+                id: 'deleteAllVolumes',
+                name: 'deleteAllVolumes',
+                on : '0',
+                value: '1',
+                errors: settings.getErrors('deleteAllVolumes'),
+                required: true
+            }) }}
+            {{ forms.lightSwitchField({
+                label: 'Delete all globals'|t('migrate-from-wordpress'),
+                id: 'deleteAllGlobals',
+                name: 'deleteAllGlobals',
+                on : '0',
+                value: '1',
+                errors: settings.getErrors('deleteAllGlobals'),
+                required: true
+            }) }}
+            {{ forms.lightSwitchField({
+                label: 'Delete all category groups'|t('migrate-from-wordpress'),
+                id: 'deleteAllCategories',
+                name: 'deleteAllCategories',
+                on : '0',
+                value: '1',
+                errors: settings.getErrors('deleteAllCategories'),
+                required: true
+            }) }}
+            {{ forms.lightSwitchField({
+                label: 'Delete all tag groups'|t('migrate-from-wordpress'),
+                id: 'deleteAllTags',
+                name: 'deleteAllTags',
+                on : '0',
+                value: '1',
+                errors: settings.getErrors('deleteAllTags'),
+                required: true
+            }) }}
+        </div>
+    {% endif %}
+
+    {% endnamespace %}
+</div>

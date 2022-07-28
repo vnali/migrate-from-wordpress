@@ -1,0 +1,102 @@
+{% import "_includes/forms" as forms %}
+
+<div id="general" class="hidden">
+
+	{% namespace "settings" %}
+
+    {#
+	{{ forms.lightSwitchField({
+        label: 'Protect user\'s password on user update'|t('migrate-from-wordpress'),
+        instructions: 'When this option is enabled, user\'s password doesn\'t change on user update. the user who runs the feed is always protected anyway.'|t('migrate-from-wordpress'),
+        id: 'protectUserPasswordOnUpdate',
+        name: 'protectUserPasswordOnUpdate',
+        on : settings.protectUserPasswordOnUpdate ?? '1',
+        value: '1',
+        errors: settings.getErrors('protectUserPasswordOnUpdate'),
+    }) }}
+    #}
+
+    <hr>
+
+    {{ forms.lightSwitchField({
+        label: 'Add excerpt to body content too'|t('migrate-from-wordpress'),
+        id: 'addExcerptToBody',
+        name: 'addExcerptToBody',
+        on : settings.addExcerptToBody ?? '1',
+        value: '1',
+        errors: settings.getErrors('addExcerptToBody'),
+    }) }}
+
+    <hr>
+
+    {{ forms.textField({
+        label: 'WordPress item limit'|t('migrate-from-wordpress'),
+        instructions: 'How many WordPress items process on each feed processing step, e.g., 10'|t('migrate-from-wordpress'),
+        id: 'limit',
+        name: 'limit',
+        value: settings.limit,
+        errors: settings.getErrors('limit'),
+        required: true 
+    }) }}
+
+    <hr>
+
+    {{ forms.textField({
+        label: 'Category base'|t('migrate-from-wordpress'),
+        id: 'categoryBase',
+        name: 'categoryBase',
+        value: settings.categoryBase,
+        errors: settings.getErrors('categoryBase'),
+        required: true,
+        instructions: 'Category base used in category URL, e.g., category',
+        tip: 'Check the optional section of wp-admin/options-permalink.php on WordPress Site for category base. Leave it as default if it is empty'
+    }) }}
+
+    {{ forms.textField({
+        label: 'Tag base'|t('migrate-from-wordpress'),
+        id: 'tagBase',
+        name: 'tagBase',
+        value: settings.tagBase,
+        errors: settings.getErrors('tagBase'),
+        required: true,
+        instructions: 'Tag base used in tag URL, e.g., tag',
+        tip: 'Check the optional section of wp-admin/options-permalink.php on WordPress Site for category base. Leave it as default if it is empty.'
+    }) }}
+
+    <hr>
+
+    {{ forms.textField({
+        label: 'WordPress upload path'|t('migrate-from-wordpress'),
+        id: 'wordpressUpploadPath',
+        name: 'wordpressUploadPath',
+        value: settings.wordpressUploadPath,
+        errors: settings.getErrors('wordpressUploadPath'),
+        required: true 
+    }) }}
+
+    {{ forms.lightSwitchField({
+        label: 'Ignore wordpress upload path as folder path'|t('migrate-from-wordpress'),
+        id: 'ignoreWordPressUploadPath',
+        name: 'ignoreWordPressUploadPath',
+        on : settings.ignoreWordPressUploadPath ?? '0',
+        value: '1',
+        errors: settings.getErrors('ignoreWordPressUploadPath'),
+        tip: 'If your volume path already is like @webroot/wp-content/uploads/, 
+        you can enable this option so /wp-content/uploads/ be ignored as folder path.'
+    }) }}
+
+    {#
+    {{ forms.lightSwitchField({
+        label: 'Fetch Files by Asset Index'|t('migrate-from-wordpress'),
+        id: 'fetchFilesByAssetIndex',
+        name: 'fetchFilesByAssetIndex',
+        on : settings.fetchFilesByAssetIndex ?? '0',
+        value: '1',
+        errors: settings.getErrors('fetchFilesByAssetIndex'),
+        tip: 'If you are going to migrate WordPress files by uploading them to server and using asset index utility, select this option
+        so this plugin apply needed settings later'
+    }) }}
+    #}
+    
+    {% endnamespace %}
+</div>

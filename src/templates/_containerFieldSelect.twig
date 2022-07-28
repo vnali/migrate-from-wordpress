@@ -1,0 +1,271 @@
+{% macro containerFieldSelect(containerParams, matrixHtml, matrixJs, matrixHeading, superTableHtml, superTableJs, superTableHeading, tableHtml, tableJs, tableHeading) %}
+
+	{% from "_includes/forms" import selectField %}
+	{{ selectField(containerParams) }}
+
+	{% js %}
+	(function() {
+	
+	        var $select = $('#{{ containerParams.id }}').selectize({
+	            dropdownParent: 'body',
+                allowEmptyOption: false,
+                render: {
+                    option: function(item, escape) {
+                        var regexp = new RegExp(/\([a-z0-9]+\)/, 'ig');
+                        var regexp2 = new RegExp(/\|/, 'g');
+                        return '<div>'
+                        + item.text.replace(regexp, '<b> $& </b>').replace(regexp2, ' <div class="triangle"></div> ')
+                        + '</div>';
+                    },
+                    item: function(item, scope){
+                        var regexp = new RegExp(/\([a-z0-9]+\)/, 'ig');
+                        var regexp2 = new RegExp(/\|/, 'g');
+                        return '<div>'
+                        + item.text.replace(regexp, '<b> $& </b>').replace(regexp2, ' <div class="triangle"></div> ')
+                        + '</div>';
+                    }
+                },
+	        });
+	
+	        var selectize = $select.get(0).selectize;
+
+	        selectize.addOption({
+	            value: 'new matrix',
+	            text: 'New Matrix'
+	        });
+	
+            /*
+            // not ready yet
+	        selectize.addOption({
+	            value: 'new super table',
+	            text: 'New Super Table'
+	        });
+            */
+	
+	        selectize.addOption({
+	            value: 'new table',
+	            text: 'New Table'
+	        });
+	
+	        selectize.setValue("");
+	
+            $('#{{ containerParams.id }}').change(function() {
+                field= $(this).closest('tr').data('id');
+                convertTo = $(this).closest('tr').find('.convertTo select').val();
+                selectField(field, convertTo, this.value);
+            }); 
+
+	        selectize.on('item_add', function(value, $item) {
+	
+	            if (value == 'new matrix') {
+	                selectize.clear();
+	
+	                var $form = $(
+	                '<form data-related="{{ containerParams.id }}" class="modal fitted lazy-create-modal">' +
+		                '<div class="header">' +
+		                    '<h1 class="centeralign min-width-modal">{{ matrixHeading }}</h1>' +
+		                '</div>' +
+		                '<div class="body">' +
+		                    '{{ matrixHtml|e("js") }}' +
+		                '</div>' +
+		                '<div class="footer">' +
+		                    '<div class="buttons right">' +
+		                        '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+		                        '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+		                        '<div class="spinner hidden"/>' +
+		                        '</div>' +
+		                    '</div>' +
+		                '</form>');
+
+		                var modal = new Garnish.Modal($form, {
+		                    onHide: function() {
+		                        modal.destroy();
+		                        delete modal;
+		                    }
+		                });
+		
+		                setTimeout(function() {
+		                    $form.find('.text:first').focus();
+		                    modal.updateSizeAndPosition();
+		
+		                    $form.find('.body:first').on('resize', function() {
+		                        modal.updateSizeAndPosition();
+		                    });
+		                    eval('{{ matrixJs|e("js") }}');
+		                }, 100);
+		
+		                $form.on('submit', function(ev) {
+		                    ev.preventDefault();
+		
+		                    $form.find('.spinner').removeClass('hidden');
+
+                            matrixVal = $('#matrixContainer').val();
+                            blockTypeVal = $('#blockType').val();
+                            tableVal = $('#tableContainer').val();
+                            if (matrixVal && blockTypeVal){
+                                val = matrixVal + '-Matrix|' + blockTypeVal + '-BlockType';
+                                text = matrixVal + ' (M) ' + blockTypeVal + '(BT)';
+                                if (tableVal){
+                                    val = val + '|' + tableVal + '-Table';
+                                    text = text + '|' + tableVal + ' (T) ';
+                                }
+                            } 
+                            
+                            if (typeof val !== 'undefined'){
+                                var selectize3 = $('.container select');
+                                $.each(selectize3, function(key, sel) {             
+                                    sel.selectize.addOption({
+                                        value: val,
+                                        text: text,
+                                        $order: -1
+                                    });      
+                                });    
+            
+                                selectize.setValue(val);
+                            }
+		                    modal.hide();                
+		                });
+		
+		                $form.find('.cancel-btn').on('click', function() {
+		                    modal.hide();
+		                });
+                    }
+                    
+                    else if (value == 'new super table') {
+                        selectize.clear();
+        
+                        var $form = $(
+                        '<form data-related="{{ containerParams.id }}" class="modal fitted lazy-create-modal">' +
+                            '<div class="header">' +
+                                '<h1 class="centeralign">{{ superTableHeading }}</h1>' +
+                            '</div>' +
+                            '<div class="body">' +
+                                '{{ superTableHtml|e("js") }}' +
+                            '</div>' +
+                            '<div class="footer">' +
+                                '<div class="buttons right">' +
+                                    '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+                                    '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+                                    '<div class="spinner hidden"/>' +
+                                '</div>' +
+                            '</div>' +
+                        '</form>');
+		                
+		                var modal = new Garnish.Modal($form, {
+		                    onHide: function() {
+		                        modal.destroy();
+		                        delete modal;
+		                    }
+		                });
+		
+		                setTimeout(function() {
+		                    $form.find('.text:first').focus();
+		                    modal.updateSizeAndPosition();
+		
+		                    $form.find('.body:first').on('resize', function() {
+		                        modal.updateSizeAndPosition();
+		                    });
+		                    eval('{{ superTableJs|e("js") }}');
+		                }, 100);
+		
+		                $form.on('submit', function(ev) {
+		                    ev.preventDefault();
+		                    $form.find('.spinner').removeClass('hidden');
+
+                            superTableVal = $('#supertableContainer').val();
+                            tableVal = $('#tables').val();
+                            if (superTableVal){
+                                val = superTableVal + '-SuperTable';
+                                text = superTableVal + ' (ST) ';
+                                if (tableVal){
+                                    val = val + '|' + tableVal + '-Table';
+                                    text = text + '|' + tableVal + ' (T) ';
+                                }
+                            }
+
+                            if (typeof val !== 'undefined'){
+                                var selectize3 = $('.container select');
+                                $.each(selectize3, function(key, sel) {             
+                                    sel.selectize.addOption({
+                                        value: val,
+                                        text: text,
+                                        $order: -1
+                                    });      
+                                });    
+                                selectize.setValue(val);
+                            }
+		                    modal.hide();                
+		                });
+		
+		                $form.find('.cancel-btn').on('click', function() {
+		                    modal.hide();
+		                });
+		            }
+		            else if (value == 'new table') {
+		                selectize.clear();
+		
+		                var $form = $(
+		                '<form data-related="{{ containerParams.id }}" class="modal fitted lazy-create-modal">' +
+		                '<div class="header">' +
+		                    '<h1 class="centeralign">{{ tableHeading }}</h1>' +
+		                '</div>' +
+		                '<div class="body">' +
+		                    '{{ tableHtml|e("js") }}' +
+		                '</div>' +
+		                '<div class="footer">' +
+		                    '<div class="buttons right">' +
+		                        '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+		                        '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+		                        '<div class="spinner hidden"/>' +
+		                    '</div>' +
+		                '</div>' +
+		                '</form>');
+	
+		                var modal = new Garnish.Modal($form, {
+		                    onHide: function() {
+		                        modal.destroy();
+		                        delete modal;
+		                    },
+		                });
+		
+		                setTimeout(function() {
+		                    $form.find('.text:first').focus();
+		                    modal.updateSizeAndPosition();
+		
+		                    $form.find('.body:first').on('resize', function() {
+		                        modal.updateSizeAndPosition();
+		                    });
+		                    eval('{{ tableJs|e("js") }}');
+		                }, 100);
+		
+		                $form.on('submit', function(ev) {
+		                    ev.preventDefault();
+		
+		                    $form.find('.spinner').removeClass('hidden');
+		                    val = $('#tableContainer').val()+'-Table';
+                            text = $('#tableContainer').val()+' (T)';
+                            
+                            if (typeof val !== 'undefined'){
+                                var selectize3 = $('.container select');
+                                $.each(selectize3, function(key, sel) {             
+                                    sel.selectize.addOption({
+                                        value: val,
+                                        text: text,
+                                        $order: -1
+                                    });      
+                                });    
+            
+                                selectize.setValue(val);
+                            }
+		                    modal.hide();
+		                });
+		
+		                $form.find('.cancel-btn').on('click', function() {
+		                    modal.hide();
+		                });
+		            }
+		        });
+		    })();
+	{% endjs %}
+
+{% endmacro %}

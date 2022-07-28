@@ -1,0 +1,152 @@
+{% extends "/_layouts/cp" %}
+
+{% set title = "Migrate '" ~ taxonomyLabel ~ "' terms" %}
+
+{% block content %}
+    {% import "_includes/forms" as forms %}
+
+    <form action="" method="post" accept-charset="UTF-8">
+        {% set address = 'migrate-from-wordpress/taxonomies/migrate?taxonomyId=' ~ taxonomyId %}
+		{{ redirectInput(address) }}
+		{{ csrfInput() }}
+		<input type="hidden" name="action" value="migrate-from-wordpress/default/clear-cache">
+        <input type="hidden" name="item" value="migrate-from-wordpress-taxonomy-{{ taxonomyId }}-items">
+        <div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+            <p class="font-bold">{{ 'Attention!'|t('migrate-from-wordpress') }}</p>
+            <p>
+                {{ "Clear cache if you can't see the latest changes made in taxonomies in WordPress"|t('migrate-from-wordpress') }}
+            </p>
+            <input type="submit" class="btn submit" value="{{ "Clear '" ~ taxonomyLabel|capitalize ~ "' Taxonomy Cache"|t('migrate-from-wordpress') }}">
+        </div>
+    </form>
+
+	<form action="" method="post" accept-charset="UTF-8">
+    	{{ redirectInput('feed-me') }}
+		{{ csrfInput() }}
+		<input type="hidden" name="action" value="migrate-from-wordpress/taxonomies/save-fields">
+        <input type="hidden" name="formType" value="taxonomy">
+
+        {% if taxonomyModel %}
+        {% set fieldErrors = [] %}
+        {% for attribute, errors in taxonomyModel.getErrors() %}
+            {% set fieldErrors = fieldErrors|merge(errors) %}
+        {% endfor %}
+            {% include "_includes/forms/errorList" with { errors: fieldErrors } %}
+        {% endif %}
+        <br>
+        <div class= "grid grid-cols-3 gap-2 pb-5 pt-1">
+            <div class="max-w-sm rounded overflow-hidden bg-gray-100 border border-solid border-gray-500 p-5">
+                <h3>{{ 'Migrate to entry'|t('migrate-from-wordpress') }}</h3>
+                <div class= "grid grid-cols-2 gap-2 pb-5 pt-1">
+                    {% include 'migrate-from-wordpress/_section-entrytype.twig' %}
+                </div>
+            </div>
+            <div class="max-w-sm rounded overflow-hidden bg-gray-100 border border-solid border-gray-500 p-5">
+                <h3>{{ 'Migrate to category'|t('migrate-from-wordpress') }} </h3>
+                {{ forms.selectField({
+                    label: 'Category Group'|t('migrate-from-wordpress'),
+                    id: 'category',
+                    name: 'category',
+                    options: categories, 
+                    value: categoryModel ? categoryModel.categoryId,
+                    errors: categoryModel ? categoryModel.getErrors('catgeoryId')          
+                }) }}
+                
+                {{ forms.textField({
+                    label: 'New Category Group Name'|t('migrate-from-wordpress'),
+                    instructions: 'insert new catgeory group name',
+                    id: 'categoryGroupName',
+                    name: 'categoryGroupName',  
+                    value: categoryModel ? categoryModel.categoryGroupName,
+                    errors: categoryModel ? categoryModel.getErrors('categoryGroupName'),
+                    required: true
+                }) }}
+        
+                {{ forms.textField({
+                    label: 'New Category Field'|t('migrate-from-wordpress'),
+                    instructions: 'insert new catgeory field name',
+                    id: 'categoryGroupFieldName',
+                    name: 'categoryGroupFieldName',
+                    value: categoryModel ? categoryModel.categoryFieldHandle,
+                    errors: categoryModel ? categoryModel.getErrors('categoryFieldHandle')          
+                }) }}
+            </div>
+            <div class="max-w-sm rounded overflow-hidden bg-gray-100 border border-solid border-gray-500 p-5">
+                <h3>{{ 'Migrate to tag'|t('migrate-from-wordpress') }}</h3>
+                {{ forms.selectField({
+                    label: 'Tag Group'|t('migrate-from-wordpress'),
+                    id: 'tag',
+                    name: 'tag',
+                    options: tags,
+                    value: tagModel ? tagModel.tagId,
+                    errors: tagModel ? tagModel.getErrors('tagId')               
+                }) }}
+        
+                {{ forms.textField({
+                    label: 'New Tag Group Name'|t('migrate-from-wordpress'),
+                    instructions: 'insert new tag group name',
+                    id: 'tagGroupName',
+                    name: 'tagGroupName',
+                    value: tagModel ? tagModel.tagGroupName,
+                    errors: tagModel ? tagModel.getErrors('tagGroupName'),
+                    required: true      
+                }) }}
+        
+                {{ forms.textField({
+                    label: 'New Tag Field'|t('migrate-from-wordpress'),
+                    instructions: 'insert new tag field name',
+                    id: 'tagGroupFieldName',
+                    name: 'tagGroupFieldName',
+                    value: tagModel ? tagModel.tagFieldHandle,
+                    errors: tagModel ? tagModel.getErrors('tagFieldHandle')          
+                }) }}
+            </div>
+        </div>
+        <hr>
+        {% include 'migrate-from-wordpress/_languageOption.twig' %}
+        <hr>
+        {% include 'migrate-from-wordpress/_mappingTable.twig' %}
+
+		<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}">
+	</form>
+
+{% endblock %}
+{% js %}
+    (function() {
+        $('#categoryGroupName-field').hide();
+        $('#tagGroupName-field').hide();
+        $('#categoryGroupFieldName-field').hide();
+        $('#tagGroupFieldName-field').hide();
+        $("#category").change(function() {
+            if (this.value!='') {
+                $('#categoryGroupFieldName-field').show();
+                $('#tagGroupFieldName-field').hide(); 
+            } else {
+                $('#categoryGroupFieldName-field').hide();            
+            }
+            if (this.value == '-1') {
+                $('#categoryGroupName-field').show();
+                $('#tagGroupName-field').hide();
+                $('#tag').val('');
+            } else {
+                $('#categoryGroupName-field').hide();             
+            }
+        });
+        $("#tag").change(function() {
+            if (this.value!='') {
+                $('#tagGroupFieldName-field').show();
+                $('#categoryGroupFieldName-field').hide();   
+            } else {
+                $('#tagGroupFieldName-field').hide();          
+            }
+            if (this.value == '-1') {
+                $('#tagGroupName-field').show();
+                $('#categoryGroupName-field').hide();
+                $('#category').val('');
+            } else {
+                $('#tagGroupName-field').hide();             
+            }
+        });
+    })();
+{% endjs %}
+{% do view.registerAssetBundle("vnali\\migratefromwordpress\\assetbundles\\ConvertAsset") %}

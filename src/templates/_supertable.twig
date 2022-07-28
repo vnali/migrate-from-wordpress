@@ -1,0 +1,245 @@
+{% macro superTableSelect(superTableParams, tableParams, modalHeading, html, js, tableHtml, tableJs) %}
+
+{% from "_includes/forms" import selectField %}
+{{ selectField(superTableParams) }}
+
+{% js %}
+    (function() {
+        //set super Table
+        var $select = $('#{{ superTableParams.id }}').selectize({
+            dropdownParent: 'body',
+        });
+        var selectize = $select.get(0).selectize;
+
+        var $select2 = $('#{{ tableParams.id }}').selectize({
+            dropdownParent: 'body',
+        });
+        var selectize2 = $select2.get(0).selectize;
+
+        //on change for matrix
+        selectize.on('change', function(value, $item) {
+            if (value == 'new super table'){
+                selectize.clear(true);
+
+                var $form = $(
+                '<form  class="modal fitted lazy-create-modal">' +
+                    '<div class="header">' +
+                        '<h1 class="centeralign">{{ modalHeading }}</h1>' +
+                        '</div>' +
+                    '<div class="body">' +
+                        '{{ html|e("js") }}' +
+                        '</div>' +
+                    '<div class="footer">' +
+                        '<div class="buttons right">' +
+                            '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+                            '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+                            '<div class="spinner hidden"/>' +
+                        '</div>' +
+                    '</div>' +
+                '</form>');
+
+                var modal = new Garnish.Modal($form, {
+                    onHide: function() {
+                        modal.destroy();
+                        delete modal;
+                    },
+                });
+
+                setTimeout(function() {
+                    $form.find('.text:first').focus();
+                    modal.updateSizeAndPosition();
+
+                    $form.find('.body:first').on('resize', function() {
+                        modal.updateSizeAndPosition();
+                    });
+
+                    eval('{{ js|e("js") }}');
+                }, 100);
+
+                $form.on('submit', function(ev) {
+                    ev.preventDefault();
+                    $form.find('.spinner').removeClass('hidden');
+                    selectize.addOption({
+                        value: $('#superTableHandle').val(),
+                        text: $('#superTableHandle').val(),
+                        $order: -1
+                    });
+
+                    selectize.setValue($('#superTableHandle').val());
+                    modal.hide();
+                });
+
+                $form.find('.cancel-btn').on('click', function() {
+                    modal.hide();
+                });
+            } else {
+                var data = {
+                    'fieldHandle' : value
+                };
+                $.ajax({
+                    method: "GET",
+                    url: Craft.getUrl("migrate-from-wordpress/default/get-supertable-blocks" + "?=_" + new Date().getTime()),
+                    data: data,
+                    dataType: 'json',
+                    success: function (data) {
+                        var length = data.length;
+                        var selected = "";
+                        $.each(data, function(i, item) {
+                            if (length == i+1){
+                                selected = item.value;
+                            }
+                            selectize2.addOption({
+                                value: item.value,
+                                text: item.label
+                            });
+                        });
+                        selectize2.addOption({
+                            value: 'new table',
+                            text: 'new table'
+                        });
+                        selectize2.setValue(selected);
+                    }
+                });
+            }
+        });
+
+        selectize2.on('change', function(value, $item) {
+            if (value == 'new table'){
+                // Not a real option
+                selectize2.clear(true);
+
+                var $form = $(
+                '<form  class="modal fitted lazy-create-modal">' +
+                    '<div class="header">' +
+                        '<h1 class="centeralign">{{ "create a new table"|t('migrate-from-wordpress') }}</h1>' +
+                        '</div>' +
+                    '<div class="body">' +
+                        '{{ tableHtml|e("js") }}' +
+                    '</div>' +
+                    '<div class="footer">' +
+                        '<div class="buttons right">' +
+                            '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+                            '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+                            '<div class="spinner hidden"/>' +
+                        '</div>' +
+                    '</div>' +
+                '</form>');
+
+
+                var modal = new Garnish.Modal($form, {
+                    onHide: function() {
+                        modal.destroy();
+                        delete modal;
+                    },
+                });
+
+                setTimeout(function() {
+                    $form.find('.text:first').focus();
+                    modal.updateSizeAndPosition();
+
+                    $form.find('.body:first').on('resize', function() {
+                        modal.updateSizeAndPosition();
+                    });
+
+                    eval('{{ tableJs|e("js") }}');
+                }, 100);
+
+                $form.on('submit', function(ev) {
+                    ev.preventDefault();
+                    $form.find('.spinner').removeClass('hidden');
+                    selectize2.addOption({
+                        value: $('#tableHandle').val(),
+                        text: $('#tableHandle').val(),
+                        $order: -1
+                    });
+
+                    selectize2.setValue($('#tableHandle').val());
+                    modal.hide();
+                });
+
+                $form.find('.cancel-btn').on('click', function() {
+                    modal.hide();
+                });
+            }
+        });
+
+        var data = {
+            'containerTypes' : 'verbb\\supertable\\fields\\SuperTableField',
+            'limitFieldsToLayout': $('.lightswitchLimitFields').hasClass('on'),
+            'onlyContainer' : 1,
+            'item' : $('#formType').val(),
+            'entryTypeId' : $('#entrytype').val()
+        };
+        $.ajax({
+            method: "GET",
+            url: Craft.getUrl("migrate-from-wordpress/default/get-container-fields" + "?=_" + new Date().getTime()),
+            data: data,
+            dataType: 'json',
+            success: function (data) {
+                var length = data.length;
+                var selected = "";
+                $.each(data, function(i, item) {
+                    if (length == i+1){
+                        selected = item.value;
+                    }
+                    selectize.addOption({
+                        value: item.value,
+                        text: item.label
+                    });
+                });
+                selectize.addOption({
+                    value: 'new super table',
+                    text: 'new super table'
+                });
+                selectize.setValue(selected);
+            }
+        });
+    })();
+{% endjs %}
+
+{% endmacro %}
+
+{% macro tableSelect(selectParams) %}
+
+{% from "_includes/forms" import selectField %}
+{{ selectField(selectParams) }}
+
+{% endmacro %}
+
+{% from _self import superTableSelect %}
+
+{% set superTableParams = {
+    id: 'supertableContainer',
+    class: 'selectize fullwidth',
+    options: null,
+    name: 'supertableField',
+} %}
+
+{% set tableParams = {
+    id: 'tables',
+    class: 'selectize fullwidth',
+    options: null,
+    name: 'table'
+} %}
+
+<br>
+<b>Super Table:</b>
+<div>
+    {{ superTableSelect(
+        superTableParams,
+        tableParams,
+        'Create a new super table'|t('migrate-from-wordpress'),
+        createSuperTable,
+        createSuperTableJs,
+        createTable,
+        createTableJs
+    ) }}
+</div>
+
+<b>Table:</b>
+{% from _self import tableSelect %}
+<div>
+    {{ tableSelect(
+        tableParams
+    ) }}
+</div>

@@ -1,0 +1,357 @@
+{% macro matrixSelect(matrixParams, blockTypeParams, tableParams, matrixHtml, matrixJs, blockTypeHtml, blockTypeJs, tableHtml, tableJs) %}
+
+{% from "_includes/forms" import selectField %}
+{{ selectField(matrixParams) }}
+
+{% js %}
+    (function() {
+        //set matrix
+        var $select = $('#{{ matrixParams.id }}').selectize({
+            dropdownParent: 'body',
+        });
+        var selectize = $select.get(0).selectize;
+        //set matrix types
+        var $select2 = $('#{{ blockTypeParams.id }}').selectize({
+            dropdownParent: 'body',
+        });
+        var selectize2 = $select2.get(0).selectize;
+        //set table
+        var $select3 = $('#{{ tableParams.id }}').selectize({
+            dropdownParent: 'body',
+        });
+        var selectize3 = $select3.get(0).selectize;
+
+        //on change for matrix
+        selectize.on('change', function(value, $item) {
+            if (value == 'new matrix'){
+                // Not a real option
+                selectize.clear(true);
+
+                var $form = $(
+                '<form  class="modal fitted lazy-create-modal">' +
+                    '<div class="header">' +
+                        '<h1 class="centeralign">{{ "Create a new matrix"|t('migrate-from-wordpress') }}</h1>' +
+                    '</div>' +
+                    '<div class="body">' +
+                        '{{ matrixHtml|e("js") }}' +
+                    '</div>' +
+                    '<div class="footer">' +
+                        '<div class="buttons right">' +
+                            '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+                            '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+                            '<div class="spinner hidden"/>' +
+                        '</div>' +
+                    '</div>' +
+                '</form>');
+
+                var modal = new Garnish.Modal($form, {
+                    onHide: function() {
+                        modal.destroy();
+                        delete modal;
+                    }
+                });
+
+                setTimeout(function() {
+                    $form.find('.text:first').focus();
+                    modal.updateSizeAndPosition();
+
+                    $form.find('.body:first').on('resize', function() {
+                        modal.updateSizeAndPosition();
+                    });
+
+                    eval('{{ matrixJs|e("js") }}');
+                }, 100);
+
+                $form.on('submit', function(ev) {
+                    ev.preventDefault();
+                    $form.find('.spinner').removeClass('hidden');
+                    selectize.addOption({
+                        value: $('#matrixHandle').val(),
+                        text: $('#matrixHandle').val(),
+                        //$order: selectize.order - 2
+                    });
+
+                    selectize.setValue($('#matrixHandle').val());
+                    modal.hide();
+                });
+
+                $form.find('.cancel-btn').on('click', function() {
+                    modal.hide();
+                });
+            } else {
+                var data = {
+                    'fieldHandle' : value
+                };
+                $.ajax({
+                    method: "GET",
+                    url: Craft.getUrl("migrate-from-wordpress/default/get-matrix-block-types" + "?=_" + new Date().getTime()),
+                    data: data,
+                    dataType: 'json',
+                    success: function (data) {
+                        var length = data.length;
+                        var selected = "";
+                        $.each(data, function(i, item) {
+                            if (length == i+1){
+                                selected = item.value;
+                            }
+                            selectize2.addOption({
+                                value: item.value,
+                                text: item.label
+                            });
+                        });
+                        selectize2.addOption({
+                            value: 'new block type',
+                            text: 'new block type'
+                        });
+                        selectize2.setValue(selected);
+                    }
+                });
+            }
+        });
+
+        //on change for matrix
+        selectize2.on('change', function(value, $item) {
+            if (value == 'new block type') {
+                selectize2.clear(true);
+
+                var $form = $(
+                '<form  class="modal fitted lazy-create-modal">' +
+                    '<div class="header">' +
+                        '<h1 class="centeralign">{{ "Create a new block type"|t('migrate-from-wordpress') }}</h1>' +
+                    '</div>' +
+                    '<div class="body">' +
+                        '{{ blockTypeHtml|e("js") }}' +
+                    '</div>' +
+                    '<div class="footer">' +
+                        '<div class="buttons right">' +
+                            '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+                            '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+                            '<div class="spinner hidden"/>' +
+                        '</div>' +
+                    '</div>' +
+                '</form>');
+
+
+                var modal = new Garnish.Modal($form, {
+                    onHide: function() {
+                        modal.destroy();
+                        delete modal;
+                    }
+                });
+
+                setTimeout(function() {
+                    $form.find('.text:first').focus();
+                    modal.updateSizeAndPosition();
+
+                    $form.find('.body:first').on('resize', function() {
+                        modal.updateSizeAndPosition();
+                    });
+
+                    eval('{{ blockTypeJs|e("js") }}');
+                }, 100);
+
+                $form.on('submit', function(ev) {
+                    ev.preventDefault();
+                    $form.find('.spinner').removeClass('hidden');
+                    selectize2.addOption({
+                        value: $('#blockTypeHandle').val(),
+                        text: $('#blockTypeHandle').val(),
+                        $order: -1
+                    });
+
+                    selectize2.setValue($('#blockTypeHandle').val());
+                    modal.hide();
+                });
+
+                $form.find('.cancel-btn').on('click', function() {
+                    modal.hide();
+                });
+            } else {
+                var data = {
+                    'matrixHandle' : $('#matrixContainer').val(),
+                    'blockTypeHandle': value
+                };
+                $.ajax({
+                    method: "GET",
+                    url: Craft.getUrl("migrate-from-wordpress/default/get-matrix-tables" + "?=_" + new Date().getTime()),
+                    data: data,
+                    dataType: 'json',
+                    success: function (data) {
+                        var length = data.length;
+                        var selected = "";
+                        $.each(data, function(i, item) {
+                            if (length == i+1){
+                                selected = item.value;
+                            }
+                            selectize3.addOption({
+                                value: item.value,
+                                text: item.label
+                            });
+                        });
+                        selectize3.addOption({
+                            value: 'new table',
+                            text: 'new table'
+                        });
+                        selectize3.setValue(selected);
+                    }
+                });
+            }
+        });
+
+        selectize3.on('change', function(value, $item) {
+            if (value == 'new table'){
+                // Not a real option
+                selectize3.clear(true);
+
+                var $form = $(
+                '<form  class="modal fitted lazy-create-modal">' +
+                    '<div class="header">' +
+                        '<h1 class="centeralign">{{ "Create a new table"|t('migrate-from-wordpress') }}</h1>' +
+                    '</div>' +
+                    '<div class="body">' +
+                        '{{ tableHtml|e("js") }}' +
+                    '</div>' +
+                    '<div class="footer">' +
+                        '<div class="buttons right">' +
+                            '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+                            '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+                            '<div class="spinner hidden"/>' +
+                        '</div>' +
+                    '</div>' +
+                '</form>');
+
+                var modal = new Garnish.Modal($form, {
+                    onHide: function() {
+                        modal.destroy();
+                        delete modal;
+                    }
+                });
+
+                setTimeout(function() {
+                    $form.find('.text:first').focus();
+                    modal.updateSizeAndPosition();
+
+                    $form.find('.body:first').on('resize', function() {
+                        modal.updateSizeAndPosition();
+                    });
+
+                    eval('{{ tableJs|e("js") }}');
+                }, 100);
+
+                $form.on('submit', function(ev) {
+                    ev.preventDefault();
+                    $form.find('.spinner').removeClass('hidden');
+                    selectize3.addOption({
+                        value: $('#tableHandle').val(),
+                        text: $('#tableHandle').val(),
+                        //$order: selectize.order - 2
+                    });
+                    selectize3.setValue($('#tableHandle').val());
+                    modal.hide();
+                });
+
+                $form.find('.cancel-btn').on('click', function() {
+                    modal.hide();
+                });
+            }
+        });
+
+        var data = {
+            'containerTypes' : 'craft\\fields\\Matrix',
+            'limitFieldsToLayout': $('.lightswitchLimitFields').hasClass('on'),
+            'onlyContainer' : 1,
+            'item' : $('#formType').val(),
+            'entryTypeId' : $('#entrytype').val()
+        };
+        $.ajax({
+            method: "GET",
+            url: Craft.getUrl("migrate-from-wordpress/default/get-container-fields" + "?=_" + new Date().getTime()),
+            data: data,
+            dataType: 'json',
+            success: function (data) {
+                var length = data.length;
+                var selected = "";
+                $.each(data, function(i, item) {
+                    if (length == i+1){
+                        selected = item.value;
+                    }
+                    selectize.addOption({
+                        value: item.value,
+                        text: item.label
+                    });
+                });
+                selectize.addOption({
+                    value: 'new matrix',
+                    text: 'new matrix'
+                });
+                selectize.setValue(selected);
+            }
+        });
+    })();
+{% endjs %}
+
+{% endmacro %}
+
+{% macro blockTypeSelect(blockTypeParams) %}
+    {% from "_includes/forms" import selectField %}
+    {{ selectField(blockTypeParams) }}
+{% endmacro %}
+
+{% macro tableSelect(tableParams) %}
+    {% from "_includes/forms" import selectField %}
+    {{ selectField(tableParams) }}
+{% endmacro %}
+
+{% from _self import matrixSelect %}
+
+{% set matrixParams = {
+    id: 'matrixContainer',
+    class: 'selectize fullwidth',
+    options: null,
+    name: 'matrixField',
+} %}
+
+{% set blockTypeParams = {
+    id: 'blockType',
+    class: 'selectize fullwidth',
+    options: null,
+    name: 'blockType'
+} %}
+
+{% set tableParams = {
+    id: 'tableContainer',
+    class: 'selectize fullwidth',
+    options: null,
+    name: 'tableField',
+} %}
+
+<br>
+<b>Matrix:</b>
+<div>
+    {{ matrixSelect(
+        matrixParams,
+        blockTypeParams,
+        tableParams,
+        createMatrix,
+        createMatrixJs,
+        createBlockType,
+        createBlockTypeJs,
+        createTable,
+        createTableJs
+    ) }}
+</div>
+<b>Block Type:</b>
+{% from _self import blockTypeSelect %}
+<div>
+    {{ blockTypeSelect(
+        blockTypeParams
+    ) }}
+</div>
+<b>Table:</b>
+{% from _self import tableSelect %}
+
+<div>
+    {{ tableSelect(
+        tableParams
+    ) }}
+</div>

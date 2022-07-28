@@ -1,0 +1,81 @@
+{% set siteRows = [] %}
+{% set siteErrors = [] %}
+{% for wordpressLanguage in wordpressLanguages %}
+    {% if wordpressLanguage.enableForMigration %}
+        {% set lightswitchAttributes = {
+            class: [
+                'lightswitchSite',
+                'lightswitchSite'~loop.index
+            ]|filter,
+            }
+        %}
+
+        {% set site = siteModel[wordpressLanguage.id] ?? null %}
+        
+        {% if site %}
+            {% for attribute, errors in site.getErrors() %}
+                {% set siteErrors = siteErrors|merge(errors) %}
+            {% endfor %}
+        {% endif %}
+
+        {% set siteRows = siteRows|merge({
+            (wordpressLanguage.id): {
+            heading: wordpressLanguage.label|t('site')|e,
+            convert: include('_includes/forms/lightswitch', {
+                name: 'sites['~wordpressLanguage.id~'][convert]',
+                on: site ? site.convert : '0',
+                value: '1',
+                containerAttributes: lightswitchAttributes,
+            }),
+            convertTo: include('_includes/forms/select', {
+                name: 'sites['~wordpressLanguage.id~'][convertTo]',
+                options: craftSites,
+                value: site ? site.craftSiteId,
+                id: 'convertTo'~loop.index,
+                class: ''
+            }),
+        }|filter
+        }) %}
+    {% endif %}
+{% endfor %}
+
+{% import "_includes/forms" as forms %}
+
+<div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+    <p class="font-bold">{{ 'Attention!'|t('migrate-from-wordpress') }}</p>
+    <p>
+        {{ 'Make sure selected craft site is enabled on target (e.g. target Section).'|t('migrate-from-wordpress') }}
+    </p>
+</div>
+
+{{ forms.editableTableField({
+    label: "Language Settings"|t('migrate-from-wordpress'),
+    instructions: "Choose languages"|t('migrate-from-wordpress'),
+    id: 'language-settings',
+    name: 'language-settings',
+    cols: {
+        heading: {
+            type: 'heading',
+            heading: "WordPress Site Language"|t('migrate-from-wordpress'),
+            thin: true
+        },
+        convert: {
+            type: 'heading',
+            thin: true,
+        },
+        convertTo: {
+            type: 'html',
+            heading: 'Craft site',
+            thin: true,
+        },
+    }|filter,
+    rows: siteRows,
+    staticRows: true,
+    errors: siteErrors|unique
+}) }}
+
+{% css %}
+#language-settings{
+    max-width: 300px;
+}
+{% endcss %}

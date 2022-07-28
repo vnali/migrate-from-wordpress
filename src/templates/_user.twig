@@ -1,0 +1,126 @@
+{% extends "/_layouts/cp" %}
+
+{% set title = "Migrate Users"|t('migrate-from-wordpress') %}
+
+{% block content %}
+
+    {% import "_includes/forms" as forms %}
+
+    <form action="" method="post" accept-charset="UTF-8">
+		{{ redirectInput('migrate-from-wordpress/users/migrate') }}
+		{{ csrfInput() }}
+		<input type="hidden" name="action" value="migrate-from-wordpress/default/clear-cache">
+        <input type="hidden" name="item" value="migrate-from-wordpress-user-items">
+        <div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+            <p class="font-bold">{{ 'Attention!'|t('migrate-from-wordpress') }}</p>
+            <p>
+                {{ 'Clear cache if you can not see the latest changes'|t('migrate-from-wordpress') }}
+            </p>
+            <input type="submit" class="btn submit" value="{{ 'Clear User Cache'|t('migrate-from-wordpress') }}">
+        </div>
+    </form>
+
+	<form action="" method="post" accept-charset="UTF-8">
+		{{ redirectInput('feed-me') }}
+		{{ csrfInput() }}
+        <input type="hidden" name="action" value="migrate-from-wordpress/users/save-fields">
+        <input type="hidden" id="formType" name="formType" value="user">
+        {% set lightswitchAttributes = {
+            class: [
+                'lightswitchLimitFields',
+            ]|filter,
+        } %}
+        
+        {{ forms.selectField({
+            label: "Fetch user data from this WordPress language"|t('migrate-from-wordpress'),
+            id: 'wordpressLanguage',
+            name: 'wordpressLanguage',
+            options: wordpressLanguages,
+            value: userItem.wordpressLanguage,
+            errors: userItem.getErrors('wordpressLanguage'),
+            required: true
+        }) }}
+
+        {{ forms.selectField({
+            label: "Craft user's full name attribute"|t('migrate-from-wordpress'),
+            id: 'fullNameField',
+            name: 'wordpressFullNameField',
+            options: nameFields,
+            instructions: 'Which data from Rest API is used for the Craft user\'s full name attribute? If no item is selected, the name attribute from REST API is used as the full name',
+            class: 'nameField',
+            value: userItem.wordpressFullNameField,
+            errors: userItem.getErrors('wordpressFullNameField')
+        }) }}
+
+        {% if showPhotoField %}
+            {{ forms.selectField({
+                label: "Craft user picture attribute"|t('migrate-from-wordpress'),
+                id: 'userPictureField',
+                name: 'wordpressUserPictureField',
+                options: userPictureFields,
+                instructions: 'Which field from the WordPress users\' field is used for the Craft users\' picture?',
+                class: 'userPictureField',
+                value: userItem.wordpressUserPictureField,
+                errors: userItem.getErrors('wordpressUserPictureField')
+            }) }}
+        {% else %}
+            <p class="font-bold">{{ 'Craft user picture attribute'|t('migrate-from-wordpress') }}</p>
+            {% set cpTriggerUrl =  alias('@web') ~ '/' ~ craft.app.config.general.cpTrigger %}
+            <div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+                <p style="color:red">
+                    {{ 'Attention!'|t('migrate-from-wordpress') }}
+                    <a href="{{ cpTriggerUrl }}/settings/users/settings">
+                        {{ 'Please set a volume for storing the user photos on the user\'s settings page first.'|t('migrate-from-wordpress') }}
+                    </a>
+                </p>
+            </div>
+        {% endif %}
+
+        {{ forms.lightSwitchField({
+            label: 'Suggest only fields in field layout'|t('migrate-from-wordpress'),
+            id: 'limitFieldsToLayout',
+            name: 'limitFieldsToLayout',
+            on: 0,
+            containerAttributes: lightswitchAttributes,
+            value: 'user',
+            instructions: 'Only fields currently available in the user\'s field layout are suggested when this option is enabled. Otherwise, all fields in Craft are suggested'
+        }) }}
+
+        {% include 'migrate-from-wordpress/_mappingTable.twig' %}
+
+		<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}">
+	</form>
+{% endblock %}
+
+{% js %}
+    $("#fullNameField").change(function() {
+        var beforeChange = $(this).data('beforeChange');
+        field = $("#fullNameField").val();
+        $(this).data('beforeChange', field);
+        if (field != '') {
+            $('#fields tr[data-id="'+beforeChange+'"] .lightswitchConvert input').prop('disabled', false);
+            $('#fields tr[data-id="'+beforeChange+'"] .lightswitchConvert').removeClass('disabled');
+            $('#fields tr[data-id="'+field+'"] .lightswitchConvert input').prop('disabled', true);
+            $('#fields tr[data-id="'+field+'"] .lightswitchConvert').addClass('disabled');
+        } else {
+            $('#fields tr[data-id="'+beforeChange+'"] .lightswitchConvert input').prop('disabled', false);
+            $('#fields tr[data-id="'+beforeChange+'"] .lightswitchConvert').removeClass('disabled');
+        }
+    });
+
+    $("#userPictureField").change(function() {
+        var beforeChange = $(this).data('beforeChange');
+        $(this).data('beforeChange', $(this).val());
+        field = $("#userPictureField").val();
+        if (field != '') {
+            $('#fields tr[data-id="'+beforeChange+'"] .lightswitchConvert input').prop('disabled', false);
+            $('#fields tr[data-id="'+beforeChange+'"] .lightswitchConvert').removeClass('disabled');
+            $('#fields tr[data-id="'+field+'"] .lightswitchConvert input').prop('disabled', true);
+            $('#fields tr[data-id="'+field+'"] .lightswitchConvert').addClass('disabled');
+        } else {
+            $('#fields tr[data-id="'+beforeChange+'"] .lightswitchConvert input').prop('disabled', false);
+            $('#fields tr[data-id="'+beforeChange+'"] .lightswitchConvert').removeClass('disabled');
+        }
+    });
+{% endjs %}
+{% do view.registerAssetBundle("vnali\\migratefromwordpress\\assetbundles\\ConvertAsset") %}

@@ -1,0 +1,30 @@
+{% requireAdmin %}
+
+{% extends "_layouts/cp" %}
+
+{% import "_includes/forms" as forms %}
+
+{% set title = "Plugin Settings"|t('migrate-from-wordpress') %}
+
+{% set tabs = {
+    "rest-api": {label: "REST API"|t('migrate-from-wordpress'), url: "#rest-api"},
+    "general": {label: "General"|t('migrate-from-wordpress'), url: "#general"},
+    "reset": {label: "Reset"|t('migrate-from-wordpress'), url: "#reset"},
+} %}
+
+{% block content %}
+
+	<input type="hidden" name="action" value="migrate-from-wordpress/settings/save-plugin-settings">
+	<input type="hidden" name="pluginHandle" value="migrate-from-wordpress">
+
+	{{ redirectInput("migrate-from-wordpress/settings/plugin") }}
+
+	{% include "migrate-from-wordpress/_plugin-rest-api-settings.twig" %}
+
+	{% include "migrate-from-wordpress/_plugin-general-settings.twig" %}
+
+	{% include "migrate-from-wordpress/_plugin-reset-settings.twig" %}
+
+    {% do view.registerAssetBundle("vnali\\migratefromwordpress\\assetbundles\\SettingPageAsset") %}
+
+{% endblock %}

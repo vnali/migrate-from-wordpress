@@ -1,0 +1,48 @@
+{% import "_includes/forms" as forms %}
+<div>
+    {{ forms.selectField({
+        label: 'Section'|t,
+        id: 'section',
+        name: 'section',
+        options: sections,
+        value: entryModel ? entryModel.sectionId,
+        errors: entryModel ? entryModel.getErrors('sectionId')          
+    }) }}
+</div>
+<div>
+    {{ forms.selectField({
+        label: 'Entry Type'|t,
+        id: 'entrytype',
+        name: 'entrytype',
+        options: entrytypes,
+        value: entryModel ? entryModel.entryTypeId,
+        errors: entryModel ? entryModel.getErrors('entryTypeId')           
+    }) }}
+</div>
+{% js %}
+    $("#section").change(function() {
+        if (this.value) {
+            sectionId = this.value;
+        } else {
+            sectionId = 0;
+        }
+        var data = {
+            'sectionId' : sectionId
+        }
+        $.ajax({
+            method: "GET",
+            url: Craft.getUrl("migrate-from-wordpress/default/get-entry-types" + "?=_" + new Date().getTime()),
+            data: data,
+            dataType: 'json',
+            success: function (data) {
+                $('#entrytype').empty();
+                $.each(data, function (i, item) {
+                    $('#entrytype').append($('<option>', { 
+                        value: item.value,
+                        text : item.label
+                    }));
+                });
+            }
+        });
+    });
+{% endjs %}

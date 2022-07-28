@@ -1,0 +1,16 @@
+{% import "_includes/forms" as forms %}
+
+{{ forms.selectField({
+    label: 'Category'|t('migrate-from-wordpress'),
+    id: 'categoryGroup',
+    name: 'caegoryGroup',
+    options: categories,  
+}) }}
+
+{{ forms.textField({
+    first: true,
+    label: "handle"|t('migrate-from-wordpress'),
+    instructions: "field handle:"|t('migrate-from-wordpress'),
+    id: 'fieldHandle',
+    name: 'fieldHandle',
+}) }}

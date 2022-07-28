@@ -1,0 +1,42 @@
+{
+    "name": "vnali/migrate-from-wordpress",
+    "description": "Migrate From WordPress to Craft CMS",
+    "type": "craft-plugin",
+    "version": "0.1.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "wordpress"
+    ],
+    "license": "MIT",
+    "authors": [{
+        "name": "vnali",
+        "homepage": "https://github.com/vnali"
+    }],
+    "support": {
+        "docs": "https://github.com/vnali/migrate-from-wordpress-plugin-docs",
+        "issues": "https://github.com/vnali/migrate-from-wordpress/issues"
+    },
+    "require": {
+        "craftcms/cms": "^4.0.0",
+        "craftcms/feed-me": "^5.0.0",
+        "symfony/dom-crawler": "^6.0.0",
+        "symfony/css-selector": "^6.0.0"    
+    },
+    "autoload": {
+        "psr-4": {
+            "vnali\\migratefromwordpress\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Migrate From WordPress",
+        "handle": "migrate-from-wordpress",
+        "developer": "vnali",
+        "developerUrl": "https://github.com/vnali",
+        "documentationUrl": "https://github.com/vnali/migrate-from-wordpress-plugin-docs",
+        "changelogUrl": "https://raw.githubusercontent.com/vnali/migrate-from-wordpress/v0/CHANGELOG.md",
+        "class": "vnali\\migratefromwordpress\\MigrateFromWordPress"
+    }
+}

@@ -1,0 +1,67 @@
+{% extends "/_layouts/cp" %}
+
+{% set title = "Migrate Files from WordPress site"|t('migrate-from-wordpress') %}
+
+{% block content %}
+	{% import "_includes/forms" as forms %}
+	<br>
+	<form action="" method="post" accept-charset="UTF-8">
+		{{ redirectInput('migrate-from-wordpress/files/migrate') }}
+		{{ csrfInput() }}
+		<input type="hidden" name="action" value="migrate-from-wordpress/default/clear-cache">
+		<input type="hidden" name="item" value="migrate-from-wordpress-file-items">
+		<div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+			<p class="font-bold">{{ 'Attention!'|t('migrate-from-wordpress') }}</p>
+			<p>
+				{{ 'Clear cache if you cannot see the latest changes made in WordPress files'|t('migrate-from-wordpress') }}
+			</p>
+			<input type="submit" class="btn submit" value="{{ 'Clear File Cache'|t('migrate-from-wordpress') }}">
+		</div>
+	</form>
+	<br>
+	<form action="" method="post" accept-charset="UTF-8">
+		{{ redirectInput('feed-me') }}
+		{{ csrfInput() }}
+		<input type="hidden" name="action" value="migrate-from-wordpress/files/save-fields">
+		<input type="hidden" name="formType" value="file">
+
+		<div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+			<p class="font-bold">{{ 'Attention!'|t('migrate-from-wordpress') }}</p>
+			<p>
+				{{ 'You can choose each volume only one time.'|t('migrate-from-wordpress') }}
+			</p>
+		</div>
+
+		{{ forms.selectField({
+            label: 'Volume'|t('migrate-from-wordpress'),
+            id: 'volume',
+            name: 'volume',
+            options: volumes,     
+            value: volumeModel ? volumeModel.volumeId,
+            errors: volumeModel ? volumeModel.getErrors('volumeId')        
+        }) }}
+
+		{{ forms.selectField({
+            label: 'Asset title'|t('migrate-from-wordpress'),
+            instructions: "how generate asset title"|t('migrate-from-wordpress'),
+            id: 'titleOption',
+            name: 'condition[titleOption]',
+            options: titleOptions,             
+        }) }}
+
+        {{ forms.lightSwitchField({
+            label: 'Use alt native field'|t('migrate-from-wordpress'),
+            instructions: 'use alt native field in volume field layout',
+            id: 'useAltNativeField',
+            name: 'condition[useAltNativeField]',
+            on: 0,
+            value: 1,
+        }) }}
+
+		{% include 'migrate-from-wordpress/_mappingTable.twig' %}
+
+		<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}">
+	</form>
+
+{% endblock %}
+{% do view.registerAssetBundle("vnali\\migratefromwordpress\\assetbundles\\ConvertAsset") %}

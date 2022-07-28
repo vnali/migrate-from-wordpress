@@ -1,0 +1,178 @@
+{% macro fieldSelect(selectParams, wordpressHandle, modalHeading, html, js, uniqueId, assetFieldHtml, tagFieldHtml, categoryFieldHtml) %}
+
+{% from "_includes/forms" import selectField %}
+{{ selectField(selectParams) }}
+
+{% js %}
+    (function() {
+        $('#{{ selectParams.id }}').closest('tr').attr('data-handle', '{{ wordpressHandle }}');
+        var $select = $('#{{ selectParams.id }}').selectize({
+            dropdownParent: 'body',
+        });
+        var selectize = $select.get(0).selectize;
+
+        selectize.on('change', function(value, $item) {
+            if (value == 'new field') {
+                selectize.clear(true);
+                var convertTo = $('#{{ selectParams.id }}').closest('tr').find('.convertTo select').val();
+                var $plainform = $(
+                '<form  class="modal fitted lazy-create-modal">' +
+                    '<div class="header">' +
+                        '<h1 class="centeralign">{{ modalHeading }}</h1>' +
+                    '</div>' +
+                    '<div class="body">' +
+                        '{{ html|e("js") }}' +
+                    '</div>' +
+                    '<div class="footer">' +
+                        '<div class="buttons right">' +
+                            '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+                            '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+                            '<div class="spinner hidden"/>' +
+                        '</div>' +
+                    '</div>' +
+                '</form>');
+
+                var $assetForm = $(
+                '<form  class="modal fitted lazy-create-modal">' +
+                    '<div class="header">' +
+                        '<h1 class="centeralign">{{ modalHeading }}</h1>' +
+                    '</div>' +
+                    '<div class="body">' +
+                        '{{ assetFieldHtml|e("js") }}' +
+                    '</div>' +
+                    '<div class="footer">' +
+                        '<div class="buttons right">' +
+                            '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+                            '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+                            '<div class="spinner hidden"/>' +
+                        '</div>' +
+                    '</div>' +
+                '</form>');
+
+                var $tagForm = $(
+                '<form  class="modal fitted lazy-create-modal">' +
+                    '<div class="header">' +
+                        '<h1 class="centeralign">{{ modalHeading }}</h1>' +
+                    '</div>' +
+                    '<div class="body">' +
+                        '{{ tagFieldHtml|e("js") }}' +
+                    '</div>' +
+                    '<div class="footer">' +
+                        '<div class="buttons right">' +
+                            '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+                            '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+                            '<div class="spinner hidden"/>' +
+                        '</div>' +
+                    '</div>' +
+                '</form>');
+
+                var $categoryForm = $(
+                '<form  class="modal fitted lazy-create-modal">' +
+                    '<div class="header">' +
+                        '<h1 class="centeralign">{{ modalHeading }}</h1>' +
+                    '</div>' +
+                    '<div class="body">' +
+                        '{{ categoryFieldHtml|e("js") }}' +
+                    '</div>' +
+                    '<div class="footer">' +
+                        '<div class="buttons right">' +
+                            '<div class="btn cancel-btn">{{ "Cancel"|t('migrate-from-wordpress') }}</div>' +
+                            '<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}"/>' +
+                            '<div class="spinner hidden"/>' +
+                        '</div>' +
+                    '</div>' +
+                '</form>');
+
+                if (convertTo == 'craft\\fields\\Assets') {
+                    var $form = $assetForm;
+                } else if (convertTo == 'craft\\fields\\Tags') {
+                    var $form = $tagForm;
+                } else if (convertTo == 'craft\\fields\\Categories') {
+                    var $form = $categoryForm;
+                } else {
+                    var $form = $plainform;
+                }
+
+                var modal = new Garnish.Modal($form, {
+                    onHide: function() {
+                        modal.destroy();
+                        delete modal;
+                    },
+                    onShow: function(){
+                        $('#fieldHandle').val('{{ wordpressHandle }}'.replaceAll("-", "_").replaceAll(" ","_"));
+                    }
+                });
+
+                setTimeout(function() {
+                    $form.find('.text:first').focus();
+                    modal.updateSizeAndPosition();
+
+                    $form.find('.body:first').on('resize', function() {
+                        modal.updateSizeAndPosition();
+                    });
+
+                    eval('{{ js|e("js") }}');
+                }, 100);
+
+                $form.on('submit', function(ev) {
+                    ev.preventDefault();
+                    $form.find('.spinner').removeClass('hidden');
+                    if ($('#assetVolume').val()) {
+                        newFieldHandleValue = $('#fieldHandle').val() + '--' + $('#assetVolume').val() + '--asset';
+                    } else if ($('#tagGroup').val()) {
+                        newFieldHandleValue = $('#fieldHandle').val() + '--' + $('#tagGroup').val() + '--tag';
+                    } else if ($('#categoryGroup').val()) {
+                        newFieldHandleValue = $('#fieldHandle').val() + '--' + $('#categoryGroup').val() + '--category';
+                    } else {
+                        newFieldHandleValue = $('#fieldHandle').val();
+                    }
+                    selectize.addOption({
+                        value: newFieldHandleValue,
+                        text: $('#fieldHandle').val(),
+                        $order: -1
+                    });
+
+                    selectize.setValue(newFieldHandleValue);
+                    modal.hide();
+                });
+
+                $form.find('.cancel-btn').on('click', function() {
+                    modal.hide();
+                });
+            }
+        });
+
+        $( ".lightswitchConvert{{uniqueId}}" ).on( "change", function() {
+            if ($(this).hasClass('on')){
+            } else{
+                selectize.clear();
+                selectize.clearOptions();
+            }
+        });
+    })();
+{% endjs %}
+
+{% endmacro %}
+
+{% from _self import fieldSelect %}
+
+{% set selectParams = {
+    id: 'craftField'~uniqueId,
+    name: 'fields['~handle~'][craftField]',
+    value: "",
+    required: false,
+    options: craftField,
+    class: 'selectize fullwidth selectfield',
+} %}
+
+{{ fieldSelect(
+    selectParams,
+    wordpressHandle,
+    'New Field',
+    createField,
+    createFieldJs,
+    uniqueId,
+    createAssetField,
+    createTagField,
+    createCategoryField
+) }}

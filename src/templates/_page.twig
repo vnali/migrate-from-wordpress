@@ -1,0 +1,66 @@
+{% extends "/_layouts/cp" %}
+
+{% set title = "Migrate '" ~ pageTypeLabel|capitalize ~ "' Pages"|t('migrate-from-wordpress') %}
+
+{% block content %}
+
+    {% import "_includes/forms" as forms %}
+
+    <form action="" method="post" accept-charset="UTF-8">
+        {% set address = 'migrate-from-wordpress/pages/migrate?pageType=' ~ pageType %}
+		{{ redirectInput(address) }}
+		{{ csrfInput() }}
+		<input type="hidden" name="action" value="migrate-from-wordpress/default/clear-cache">
+        <input type="hidden" name="item" value="migrate-from-wordpress-page-{{ pageType }}-items">
+        <div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+            <p class="font-bold">{{ 'Attention!'|t('migrate-from-wordpress') }}</p>
+            <p>
+                {{ 'Clear cache if you cannot see latest changes made in WordPress pages'|t('migrate-from-wordpress') }}
+            </p>
+            <input type="submit" class="btn submit" value="{{ "Clear '" ~ pageTypeLabel|capitalize ~ "' Page Cache"|t('migrate-from-wordpress') }}">
+        </div>
+    </form>
+    <br>
+	<form action="" method="post" accept-charset="UTF-8">
+		{{ redirectInput('feed-me') }}
+		{{ csrfInput() }}
+        <input type="hidden" name="action" value="migrate-from-wordpress/pages/save-fields">
+        <input type="hidden" id="formType" name="formType" value="page">
+
+        <hr>
+
+        <div class= "grid grid-cols-6 gap-2 pb-5 pt-1">
+            {% include 'migrate-from-wordpress/_section-entrytype.twig' %}
+        </div>
+
+        {% set lightswitchAttributes = {
+            class: [
+                'lightswitchLimitFields',
+            ]|filter,
+        }
+        %}
+
+        <hr>
+
+        {% include 'migrate-from-wordpress/_languageOption.twig' %}
+
+        <hr>
+
+        {{
+            forms.lightSwitchField({
+                label: 'suggest only fields in selected entry type'|t('migrate-from-wordpress'),
+                id: 'limitFeildsToLayout',
+                name: 'limitFeildsToLayout',
+                on: 0,
+                containerAttributes: lightswitchAttributes,
+                value: 1
+            })
+        }}
+
+        {% include 'migrate-from-wordpress/_mappingTable.twig' %}
+
+		<input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}">
+	</form>
+
+{% endblock %}
+{% do view.registerAssetBundle("vnali\\migratefromwordpress\\assetbundles\\ConvertAsset") %}
