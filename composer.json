@@ -2,7 +2,7 @@
     "name": "vnali/migrate-from-wordpress",
     "description": "Migrate From WordPress to Craft CMS",
     "type": "craft-plugin",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "keywords": [
         "craft",
         "cms",
