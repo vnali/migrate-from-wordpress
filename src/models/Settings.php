@@ -115,6 +115,16 @@ class Settings extends Model
     public $migrateUserCreated = true;
 
     /**
+     * @var bool
+     */
+    public $migrateNotPublicStatus = true;
+
+    /**
+     * @var bool
+     */
+    public $migrateTrashStatus = false;
+
+    /**
      * @var string
      */
     public $tagBase = 'tag';
@@ -157,6 +167,7 @@ class Settings extends Model
     public function rules(): array
     {
         return [
+            [['addExcerptToBody', 'ignoreWordPressUploadPath', 'migrateNotPublicStatus', 'migrateTrashStatus'], 'in', 'range' => ['0', '1']],
             [['wordpressURL'], function($attribute, $params, $validator) {
                 if ((!Craft::$app->plugins->isPluginInstalled('feed-me') || !Craft::$app->plugins->isPluginEnabled('feed-me'))) {
                     $this->addError($attribute, 'Make sure the Feedme plugin is installed and enabled.');

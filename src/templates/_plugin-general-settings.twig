@@ -19,6 +19,28 @@
     <hr>
 
     {{ forms.lightSwitchField({
+        label: 'Migrate not public posts and pages'|t('migrate-from-wordpress'),
+        id: 'migrateNotPublicStatus',
+        name: 'migrateNotPublicStatus',
+        on : settings.migrateNotPublicStatus ?? '1',
+        value: '1',
+        errors: settings.getErrors('migrateNotPublicStatus'),
+        tip: 'If enabled, private and draft items are migrated to disabled entry'|t('migrate-from-wordpress')
+    }) }}
+
+    {{ forms.lightSwitchField({
+        label: 'Migrate posts and pages with trash status'|t('migrate-from-wordpress'),
+        id: 'migrateTrashStatus',
+        name: 'migrateTrashStatus',
+        on : settings.migrateTrashStatus ?? '1',
+        value: '1',
+        errors: settings.getErrors('migrateTrashStatus'),
+        tip: 'If enabled, trashed items are migrated to disabled entry'|t('migrate-from-wordpress')
+    }) }}
+
+    <hr>
+
+    {{ forms.lightSwitchField({
         label: 'Add excerpt to body content too'|t('migrate-from-wordpress'),
         id: 'addExcerptToBody',
         name: 'addExcerptToBody',
