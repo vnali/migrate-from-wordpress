@@ -26,7 +26,7 @@
     // Get container fields on load
     container(0);
     
-    // load again container fields on limiting fields to layout
+    // Load again container fields on limiting fields to layout
     $( ".lightswitchLimitFields" ).on( "change", function() {
         limit = $(this).hasClass('on');
         container(limit);

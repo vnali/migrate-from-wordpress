@@ -96,7 +96,7 @@ class PagesController extends Controller
             new TagDependency(['tags' => ['migrate-from-wordpress', 'migrate-from-wordpress-page-' . $pageType . '-items']])
         );
 
-        //check if user converted
+        // Check if user converted
         GeneralHelper::hookCheckUserConvert();
         //
         $pageCacheKey = 'migrate-from-wordpress-page-' . $pageType . '-items-' . $migrateGutenbergBlocks;
@@ -184,7 +184,7 @@ class PagesController extends Controller
             $converts[] = $siteSetting['convert'];
             $siteModel->wordpressLanguage = $key;
             $siteModel->craftSiteId = $siteSetting['convertTo'];
-            //if this is last item.
+            // If this is last item.
             if ($key == $endKey) {
                 $siteModel->setScenario('lastLanguage');
                 $siteModel->converts = $converts;
@@ -210,7 +210,7 @@ class PagesController extends Controller
 
         $fieldDefinitionModelArray = [];
         foreach ($postedFields as $key => $postedField) {
-            //set convert value for disabled lightswitch
+            // Set convert value for disabled lightswitch
             if (!isset($postedField['convert'])) {
                 $convertField = 0;
             } else {
@@ -229,10 +229,10 @@ class PagesController extends Controller
             if (!$fieldDefinitionModel->validate()) {
                 $validate = false;
             }
-            //add convert status to fieldDefinitions. needed for getting value
+            // Add convert status to fieldDefinitions. needed for getting value
             $fieldDefinitions[$key]['convert'] = $convertField;
             //
-            //add target craft type to fieldDefinitions. needed for getting value
+            // Add target craft type to fieldDefinitions. needed for getting value
             $fieldDefinitions[$key]['convertTarget'] = $postedField['convertTo'];
             //
             $fieldDefinitions[$key]['containerField'] = $postedField['containerField'];
@@ -441,7 +441,7 @@ class PagesController extends Controller
      */
     public function actionValues(string $pageType, string $contentLanguage = null, string $token = null, int $page = 1, int $limit = 10, $isUpdateFeed = 0, $hasUpdateFeed = 0): Response
     {
-        //prevent other feeds from running when token is regenerating
+        // Prevent other feeds from running when token is regenerating
         if (Craft::$app->cache->get('migrate-from-wordpress-token-regenerate') == 'wait') {
             throw new ServerErrorHttpException('feed url is regenerating. try again');
         }

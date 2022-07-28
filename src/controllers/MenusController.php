@@ -61,7 +61,7 @@ class MenusController extends Controller
     }
 
     /**
-     * Prepare migrate Drupal menus to Craft elements.
+     * Prepare migrate WordPress menus to Craft elements.
      *
      * @param string $menuId
      * @param FieldDefinitionModel[] $fieldsModel
@@ -80,7 +80,7 @@ class MenusController extends Controller
         if (!in_array($menuId, ArrayHelper::getColumn($availableMenuTypes, 'value'))) {
             throw new ForbiddenHttpException($menuId . ' is not valid menu!');
         }
-        //check if user converted
+        // Check if user converted
         GeneralHelper::hookCheckUserConvert();
         //
         $menuCacheKy = 'migrate-from-wordpress-menu-' . $menuId . '-items';
@@ -220,7 +220,7 @@ class MenusController extends Controller
 
         $fieldDefinitionModelArray = [];
         foreach ($postedFields as $key => $postedField) {
-            //set convert value for disabled lightswitch
+            // Set convert value for disabled lightswitch
             if (!isset($postedField['convert'])) {
                 $convertField = 0;
             } else {
@@ -252,10 +252,10 @@ class MenusController extends Controller
             if (!$fieldDefinitionModel->validate()) {
                 $validate = false;
             }
-            //add convert status to fieldDefinitions. needed for getting value
+            // Add convert status to fieldDefinitions. needed for getting value
             $fieldDefinitions[$key]['convert'] = $convertField;
             //
-            //add target craft type to fieldDefinitions. needed for getting value
+            // Add target craft type to fieldDefinitions. needed for getting value
             $fieldDefinitions[$key]['convertTarget'] = $postedField['convertTo'];
             //
             $fieldDefinitions[$key]['containerField'] = $postedField['containerField'];
@@ -277,7 +277,7 @@ class MenusController extends Controller
             return null;
         }
 
-        //get exact name of column uuid
+        // Get exact name of column uuid
         $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUUID');
         if (!$uuidField) {
             $newField = new \craft\fields\PlainText([
@@ -465,7 +465,7 @@ class MenusController extends Controller
     }
 
     /**
-     * Get values of Drupal menus.
+     * Get values of WordPress menus.
      *
      * @param string $menuId
      * @param string $contentLanguage

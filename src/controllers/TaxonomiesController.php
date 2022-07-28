@@ -84,7 +84,7 @@ class TaxonomiesController extends Controller
             throw new ForbiddenHttpException($taxonomyId . " taxonomy type $taxonomyId is not valid!" . json_encode($availableTaxonomyTypes));
         }
 
-        //check if user converted
+        // Check if user converted
         GeneralHelper::hookCheckUserConvert();
         //
 
@@ -254,7 +254,7 @@ class TaxonomiesController extends Controller
 
         $fieldDefinitionModelArray = [];
         foreach ($postedFields as $key => $postedField) {
-            //set convert value for disabled lightswitch
+            // Set convert value for disabled lightswitch
             if (!isset($postedField['convert'])) {
                 $convertField = 0;
             } else {
@@ -273,10 +273,10 @@ class TaxonomiesController extends Controller
             if (!$fieldDefinitionModel->validate()) {
                 $validate = false;
             }
-            //add convert status to fieldDefinitions. needed for getting value
+            // Add convert status to fieldDefinitions. needed for getting value
             $fieldDefinitions[$key]['convert'] = $convertField;
             //
-            //add target craft type to fieldDefinitions. needed for getting value
+            // Add target craft type to fieldDefinitions. needed for getting value
             $fieldDefinitions[$key]['convertTarget'] = $postedField['convertTo'];
             //
             $fieldDefinitions[$key]['containerField'] = $postedField['containerField'];

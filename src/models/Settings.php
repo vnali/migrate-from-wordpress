@@ -174,7 +174,7 @@ class Settings extends Model
                 }
             }, 'skipOnEmpty' => false],
             [['wordpressRestApiEndpoint'], function($attribute, $params, $validator) {
-                // check for rest api endpoint only if WordPress url is specified
+                // Check for rest api endpoint only if WordPress url is specified
                 if ($this->wordpressURL) {
                     $handle = curl_init($this->wordpressURL . '/' . $this->wordpressRestApiEndpoint);
                     curl_setopt($handle, CURLOPT_FRESH_CONNECT, true);

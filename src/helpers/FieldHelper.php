@@ -580,15 +580,14 @@ class FieldHelper
 
             if ($convertTo == 'craft\fields\Categories' || $convertTo == 'craft\fields\Tags') {
                 $fieldMap[$fieldHandle]['options']['create'] = "0";
-                //feed-me ui check for title, we force to wordpressUUID
-                //get exact name of column uuid
+                // Feed-me ui check for title, we force to wordpressUUID
+                // Get exact name of column uuid
                 $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUUID');
                 $uuidField = 'field_wordpressUUID_' . $uuidField->columnSuffix;
                 //
                 $fieldMap[$fieldHandle]['options']['match'] = $uuidField;
             } elseif ($convertTo == 'craft\fields\Entries') {
-                //$fieldMap[$fieldHandle]['options']['match'] = 'title';
-                //get exact name of column uuid
+                // Get exact name of column uuid
                 $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUUID');
                 $uuidField = 'field_wordpressUUID_' . $uuidField->columnSuffix;
                 //
@@ -596,19 +595,17 @@ class FieldHelper
             } elseif ($convertTo == 'craft\fields\Checkboxes' || $convertTo == 'craft\fields\Dropdown') {
                 $fieldMap[$fieldHandle]['options']['match'] = 'value';
             } elseif ($type == 'block_field' && $convertTo == 'craft\fields\Entries') {
-                //get exact name of column uuid
+                // Get exact name of column uuid
                 $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUUID');
                 $uuidField = 'field_wordpressUUID_' . $uuidField->columnSuffix;
-                //
                 $fieldMap[$fieldHandle]['options']['match'] = $uuidField;
             } elseif ($convertTo == 'craft\fields\Users') {
-                //get exact name of column uuid
+                // Get exact name of column uuid
                 $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUserId');
                 $uuidField = 'field_wordpressUserId_' . $uuidField->columnSuffix;
-                //
                 $fieldMap[$fieldHandle]['options']['match'] = $uuidField;
             } elseif ($convertTo == 'craft\fields\Date') {
-                // set match to auto for acf date and acf date time convert to craft date
+                // Set match to auto for acf date and acf date time convert to craft date
                 $fieldMap[$fieldHandle]['options']['match'] = 'auto';
             }
         } else {
@@ -783,9 +780,9 @@ class FieldHelper
                     return false;
                 }
                 $matrix = Craft::$app->getFields()->getFieldByHandle($matrixHandle);
-                //TODO:check if matrix is not currently in array
+                // TODO: check if matrix is not currently in array
                 $fieldItem = $matrix;
-                //set field mapping for matrix
+                // Set field mapping for matrix
 
                 if ($tableHandle && isset($col)) {
                     $fieldMap[$matrixHandle]['field'] = 'craft\fields\Matrix';
@@ -804,7 +801,7 @@ class FieldHelper
                         $fieldMap[$matrixHandle]['blocks'][$blockTypeHandle]['fields'][$fieldHandle]['options']['conflict'] = "index";
                     }
                     if ($convertTo == 'craft\fields\Categories' || $convertTo == 'craft\fields\Tags' || $convertTo == 'craft\fields\Entries') {
-                        //get exact name of column uuid
+                        // Get exact name of column uuid
                         $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUUID');
                         $uuidField = 'field_wordpressUUID_' . $uuidField->columnSuffix;
                         //
@@ -872,16 +869,16 @@ class FieldHelper
                     throw new ServerErrorHttpException('table couldn\'t save.' . '-' . json_encode($table->getErrors()));
                 }
 
-                // table handle can be changed to different cases
+                // Table handle can be changed to different cases
                 $tableHandle = $table->handle;
-                // we save container of field to find it later
+                // We save container of field to find it later
                 $fieldDefinitions[$key]['containerTarget'] = $tableHandle . '-Table';
                 $finalFieldHandle = $table->columns[$col]['handle'];
 
                 $table = Craft::$app->getFields()->getFieldByHandle($tableHandle);
                 $fieldItem = $table;
 
-                //get table column type
+                // Get table column type
                 $tableColumnType = TableHelper::fieldType2ColumnType($convertTo);
 
                 $fieldMap[$tableHandle]['field'] = 'craft\fields\Table';
@@ -1298,7 +1295,7 @@ class FieldHelper
                     ) {
                         if (
                             in_array($fields[$fieldname]['config']['type'], self::$_parentFieldTypes)
-                            // gutenberg blocks are processed before so no need to process here
+                            // Gutenberg blocks are processed before so no need to process here
                             && $fields[$fieldname]['config']['type'] != 'gutenberg'
                         ) {
                             FieldHelper::analyzeFieldValues($fieldItem, $fieldValues, $level, $contentLanguage, null, $fields);

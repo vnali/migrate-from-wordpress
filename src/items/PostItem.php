@@ -195,14 +195,14 @@ class PostItem
             $content['fields']['status']['value'] = $status;
             $content['fields']['status']['config']['isAttribute'] = true;
 
-            // password protect
+            // Password protect
             if (isset($postItem->content->protected)) {
                 $content['fields']['password-protected']['value'] = $postItem->content->protected;
                 $content['fields']['password-protected']['config']['type'] = 'boolean';
                 $content['fields']['password-protected']['config']['label'] = 'Password Protected';
                 $content['fields']['password-protected']['config']['translatable'] = 'yes';
             }
-            // wordpress status
+            // WordPress status
             if (isset($postItem->status)) {
                 $content['fields']['wordpress-status']['value'] = $postItem->status;
                 $content['fields']['wordpress-status']['config']['type'] = 'text';

@@ -134,7 +134,7 @@ class FileItem
             $content['fields']['wordpressLink']['config']['type'] = 'text';
             $content['fields']['wordpressLink']['config']['label'] = 'WordPress link';
 
-            //asset meta
+            // Asset meta
             $content['fields']['mediaAlt']['config']['type'] = 'text';
             $content['fields']['mediaAlt']['config']['label'] = 'Media Alt';
             $content['fields']['mediaAlt']['config']['translatable'] = 'no';
@@ -189,7 +189,7 @@ class FileItem
                 $content = GeneralHelper::analyzeACF($fileItem, $content);
             }
 
-            //save uri in cache for later
+            // Save uri in cache for later
             $fileIds = json_decode(Craft::$app->cache->get('migrate-from-wordpress-files-id-and-url'), true);
             $fileIds[$url] = $fileItem->id;
             Craft::$app->cache->set('migrate-from-wordpress-files-id-and-url', json_encode($fileIds), 0, new TagDependency(['tags' => ['migrate-from-wordpress']]));

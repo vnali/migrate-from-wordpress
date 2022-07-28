@@ -5,7 +5,7 @@
 
 {% js %}
     (function() {
-        //set super Table
+        // Set super Table
         var $select = $('#{{ superTableParams.id }}').selectize({
             dropdownParent: 'body',
         });
@@ -16,7 +16,7 @@
         });
         var selectize2 = $select2.get(0).selectize;
 
-        //on change for matrix
+        // On change for matrix
         selectize.on('change', function(value, $item) {
             if (value == 'new super table'){
                 selectize.clear(true);

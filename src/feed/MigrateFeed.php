@@ -164,7 +164,7 @@ class MigrateFeed
                 $feedUrl = '';
 
                 if ($this->itemType == 'post') {
-                    //get exact name of column uuid
+                    // Get exact name of column uuid
                     $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUUID');
                     $uuidField = 'field_wordpressUUID_' . $uuidField->columnSuffix;
                     //
@@ -176,7 +176,7 @@ class MigrateFeed
                     $feedUrl = Craft::getAlias('@web') . "/migrate-from-wordpress/posts/values?token=$secret&postType=" . $this->typeId .
                         "&contentLanguage=" . $key . "&limit=" . $limit . $isUpdateFeed . $hasUpdateFeed;
                 } elseif ($this->itemType == 'page') {
-                    //get exact name of column uuid
+                    // Get exact name of column uuid
                     $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUUID');
                     $uuidField = 'field_wordpressUUID_' . $uuidField->columnSuffix;
                     //

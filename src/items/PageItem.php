@@ -183,24 +183,22 @@ class PageItem
                 $content['fields']['created']['config']['isAttribute'] = true;
             }
 
-            //craft status
+            // Craft status
             $status = 0;
             if (isset($pageItem->status) && $pageItem->status == 'publish') {
                 $status = 1;
             }
-
-            // Craft status
             $content['fields']['status']['value'] = $status;
             $content['fields']['status']['config']['isAttribute'] = true;
 
-            // password protect
+            // Password protect
             if (isset($pageItem->content->protected)) {
                 $content['fields']['password-protected']['value'] = $pageItem->content->protected;
                 $content['fields']['password-protected']['config']['type'] = 'boolean';
                 $content['fields']['password-protected']['config']['label'] = 'Password Protected';
                 $content['fields']['password-protected']['config']['translatable'] = 'yes';
             }
-            // save wordpress status as text
+            // Save wordpress status as text
             if (isset($pageItem->status)) {
                 $content['fields']['wordpress-status']['value'] = $pageItem->status;
                 $content['fields']['wordpress-status']['config']['type'] = 'text';

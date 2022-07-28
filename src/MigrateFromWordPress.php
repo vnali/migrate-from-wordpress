@@ -299,11 +299,11 @@ class MigrateFromWordPress extends Plugin
             parse_str($query, $output);
 
             if ($event->feed['elementType'] == User::class) {
-                //protect the user 1 and  who runs feed-me anyway from password change
+                // Protect the user 1 and who runs feed-me anyway from password change
                 if ($event->feedData['wordpressUserId/value'] != '1' && $event->feedData['username/value'] != Craft::$app->getUser()->getIdentity()->username) {
                     $userIsAvailable = $event->element['id'];
 
-                    //if element doesn't exists or password protection is disabled on element update
+                    // If element doesn't exists or password protection is disabled on element update
                     if (!$userIsAvailable) {
                         $event->element['newPassword'] = StringHelper::randomString(8);
                     }
@@ -340,7 +340,7 @@ class MigrateFromWordPress extends Plugin
                         if ($useAltNativeField && $event->feedData['mediaAlt/value']) {
                             $event->element['alt'] = $event->feedData['mediaAlt/value'];
                         }
-                        //set asset title
+                        // Set asset title
                         $titleOption = $postedCondition['titleOption'];
                         switch ($titleOption) {
                             case 'media-alt':
@@ -382,14 +382,14 @@ class MigrateFromWordPress extends Plugin
         });
 
         Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_SAVE, function(FeedProcessEvent $event) {
-            // update parent node
+            // Update parent node
             if ($event->feed['elementType'] == 'verbb\navigation\elements\Node') {
                 if ($event->feedData['parent/value']) {
                     $node = Node::find()->wordpressMenuId($event->feedData['wordpressMenuId/value'])->one();
-                    // if node is available
+                    // If node is available
                     if ($node) {
                         $parentNode = Node::find()->wordpressMenuId($event->feedData['parent/value'])->one();
-                        // if parent node is available
+                        // If parent node is available
                         if ($parentNode) {
                             $event->element->setParent($parentNode);
                         }

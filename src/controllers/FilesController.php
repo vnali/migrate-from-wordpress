@@ -170,13 +170,13 @@ class FilesController extends Controller
 
         $fieldDefinitionModelArray = [];
         foreach ($postedFields as $key => $postedField) {
-            //set convert value for disabled lightswitch
+            // Set convert value for disabled lightswitch
             if (!isset($postedField['convert'])) {
                 $convertField = 0;
             } else {
                 $convertField = $postedField['convert'];
             }
-            //
+
             $fieldDefinitionModel = new FieldDefinitionModel();
             $fieldDefinitionModel->convert = $convertField;
             $fieldDefinitionModel->convertTo = $postedField['convertTo'];
@@ -357,7 +357,7 @@ class FilesController extends Controller
      */
     public function actionValues(int $volumeId, string $uniqueFileFeed, string $token = null, int $page = 1, int $limit = 50): Response
     {
-        //prevent other feeds from running when token is regenerating
+        // Prevent other feeds from running when token is regenerating
         if (Craft::$app->cache->get('migrate-from-wordpress-token-regenerate') == 'wait') {
             throw new ServerErrorHttpException('feed url is regenerating. try again');
         }

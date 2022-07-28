@@ -5,23 +5,23 @@
 
 {% js %}
     (function() {
-        //set matrix
+        // Set matrix
         var $select = $('#{{ matrixParams.id }}').selectize({
             dropdownParent: 'body',
         });
         var selectize = $select.get(0).selectize;
-        //set matrix types
+        // Set matrix types
         var $select2 = $('#{{ blockTypeParams.id }}').selectize({
             dropdownParent: 'body',
         });
         var selectize2 = $select2.get(0).selectize;
-        //set table
+        // Set table
         var $select3 = $('#{{ tableParams.id }}').selectize({
             dropdownParent: 'body',
         });
         var selectize3 = $select3.get(0).selectize;
 
-        //on change for matrix
+        // On change for matrix
         selectize.on('change', function(value, $item) {
             if (value == 'new matrix'){
                 // Not a real option
@@ -109,7 +109,7 @@
             }
         });
 
-        //on change for matrix
+        // On change for matrix
         selectize2.on('change', function(value, $item) {
             if (value == 'new block type') {
                 selectize2.clear(true);

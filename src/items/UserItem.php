@@ -142,13 +142,13 @@ class UserItem
         $content['fields']['lang']['config']['type'] = 'text';
         $content['fields']['lang']['config']['label'] = 'Lang';
 
-        // we don't use name attribute of rest api because it can be full name.
-        // we use slug returned in rest api. Craft doesn't support space in username too
+        // We don't use name attribute of rest api because it can be full name.
+        // We use slug returned in rest api. Craft doesn't support space in username too
         $username = $userItem->slug;
         $content['fields']['username']['value'] = $username;
         $content['fields']['username']['config']['isAttribute'] = true;
 
-        // get user name from rest api in case we need it for full name on Craft
+        // Get user name from rest api in case we need it for full name on Craft
         // TODO: also migrate user's name to a text field
         $content['fields']['name']['value'] = $userItem->name;
         $content['fields']['name']['config']['isAttribute'] = true;

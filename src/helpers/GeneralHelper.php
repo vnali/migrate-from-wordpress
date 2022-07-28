@@ -217,10 +217,10 @@ class GeneralHelper
                     'craft\fields\Url' => 'url',
                 ];
                 break;
-                // one line url
+                // One line URL
             case 'url':
                 $convertTo = ['' => 'select one', 'craft\fields\Url' => 'url'];
-                // text and url
+                // Text and URL
                 break;
             case 'link':
                 $convertTo = ['' => 'select one', 'craft\fields\Url' => 'url'];
@@ -388,7 +388,7 @@ class GeneralHelper
         $variables['createAssetField'] = $view->renderTemplate('migrate-from-wordpress/_createAssetField', $volumes);
         $variables['createAssetFieldJs'] = $view->clearJsBuffer(false);
 
-        //Tag field
+        // Tag field
         $tags['tags'] = [];
         foreach (Craft::$app->tags->getAllTagGroups()  as $tagItem) {
             $tag['value'] = $tagItem->id;
@@ -399,7 +399,7 @@ class GeneralHelper
         $variables['createTagField'] = $view->renderTemplate('migrate-from-wordpress/_createTagField', $tags);
         $variables['createTagFieldJs'] = $view->clearJsBuffer(false);
 
-        //categoryField
+        // Category Field
         $categories['categories'] = [];
         foreach (Craft::$app->categories->getAllGroups()  as $categoryItem) {
             $category['value'] = $categoryItem->id;
@@ -466,7 +466,7 @@ class GeneralHelper
 
         if (($menuItem->object == 'category' || $menuItem->object == 'post' || $menuItem->object == 'page') && $menuItem->object_id) {
             $objectId = $menuItem->object_id;
-            //search for term id in entries ,tags and categories
+            // Search for term id in entries ,tags and categories
             $elementTypes = ['craft\elements\Category', 'craft\elements\Entry'];
             foreach ($elementTypes as $key => $elementType) {
                 $record = $elementType::find()->wordpressUUID($objectId)->one();
@@ -494,7 +494,7 @@ class GeneralHelper
             } else {
                 throw new ServerErrorHttpException('undefined term id');
             }
-            //search for term id in entries ,tags and categories
+            // Search for term id in entries ,tags and categories
             $elementTypes = ['craft\elements\Tag', 'craft\elements\Category', 'craft\elements\Entry'];
             foreach ($elementTypes as $key => $elementType) {
                 $record = $elementType::find()->wordpressTermId($termId)->one();
@@ -515,7 +515,7 @@ class GeneralHelper
                 }
             }
         } else {
-            // try to match menu url with migrated pages, posts and medias
+            // Try to match menu url with migrated pages, posts and medias
             $fileIds = json_decode(Craft::$app->cache->get('migrate-from-wordpress-files-id-and-url'), true);
             // TODO: currently we search for absolute URL, also search for relative links
             if (isset($fileIds[$url]) && isset($wordpressFileId)) {
@@ -795,7 +795,7 @@ class GeneralHelper
                     $content['fields']['acf_' . $acfIndex]['fields']['acf_' . $acfIndex . '_' . $fieldKey]['value'] = $field;
                 }
             } else {
-                //add acf- to array index - there is a possibility there is an attribute with same name
+                // Add acf- to array index - there is a possibility there is an attribute with same name
                 $content['fields']['acf_' . $acfIndex]['config']['type'] = 'acf field';
                 $content['fields']['acf_' . $acfIndex]['config']['name'] = $acfIndex;
                 $content['fields']['acf_' . $acfIndex]['config']['label'] = $acfIndex;

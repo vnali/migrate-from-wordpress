@@ -257,7 +257,7 @@ class UsersController extends Controller
                 isset($fieldSettings['convertTo']) &&
                 isset($fieldSettings['convert']) &&
                 $fieldSettings['convert'] == '1' &&
-                //we don't need to convert fields that we already convert them as attribute.
+                // We don't need to convert fields that we already convert them as attribute.
                 $key != $userItemModel->wordpressFullNameField &&
                 $key != $userItemModel->wordpressUserPictureField
             ) {

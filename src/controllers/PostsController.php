@@ -79,7 +79,7 @@ class PostsController extends Controller
         $mergeSameBlockTypes = $request->get('mergeSameBlockTypes');
         $migrateGutenbergBlocks = $request->get('migrateGutenbergBlocks');
 
-        // if gutenberg settings is not provided in request -when clearaing cache of post migration page -, use last values, otherwise default is true
+        // If gutenberg settings is not provided in request -when clearing cache of post migration page -, use last values, otherwise default is true
         if (is_null($migrateGutenbergBlocks)) {
             $gutenbergSettings = $cache->get('migrate-from-wordpress-post-gutenberg-' . $postType);
             $migrateGutenbergBlocks = $gutenbergSettings['migrate'] ?? 'true';
@@ -96,7 +96,7 @@ class PostsController extends Controller
             0,
             new TagDependency(['tags' => ['migrate-from-wordpress', 'migrate-from-wordpress-post-' . $postType . '-items']])
         );
-        //check if user converted
+        // Check if user converted
         GeneralHelper::hookCheckUserConvert();
         //
         $postCacheKey = 'migrate-from-wordpress-post-' . $postType . '-items-' . $migrateGutenbergBlocks;
@@ -183,7 +183,7 @@ class PostsController extends Controller
             $converts[] = $siteSetting['convert'];
             $siteModel->wordpressLanguage = $key;
             $siteModel->craftSiteId = $siteSetting['convertTo'];
-            //if this is last item.
+            // If this is last item.
             if ($key == $endKey) {
                 $siteModel->setScenario('lastLanguage');
                 $siteModel->converts = $converts;
@@ -209,7 +209,7 @@ class PostsController extends Controller
 
         $fieldDefinitionModelArray = [];
         foreach ($postedFields as $key => $postedField) {
-            //set convert value for disabled lightswitch
+            // Set convert value for disabled lightswitch
             if (!isset($postedField['convert'])) {
                 $convertField = 0;
             } else {
@@ -228,10 +228,10 @@ class PostsController extends Controller
             if (!$fieldDefinitionModel->validate()) {
                 $validate = false;
             }
-            //add convert status to fieldDefinitions. needed for getting value
+            // Add convert status to fieldDefinitions. needed for getting value
             $fieldDefinitions[$key]['convert'] = $convertField;
             //
-            //add target craft type to fieldDefinitions. needed for getting value
+            // Add target craft type to fieldDefinitions. needed for getting value
             $fieldDefinitions[$key]['convertTarget'] = $postedField['convertTo'];
             //
             $fieldDefinitions[$key]['containerField'] = $postedField['containerField'];

@@ -163,9 +163,9 @@ class DefaultController extends Controller
                 TagDependency::invalidate(Yii::$app->cache, MigrateFromWordPressPlugin::$plugin->id);
                 break;
             default:
-                // to invalidate depended cache
+                // Invalidate depended cache
                 TagDependency::invalidate(Yii::$app->cache, $item);
-                // to delete cache
+                // Delete cache
                 $cache->delete($item);
                 break;
         }
