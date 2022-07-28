@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0 - 2022-07-29
+### Added
+- Added support for migrating not public (private and draft) and trash posts and pages
+
 ## 0.1.1 - 2022-07-28
 ### Fixed
 - Fixed changelog format
