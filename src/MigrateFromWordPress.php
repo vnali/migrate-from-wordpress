@@ -26,6 +26,7 @@ use vnali\migratefromwordpress\models\Settings;
 use Yii;
 use yii\base\Event;
 use yii\caching\TagDependency;
+use yii\web\ServerErrorHttpException;
 
 class MigrateFromWordPress extends Plugin
 {
@@ -72,7 +73,7 @@ class MigrateFromWordPress extends Plugin
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function(RegisterUrlRulesEvent $event) {
+            function (RegisterUrlRulesEvent $event) {
                 $event->rules['migrate-from-wordpress/default/fields-filter'] = 'migrate-from-wordpress/default/fields-filter';
                 $event->rules['migrate-from-wordpress/default/get-container-fields'] = 'migrate-from-wordpress/default/get-container-fields';
                 $event->rules['migrate-from-wordpress/default/get-container-fields'] = 'migrate-from-wordpress/default/get-container-fields';
@@ -82,6 +83,7 @@ class MigrateFromWordPress extends Plugin
                 $event->rules['migrate-from-wordpress/default/index'] = 'migrate-from-wordpress/default/index';
                 $event->rules['migrate-from-wordpress/files/migrate'] = 'migrate-from-wordpress/files/migrate';
                 $event->rules['migrate-from-wordpress/menus/migrate'] = 'migrate-from-wordpress/menus/migrate';
+                $event->rules['migrate-from-wordpress/navigations/migrate'] = 'migrate-from-wordpress/navigations/migrate';
                 $event->rules['migrate-from-wordpress/pages/migrate'] = 'migrate-from-wordpress/pages/migrate';
                 $event->rules['migrate-from-wordpress/posts/migrate'] = 'migrate-from-wordpress/posts/migrate';
                 $event->rules['migrate-from-wordpress/settings/plugin'] = 'migrate-from-wordpress/settings/plugin';
@@ -93,9 +95,10 @@ class MigrateFromWordPress extends Plugin
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
-            function(RegisterUrlRulesEvent $event) {
+            function (RegisterUrlRulesEvent $event) {
                 $event->rules['migrate-from-wordpress/files/values'] = 'migrate-from-wordpress/files/values';
                 $event->rules['migrate-from-wordpress/menus/values'] = 'migrate-from-wordpress/menus/values';
+                $event->rules['migrate-from-wordpress/navigations/values'] = 'migrate-from-wordpress/navigations/values';
                 $event->rules['migrate-from-wordpress/pages/values'] = 'migrate-from-wordpress/pages/values';
                 $event->rules['migrate-from-wordpress/posts/values'] = 'migrate-from-wordpress/posts/values';
                 $event->rules['migrate-from-wordpress/taxonomies/values'] = 'migrate-from-wordpress/taxonomies/values';
@@ -106,7 +109,7 @@ class MigrateFromWordPress extends Plugin
 
     private function _initEvents()
     {
-        Event::on(Process::class, Process::EVENT_AFTER_PROCESS_FEED, function(FeedProcessEvent $event) {
+        Event::on(Process::class, Process::EVENT_AFTER_PROCESS_FEED, function (FeedProcessEvent $event) {
             $cache = Craft::$app->getCache();
             $parsedUrl = parse_url($event->feed['feedUrl']);
             $path = $parsedUrl['path'];
@@ -153,6 +156,27 @@ class MigrateFromWordPress extends Plugin
 
                     if (!$notProcessed) {
                         Craft::$app->getCache()->set('migrate-from-wordpress-convert-status-menu-' . $menuType, 'process', 0, new TagDependency(['tags' => 'migrate-from-wordpress']));
+                    }
+                    break;
+                case '/migrate-from-wordpress/navigations/values':
+                    $navigationType = $output['navigationId'];
+                    $cache->set('migrate-from-wordpress-convert-status-navigation-' . $contentLanguage . '-' . $navigationType, 'process', 0, new TagDependency(['tags' => ['migrate-from-wordpress']]));
+                    $cache->set('migrate-from-wordpress-convert-status-navigation-' . $contentLanguage . '-' . $navigationType . '-update', 'process', 0, new TagDependency(['tags' => ['migrate-from-wordpress']]));
+
+                    $siteSettings = Craft::$app->cache->get('migrate-from-wordpress-navigation-siteSettings-' . $navigationType);
+                    $notProcessed = false;
+
+                    foreach ($siteSettings as $key => $siteSetting) {
+                        if ($siteSetting['convert'] == '1') {
+                            if (Craft::$app->getCache()->get('migrate-from-wordpress-convert-status-navigation-' . $key . '-' . $navigationType) != 'process') {
+                                $notProcessed = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!$notProcessed) {
+                        Craft::$app->getCache()->set('migrate-from-wordpress-convert-status-navigation-' . $navigationType, 'process', 0, new TagDependency(['tags' => 'migrate-from-wordpress']));
                     }
                     break;
                 case '/migrate-from-wordpress/pages/values':
@@ -262,7 +286,7 @@ class MigrateFromWordPress extends Plugin
             }
         });
 
-        Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_MATCH, function(FeedProcessEvent $event) {
+        Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_MATCH, function (FeedProcessEvent $event) {
             if (MigrateFromWordpressPlugin::$plugin->settings->fetchFilesByAssetIndex) {
                 // When we want to update existing files -imported via asset index- and we check unique asset id
                 $parsedUrl = parse_url($event->feed['feedUrl']);
@@ -282,17 +306,21 @@ class MigrateFromWordPress extends Plugin
                         }
                         $criteria->path = $folderPath;
                         $folder = $assetsService->findFolder($criteria);
-                        $asset = Asset::find()->filename($filename)->folderId($folder->id)->one();
-                        if ($asset) {
-                            $event->feedData['AssetId/value'] = $asset->id;
-                            $event->contentData['id'] = $asset->id;
+                        if (isset($folder)) {
+                            $asset = Asset::find()->filename($filename)->folderId($folder->id)->one();
+                            if ($asset) {
+                                $event->feedData['AssetId/value'] = $asset->id;
+                                $event->contentData['id'] = $asset->id;
+                            }
+                        } else {
+                            throw new ServerErrorHttpException('Make sure you copied content of wp-content/uploads from WordPress');
                         }
                     }
                 }
             }
         });
 
-        Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_SAVE, function(FeedProcessEvent $event) {
+        Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_SAVE, function (FeedProcessEvent $event) {
             $parsedUrl = parse_url($event->feed['feedUrl']);
             $path = $parsedUrl['path'];
             $query = $parsedUrl['query'];
@@ -381,10 +409,11 @@ class MigrateFromWordPress extends Plugin
             }
         });
 
-        Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_SAVE, function(FeedProcessEvent $event) {
+        Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_SAVE, function (FeedProcessEvent $event) {
             // Update parent node
             if ($event->feed['elementType'] == 'verbb\navigation\elements\Node') {
-                if ($event->feedData['parent/value']) {
+                // navigation items has not parent/value
+                if (isset($event->feedData['parent/value']) && $event->feedData['parent/value']) {
                     $node = Node::find()->wordpressMenuId($event->feedData['wordpressMenuId/value'])->one();
                     // If node is available
                     if ($node) {
@@ -401,7 +430,7 @@ class MigrateFromWordPress extends Plugin
         Event::on(
             __CLASS__,
             self::EVENT_BEFORE_SAVE_SETTINGS,
-            function($event) {
+            function ($event) {
 
                 // TODO: move reset function before other plugin setting validation.
                 $clearAllCache = MigrateFromWordPressPlugin::$plugin->getSettings()->clearAllCache;
@@ -491,7 +520,7 @@ class MigrateFromWordPress extends Plugin
         Event::on(
             ClearCaches::class,
             ClearCaches::EVENT_REGISTER_TAG_OPTIONS,
-            function(RegisterCacheOptionsEvent $event) {
+            function (RegisterCacheOptionsEvent $event) {
                 $event->options = array_merge(
                     $event->options,
                     $this->_customAdminCpTagOptions()

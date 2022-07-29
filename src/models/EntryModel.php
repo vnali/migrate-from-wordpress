@@ -27,7 +27,7 @@ class EntryModel extends Model
     protected function defineRules(): array
     {
         $rules = parent::defineRules();
-        $rules[] = [['sectionId', 'entryTypeId'], 'required', 'skipOnEmpty' => false, 'on' => ['convert-menu', 'convert-post', 'convert-page']];
+        $rules[] = [['sectionId', 'entryTypeId'], 'required', 'skipOnEmpty' => false, 'on' => ['convert-menu', 'convert-navigation', 'convert-page', 'convert-post']];
         $rules[] = [['sectionId'], function($attribute, $params, $validator) {
             $sections = [];
             foreach (Craft::$app->sections->getAllSections() as $section) {
@@ -38,7 +38,7 @@ class EntryModel extends Model
             if (!in_array($this->$attribute, $sections)) {
                 $this->addError($attribute, 'section is not valid.');
             }
-        }, 'skipOnEmpty' => true, 'on' => ['convert-menu', 'convert-post', 'convert-page', 'convert-taxonomy']];
+        }, 'skipOnEmpty' => true, 'on' => ['convert-menu', 'convert-navigation', 'convert-page', 'convert-post', 'convert-taxonomy']];
         $rules[] = [['entryTypeId'], function($attribute, $params, $validator) {
             if (is_numeric($this->sectionId)) {
                 $section = Craft::$app->sections->getSectionById($this->sectionId);
@@ -47,7 +47,7 @@ class EntryModel extends Model
                     $this->addError($attribute, 'entry type is not valid.');
                 }
             }
-        }, 'skipOnEmpty' => true, 'on' => ['convert-menu', 'convert-page', 'convert-post', 'convert-taxonomy']];
+        }, 'skipOnEmpty' => true, 'on' => ['convert-menu', 'convert-navigation', 'convert-page', 'convert-post', 'convert-taxonomy']];
         return $rules;
     }
 }

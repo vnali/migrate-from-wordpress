@@ -3,7 +3,6 @@
 namespace vnali\migratefromwordpress\feed;
 
 use Craft;
-
 use craft\feedme\Plugin as FeedmePlugin;
 use craft\helpers\StringHelper;
 
@@ -103,9 +102,16 @@ class MigrateFeed
         if (!$label) {
             $label = 'Default';
         } else {
-            $availableMenuTypes = Craft::$app->cache->get('migrate-from-wordpress-available-menu-types');
-            if ($availableMenuTypes && isset($availableMenuTypes[$label]['label'])) {
-                $label = $availableMenuTypes[$label]['label'];
+            if ($this->itemType == 'menu') {
+                $availableMenuTypes = Craft::$app->cache->get('migrate-from-wordpress-available-menu-types');
+                if ($availableMenuTypes && isset($availableMenuTypes[$label]['label'])) {
+                    $label = $availableMenuTypes[$label]['label'];
+                }
+            } elseif ($this->itemType == 'navigation') {
+                $availableNavigationTypes = Craft::$app->cache->get('migrate-from-wordpress-available-navigation-types');
+                if ($availableNavigationTypes && isset($availableNavigationTypes[$label]['label'])) {
+                    $label = $availableNavigationTypes[$label]['label'];
+                }
             }
         }
 
@@ -121,7 +127,7 @@ class MigrateFeed
                     $duplicateHandle = ['add', 'update'];
                     if ($this->itemType == 'post' || $this->itemType == 'page') {
                         $fieldUniques = ['wordpressPostId'];
-                    } elseif ($this->itemType == 'taxonomy') {
+                    } elseif ($this->itemType == 'taxonomy' || $this->itemType == 'navigation') {
                         $fieldUniques = ['wordpressLink'];
                     } elseif ($this->itemType == 'menu') {
                         $fieldUniques = ['wordpressMenuId'];
@@ -135,7 +141,7 @@ class MigrateFeed
                     $duplicateHandle = ['add', 'update'];
                     if ($this->itemType == 'post' || $this->itemType == 'page') {
                         $fieldUniques = ['wordpressPostId'];
-                    } elseif ($this->itemType == 'taxonomy') {
+                    } elseif ($this->itemType == 'taxonomy' || $this->itemType == 'navigation') {
                         $fieldUniques = ['wordpressLink'];
                     } elseif ($this->itemType == 'menu') {
                         $fieldUniques = ['wordpressMenuId'];
@@ -144,6 +150,7 @@ class MigrateFeed
                     }
                 }
 
+                // TODO: add item detail like navigation name to $to
                 $to = '';
                 if ($this->entryTypeId) {
                     $to = 'entry';
@@ -153,6 +160,8 @@ class MigrateFeed
                     $to = 'category';
                 } elseif ($this->volumeId) {
                     $to = 'asset';
+                } elseif ($this->navigationId) {
+                    $to = 'navigation';
                 }
 
                 $wordpressURL = MigrateFromWordPressPlugin::$plugin->settings->wordpressURL;
@@ -194,6 +203,9 @@ class MigrateFeed
                 } elseif ($this->itemType == 'menu') {
                     $feedName = self::MIGRATE_FROM_WORDPRESS . "migrate '$label' menu to $to from " . $wordpressURL . ' - ' . $wordpressSites[$key]['label'] . " language";
                     $feedUrl = Craft::getAlias('@web') . "/migrate-from-wordpress/menus/values?token=$secret&menuId=" . $this->typeId . "&contentLanguage=" . $key . "&limit=" . $limit . $isUpdateFeed;
+                } elseif ($this->itemType == 'navigation') {
+                    $feedName = self::MIGRATE_FROM_WORDPRESS . "migrate '$label' navigation to $to from " . $wordpressURL . ' - ' . $wordpressSites[$key]['label'] . " language";
+                    $feedUrl = Craft::getAlias('@web') . "/migrate-from-wordpress/navigations/values?token=$secret&navigationId=" . $this->typeId . "&contentLanguage=" . $key . "&limit=" . $limit . $isUpdateFeed;
                 }
 
                 $model->name = $feedName;
@@ -257,6 +269,9 @@ class MigrateFeed
                     $feedUrl = Craft::getAlias('@web') . "/migrate-from-wordpress/menus/values?token=$secret&menuId=" . $this->typeId . "&contentLanguage=" . $key . "&limit=" . $limit . $isUpdateFeed;
                     $fieldUniques = ['wordpressMenuId'];
                     $feedName = self::MIGRATE_FROM_WORDPRESS . "update parent of '$label' menu to $to for " . $wordpressURL . ' - ' . $wordpressSites[$key]['label'] . " language";
+                } elseif ($this->itemType == 'navigation') {
+                    // we don't need update for navigation. they have no parent/child relationship
+                    continue;
                 }
 
                 $duplicateHandle = 'update';

@@ -243,6 +243,39 @@
 				{% endfor %}
 			</div>
 		</div>
+        <div class="max-w-sm rounded overflow-hidden bg-gray-100 border border-solid border-gray-500">
+			<div class="px-6 py-3">
+				<div class="font-bold text-xl mb-2">{{ 'Navigations'|t('migrate-from-wordpress') }}</div>
+			</div>
+			<div class="px-6 pt-1 pb-2">
+				{% for type in navigations %}
+					{% if craft.app.cache.get('migrate-from-wordpress-convert-status-navigation-' ~ selectedLanguage ~ '-' ~ type.value) == 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-navigation-' ~ selectedLanguage ~ '-' ~ type.value ~ '-' ~ 'update') == 'process'
+                    %}
+						{% set color = 'bg-green-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-navigation-' ~ selectedLanguage ~ '-' ~ type.value) == 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-navigation-' ~ selectedLanguage ~ '-' ~ type.value ~ '-' ~ 'update') != 'process'
+                    %}
+						{% set color = 'bg-orange-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-navigation-' ~ selectedLanguage ~ '-' ~ type.value) != 'process'
+                        and craft.app.cache.get('migrate-from-wordpress-convert-status-navigation-' ~ selectedLanguage ~ '-' ~ type.value ~ '-' ~ 'update') == 'process'
+                    %}
+						{% set color = 'bg-orange-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-navigation-' ~ selectedLanguage ~ '-' ~ type.value) == 'feed' %}
+						{% set color = 'bg-yellow-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-navigation-' ~ selectedLanguage ~ '-'  ~ type.value) == 'no feed' %}
+						{% set color = 'bg-gray-300' %}
+					{% elseif craft.app.cache.get('migrate-from-wordpress-convert-status-navigation-' ~ type.value) == 'no-data' %}
+						{% set color = 'bg-blue-300' %}
+					{% else %}
+						{% set color = 'bg-red-300' %}
+					{% endif %}
+					<span class="inline-block  rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 {{ color }}">
+						<a href="{{ cpTriggerUrl }}/migrate-from-wordpress/navigations/migrate?navigationId={{ type.value }}">{{type.label}}</a>
+					</span>
+				{% endfor %}
+			</div>
+		</div>
 	</div>
 	<div class="px-5 py-2">
 		<form action="" method="post" accept-charset="UTF-8">

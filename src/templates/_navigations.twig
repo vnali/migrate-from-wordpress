@@ -1,0 +1,101 @@
+{% extends "/_layouts/cp" %}
+
+{% set title = "Migrate '" ~ navigationLabel ~ "' Navigations"|t('migrate-from-wordpress') %}
+
+{% block content %}
+    {% import "_includes/forms" as forms %}
+
+    <div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+        <p class="font-bold">Migration dependency:</p>
+        <div>
+            {{ 'Make sure Migraton for posts, pages, categories, tags and media are finished before starting navigations migration.'|t('migrate-from-wordpress') }}
+        </div>
+    </div>
+
+    <form action="" method="post" accept-charset="UTF-8">
+        {% set address = 'migrate-from-wordpress/navigations/migrate?navigationId=' ~ navigationId %}
+		{{ redirectInput(address) }}
+		{{ csrfInput() }}
+		<input type="hidden" name="action" value="migrate-from-wordpress/default/clear-cache">
+        <input type="hidden" name="item" value="migrate-from-wordpress-navigation-{{ navigationId }}-items">
+        <p>
+            {{ 'Clear cache if you can\'t see the latest changes made in navigations in WordPress'|t('migrate-from-wordpress') }}
+        </p>
+		<input type="submit" class="btn submit" value="{{ 'Clear ' ~ navigationLabel ~ ' Navigation cache'|t('migrate-from-wordpress') }}">
+    </form>
+
+	<form action="" method="post" accept-charset="UTF-8">
+    	{{ redirectInput('feed-me') }}
+		{{ csrfInput() }}
+        <input type="hidden" name="action" value="migrate-from-wordpress/navigations/save-fields">
+        <input type="hidden" id="formType" name="formType" value="navigation">
+
+        {{ forms.selectField({
+            label: 'Convert navigation to'|t('migrate-from-wordpress'),
+            id: 'convertNavigationTo',
+            name: 'convertNavigationTo',
+            options: convertNavigationTo,
+            value: navigationModel ? navigationModel.convertNavigationTo,
+            errors: navigationModel ? navigationModel.getErrors('convertNavigationTo'),
+            required: true            
+        }) }}
+
+        <div style="display:none" id="navigation-block">
+            <div class="bg-blue-100 border-l-4 border-blue-500 border-solid text-blue-700 p-4" role="alert">
+                <p class="font-bold">Tip:</p>
+                <p>
+                    {{ 'Each navigation is converted to one Navigation node'|t('migrate-from-wordpress') }}
+                </p>
+            </div>
+            {{ forms.selectField({
+                label: 'navigations'|t,
+                id: 'navigation',
+                name: 'navigation',
+                options: navs,
+                value: navigationModel ? navigationModel.navId,
+                errors: navigationModel ? navigationModel.getErrors('navId')               
+            }) }}
+        </div>
+        <div style="display:none" id="entry-block">
+            <div class="bg-blue-100 border-l-4 border-blue-500 border-solid text-blue-700 p-4" role="alert">
+                <p class="font-bold">Tip:</p>
+                <p>
+                    {{ 'Each navigation is converted to one entry now. only structure sections are supported'|t('migrate-from-wordpress') }}
+                </p>
+            </div>
+            <br>
+            <div class= "grid grid-cols-6 gap-2 pb-5 pt-1">
+                {% include 'migrate-from-wordpress/_section-entrytype.twig' %}
+            </div>
+        </div>
+
+        <hr>
+        
+        {% include 'migrate-from-wordpress/_languageOption.twig' %}
+
+        {% include 'migrate-from-wordpress/_mappingTable.twig' %}
+
+        <input type="submit" class="btn submit" value="{{ 'Save'|t('migrate-from-wordpress') }}">
+	</form>
+
+{% endblock %}
+{% js %}
+    (function() {
+        $("#convertNavigationTo").change(function(){
+            if (this.value != '') {
+                if (this.value == 'entry'){
+                    $('#navigation-block').hide();
+                    $('#entry-block').show();
+                } else if (this.value == 'navigation') {
+                    $('#entry-block').hide();
+                    $('#navigation-block').show();
+                }
+            } else {
+                $('#navigation-block').hide();         
+                $('#entry-block').hide();      
+            }
+        });
+    })();
+{% endjs %}
+
+{% do view.registerAssetBundle("vnali\\migratefromwordpress\\assetbundles\\ConvertAsset") %}

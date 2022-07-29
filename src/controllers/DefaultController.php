@@ -53,8 +53,7 @@ class DefaultController extends Controller
                 $cache = Craft::$app->getCache();
                 $wordpressURL = MigrateFromWordPressPlugin::$plugin->settings->wordpressURL;
                 $wordpressRestApiEndpoint = MigrateFromWordPressPlugin::$plugin->settings->wordpressRestApiEndpoint;
-                /*
-                // TODO: Navigation migration support
+                // Navigation
                 $address = $wordpressURL . '/' . $wordpressRestApiEndpoint . '/navigation';
                 $response = Curl::sendToRestAPI($address);
                 $response = json_decode($response);
@@ -63,15 +62,14 @@ class DefaultController extends Controller
                     $item = [];
                     $item['value'] = $navigation->id;
                     $item['label'] = $navigation->title->rendered;
-                    $variables['navigations'][] = $item;
+                    $variables['navigations'][$navigation->id] = $item;
                 }
                 $cache->set(
                     'migrate-from-wordpress-available-navigation-types',
-                    ArrayHelper::getColumn($variables['navigations'], 'value'),
+                    $variables['navigations'],
                     0,
                     new TagDependency(['tags' => 'migrate-from-wordpress'])
                 );
-                */
                 // Menus
                 $address = $wordpressURL . '/' . $wordpressRestApiEndpoint . '/menus';
                 $response = Curl::sendToRestAPI($address);

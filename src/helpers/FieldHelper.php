@@ -281,6 +281,7 @@ class FieldHelper
             case 'post':
             case 'taxonomy':
             case 'menu':
+            case 'navigation':
                 $cacheKey = 'migrate-from-wordpress-' . $itemType . '-' . $itemId . '-fields';
                 break;
             default:

@@ -439,12 +439,12 @@ class GeneralHelper
     /**
      * Convert wordpress URI to Craft URI
      *
-     * @param mixed $menuItem
+     * @param mixed $item
      * @return array
      */
-    public static function convertWordPressUri(mixed $menuItem): array
+    public static function convertWordPressUri(mixed $item): array
     {
-        $url = $menuItem->url;
+        $url = $item->url;
         $navType = null;
         $navElementId = null;
         $wordpressUUID = null;
@@ -464,8 +464,9 @@ class GeneralHelper
         $wordpressTermId = Craft::$app->fields->getFieldByHandle('wordpressTermId');
         $wordpressUUID = Craft::$app->fields->getFieldByHandle('wordpressUUID');
 
-        if (($menuItem->object == 'category' || $menuItem->object == 'post' || $menuItem->object == 'page') && $menuItem->object_id) {
-            $objectId = $menuItem->object_id;
+        // Navigation item has not object and object id
+        if (isset($item->object) && isset($item->object_id) && ($item->object == 'category' || $item->object == 'post' || $item->object == 'page')) {
+            $objectId = $item->object_id;
             // Search for term id in entries ,tags and categories
             $elementTypes = ['craft\elements\Category', 'craft\elements\Entry'];
             foreach ($elementTypes as $key => $elementType) {
