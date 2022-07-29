@@ -73,7 +73,7 @@ class MigrateFromWordPress extends Plugin
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
+            function(RegisterUrlRulesEvent $event) {
                 $event->rules['migrate-from-wordpress/default/fields-filter'] = 'migrate-from-wordpress/default/fields-filter';
                 $event->rules['migrate-from-wordpress/default/get-container-fields'] = 'migrate-from-wordpress/default/get-container-fields';
                 $event->rules['migrate-from-wordpress/default/get-container-fields'] = 'migrate-from-wordpress/default/get-container-fields';
@@ -95,7 +95,7 @@ class MigrateFromWordPress extends Plugin
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
+            function(RegisterUrlRulesEvent $event) {
                 $event->rules['migrate-from-wordpress/files/values'] = 'migrate-from-wordpress/files/values';
                 $event->rules['migrate-from-wordpress/menus/values'] = 'migrate-from-wordpress/menus/values';
                 $event->rules['migrate-from-wordpress/navigations/values'] = 'migrate-from-wordpress/navigations/values';
@@ -109,7 +109,7 @@ class MigrateFromWordPress extends Plugin
 
     private function _initEvents()
     {
-        Event::on(Process::class, Process::EVENT_AFTER_PROCESS_FEED, function (FeedProcessEvent $event) {
+        Event::on(Process::class, Process::EVENT_AFTER_PROCESS_FEED, function(FeedProcessEvent $event) {
             $cache = Craft::$app->getCache();
             $parsedUrl = parse_url($event->feed['feedUrl']);
             $path = $parsedUrl['path'];
@@ -286,7 +286,7 @@ class MigrateFromWordPress extends Plugin
             }
         });
 
-        Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_MATCH, function (FeedProcessEvent $event) {
+        Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_MATCH, function(FeedProcessEvent $event) {
             if (MigrateFromWordpressPlugin::$plugin->settings->fetchFilesByAssetIndex) {
                 // When we want to update existing files -imported via asset index- and we check unique asset id
                 $parsedUrl = parse_url($event->feed['feedUrl']);
@@ -320,7 +320,7 @@ class MigrateFromWordPress extends Plugin
             }
         });
 
-        Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_SAVE, function (FeedProcessEvent $event) {
+        Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_SAVE, function(FeedProcessEvent $event) {
             $parsedUrl = parse_url($event->feed['feedUrl']);
             $path = $parsedUrl['path'];
             $query = $parsedUrl['query'];
@@ -409,7 +409,7 @@ class MigrateFromWordPress extends Plugin
             }
         });
 
-        Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_SAVE, function (FeedProcessEvent $event) {
+        Event::on(Process::class, Process::EVENT_STEP_BEFORE_ELEMENT_SAVE, function(FeedProcessEvent $event) {
             // Update parent node
             if ($event->feed['elementType'] == 'verbb\navigation\elements\Node') {
                 // navigation items has not parent/value
@@ -430,7 +430,7 @@ class MigrateFromWordPress extends Plugin
         Event::on(
             __CLASS__,
             self::EVENT_BEFORE_SAVE_SETTINGS,
-            function ($event) {
+            function($event) {
 
                 // TODO: move reset function before other plugin setting validation.
                 $clearAllCache = MigrateFromWordPressPlugin::$plugin->getSettings()->clearAllCache;
@@ -520,7 +520,7 @@ class MigrateFromWordPress extends Plugin
         Event::on(
             ClearCaches::class,
             ClearCaches::EVENT_REGISTER_TAG_OPTIONS,
-            function (RegisterCacheOptionsEvent $event) {
+            function(RegisterCacheOptionsEvent $event) {
                 $event->options = array_merge(
                     $event->options,
                     $this->_customAdminCpTagOptions()
