@@ -464,13 +464,12 @@ class GeneralHelper
         $wordpressTermId = Craft::$app->fields->getFieldByHandle('wordpressTermId');
         $wordpressUUID = Craft::$app->fields->getFieldByHandle('wordpressUUID');
 
-        // Navigation item has not object and object id
-        if (isset($item->object) && isset($item->object_id) && ($item->object == 'category' || $item->object == 'post' || $item->object == 'page')) {
-            $objectId = $item->object_id;
-            // Search for term id in entries ,tags and categories
+        // Navigation item has not object
+        if (isset($item->object) && ($item->object == 'category' || $item->object == 'post' || $item->object == 'page')) {
+            // Search for item link in entries and categories
             $elementTypes = ['craft\elements\Category', 'craft\elements\Entry'];
             foreach ($elementTypes as $key => $elementType) {
-                $record = $elementType::find()->wordpressUUID($objectId)->one();
+                $record = $elementType::find()->wordpressUUID($url)->one();
                 if ($record) {
                     if ($record->uri) {
                         $uri = $record->uri;
