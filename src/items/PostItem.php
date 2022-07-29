@@ -141,7 +141,7 @@ class PostItem
     }
 
     /**
-     * Get attributes and relationships of WordPress menu items
+     * Get attributes and relationships of WordPress post items
      *
      * @param object $postItem
      * @param array|null $content

@@ -298,7 +298,7 @@ class TaxonomiesController extends Controller
 
         if (!$validate) {
             Craft::info('Taxonomy item not saved due to validation error.', __METHOD__);
-            $this->setFailFlash(Craft::t('migrate-from-wordpress', 'Taxonomy item not saved due to validation error.'));
+            $this->setFailFlash(Craft::t('migrate-from-wordpress', 'There was some validation error.'));
             /** @var UrlManager $urlManager */
             $urlManager = Craft::$app->getUrlManager();
             $urlManager->setRouteParams([

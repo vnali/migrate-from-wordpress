@@ -166,7 +166,7 @@ class UsersController extends Controller
 
         if (!$validate) {
             Craft::info('User item not saved due to validation error.', __METHOD__);
-            $this->setFailFlash(Craft::t('migrate-from-wordpress', 'User item not saved due to validation error.'));
+            $this->setFailFlash(Craft::t('migrate-from-wordpress', 'There was some validation error.'));
             /** @var UrlManager $urlManager */
             $urlManager = Craft::$app->getUrlManager();
             $urlManager->setRouteParams([

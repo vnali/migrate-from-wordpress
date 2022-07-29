@@ -245,7 +245,7 @@ class PostsController extends Controller
 
         if (!$validate) {
             Craft::info('Post item not saved due to validation error.', __METHOD__);
-            $this->setFailFlash(Craft::t('migrate-from-wordpress', 'Post item not saved due to validation error.'));
+            $this->setFailFlash(Craft::t('migrate-from-wordpress', 'There was some validation error.'));
             /** @var UrlManager $urlManager */
             $urlManager = Craft::$app->getUrlManager();
             $urlManager->setRouteParams([

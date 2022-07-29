@@ -138,7 +138,7 @@ class PageItem
     }
 
     /**
-     * Get attributes and relationships of WordPress menu items
+     * Get attributes and relationships of WordPress page items
      *
      * @param object $pageItem
      * @param array|null $content

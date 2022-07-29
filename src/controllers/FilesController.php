@@ -194,7 +194,7 @@ class FilesController extends Controller
         $fields = $postedFields;
 
         if (!$validate) {
-            $this->setFailFlash(Craft::t('migrate-from-wordpress', 'not saved due to validation error.'));
+            $this->setFailFlash(Craft::t('migrate-from-wordpress', 'There was some validation error.'));
             /** @var UrlManager $urlManager */
             $urlManager = Craft::$app->getUrlManager();
             $urlManager->setRouteParams([
