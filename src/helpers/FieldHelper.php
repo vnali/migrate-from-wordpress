@@ -1249,7 +1249,7 @@ class FieldHelper
                                     if (isset($response->link)) {
                                         $value[] = $response->link;
                                     } else {
-                                        craft::dd('response for category '. $val . ' has not link');
+                                        craft::dd('response for category ' . $val . ' has not link');
                                     }
                                 } else {
                                     // TODO: show logs to users
@@ -1274,7 +1274,7 @@ class FieldHelper
                                     if (isset($response->link)) {
                                         $value[] = $response->link;
                                     } else {
-                                        craft::dd('response for tag '. $val . ' has not link');
+                                        craft::dd('response for tag ' . $val . ' has not link');
                                     }
                                 } else {
                                     // TODO: show logs to users
@@ -1422,7 +1422,7 @@ class FieldHelper
         foreach ($fieldDefinitions as $fieldDefinition) {
             $label = '<font color=green>' . $fieldDefinition['label'] . '</font>';
 
-            Craft::$app->view->hook($fieldDefinition['wordpressHandle'], function () use ($label) {
+            Craft::$app->view->hook($fieldDefinition['wordpressHandle'], function() use ($label) {
                 return $label;
             });
         }

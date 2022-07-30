@@ -303,7 +303,7 @@ class PageItem
         if (isset($pageItem->featured_media) && $pageItem->featured_media) {
             $content['fields']['featuredMedia']['value'] = $pageItem->featured_media;
         } else {
-            $content['fields']['featuredMedia']['value'] = null; 
+            $content['fields']['featuredMedia']['value'] = null;
         }
 
         if (isset($pageItem->acf) && $pageItem->acf) {

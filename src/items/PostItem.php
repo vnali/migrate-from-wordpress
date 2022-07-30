@@ -314,7 +314,7 @@ class PostItem
         if (isset($postItem->featured_media) && $postItem->featured_media) {
             $content['fields']['featuredMedia']['value'] = $postItem->featured_media;
         } else {
-            $content['fields']['featuredMedia']['value'] = null; 
+            $content['fields']['featuredMedia']['value'] = null;
         }
 
         if (isset($postItem->acf) && $postItem->acf) {
