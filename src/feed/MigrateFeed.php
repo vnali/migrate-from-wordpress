@@ -166,7 +166,7 @@ class MigrateFeed
 
                 $wordpressURL = MigrateFromWordPressPlugin::$plugin->settings->wordpressURL;
                 $model = new \craft\feedme\models\FeedModel();
-                $limit = MigrateFromWordPressPlugin::$plugin->settings->limit;
+                $limit = MigrateFromWordPressPlugin::$plugin->settings->restItemLimit;
                 $isUpdateFeed = "&isUpdateFeed=0";
 
                 $feedName = '';

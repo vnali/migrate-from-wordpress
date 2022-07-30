@@ -227,7 +227,7 @@ class FileItem
         reset($wordpressSites);
         $firstLanguage = key($wordpressSites);
 
-        $limit = MigrateFromWordPressPlugin::$plugin->settings->limit;
+        $limit = MigrateFromWordPressPlugin::$plugin->settings->restItemLimit;
         $feedUrl = Craft::getAlias('@web') . "/migrate-from-wordpress/files/values?token=$secret&language=" . $firstLanguage .
             "&volumeId=" . $volumeId . "&uniqueFileFeed=" . $uniqueFileFeed . "&limit=" . $limit;
 

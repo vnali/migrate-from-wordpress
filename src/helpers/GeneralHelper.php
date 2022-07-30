@@ -569,6 +569,10 @@ class GeneralHelper
      */
     public static function analyzeGutenberg(string $content, bool $mergeSameBlocks = false): array
     {
+        // Password protected items are empty on rest api. currently we set them as empty paragraph
+        if (!$content) {
+            $content = '<p></p>';
+        }
         $blocks = [];
         $crawler = new Crawler($content);
         foreach ($crawler->filter('html body')->children() as $domElement) {
@@ -826,7 +830,6 @@ class GeneralHelper
             $feedRecords = FeedRecord::find()->all();
             $newToken = Craft::$app->getSecurity()->generateRandomString();
             foreach ($feedRecords as $feedRecord) {
-                /** @var FeedRecord $feedRecord */
                 $feedUrl = $feedRecord->feedUrl;
                 $newUrl = str_replace($oldToken, $newToken, $feedUrl);
                 $feedRecord->feedUrl = $newUrl;

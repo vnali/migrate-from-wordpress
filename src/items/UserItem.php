@@ -214,7 +214,7 @@ class UserItem
 
         $duplicateHandle = ['add', 'update'];
 
-        $limit = MigrateFromWordPressPlugin::$plugin->settings->limit;
+        $limit = MigrateFromWordPressPlugin::$plugin->settings->restItemLimit;
         $feedUrl = Craft::getAlias('@web') . "/migrate-from-wordpress/users/values?token=$secret&contentLanguage=" . $wordpressLanguage . "&limit=" . $limit;
         $wordpressURL = MigrateFromWordPressPlugin::$plugin->settings->wordpressURL;
 

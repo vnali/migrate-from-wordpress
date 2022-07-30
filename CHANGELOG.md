@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+### Added
+- Added support for importing password protected posts and pages
+
 ## 0.3.0 - 2022-07-29
 ### Added
 - Added support for migrating navigation

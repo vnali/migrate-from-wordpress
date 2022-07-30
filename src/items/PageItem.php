@@ -81,15 +81,19 @@ class PageItem
         if ($status) {
             $status = '&' . $status;
         }
+        $protectedItemsPasswords = MigrateFromWordPressPlugin::$plugin->settings->protectedItemsPasswords;
+        if ($protectedItemsPasswords) {
+            $protectedItemsPasswords = '&password=' . $protectedItemsPasswords;
+        }
         //
-        $address = $this->_restApiAddress . '/pages?per_page=' . $limit . '&page=' . $page . $status;
+        $address = $this->_restApiAddress . '/pages?per_page=' . $limit . '&page=' . $page . $status . $protectedItemsPasswords;
         $response = Curl::sendToRestAPI($address);
         $response = json_decode($response);
         $this->_pageItems = $response;
 
         // Check if there is next item
         $page = $page + 1;
-        $address = $this->_restApiAddress . '/pages?per_page=' . $limit . '&page=' . $page . $status;
+        $address = $this->_restApiAddress . '/pages?per_page=' . $limit . '&page=' . $page . $status . $protectedItemsPasswords;
         $response = Curl::sendToRestAPI($address);
         $response = json_decode($response);
         if (is_array($response) && isset($response[0]->id)) {

@@ -4,21 +4,21 @@
 
 	{% namespace "settings" %}
 
-    {#
+	{#
+		{{ forms.lightSwitchField({
+	        label: 'Protect user\'s password on user update'|t('migrate-from-wordpress'),
+	        instructions: 'When this option is enabled, user\'s password doesn\'t change on user update. the user who runs the feed is always protected anyway.'|t('migrate-from-wordpress'),
+	        id: 'protectUserPasswordOnUpdate',
+	        name: 'protectUserPasswordOnUpdate',
+	        on : settings.protectUserPasswordOnUpdate ?? '1',
+	        value: '1',
+	        errors: settings.getErrors('protectUserPasswordOnUpdate'),
+	    }) }}
+	#}
+
+	<hr>
+
 	{{ forms.lightSwitchField({
-        label: 'Protect user\'s password on user update'|t('migrate-from-wordpress'),
-        instructions: 'When this option is enabled, user\'s password doesn\'t change on user update. the user who runs the feed is always protected anyway.'|t('migrate-from-wordpress'),
-        id: 'protectUserPasswordOnUpdate',
-        name: 'protectUserPasswordOnUpdate',
-        on : settings.protectUserPasswordOnUpdate ?? '1',
-        value: '1',
-        errors: settings.getErrors('protectUserPasswordOnUpdate'),
-    }) }}
-    #}
-
-    <hr>
-
-    {{ forms.lightSwitchField({
         label: 'Migrate not public posts and pages'|t('migrate-from-wordpress'),
         id: 'migrateNotPublicStatus',
         name: 'migrateNotPublicStatus',
@@ -28,7 +28,7 @@
         tip: 'If enabled, private and draft items are migrated to disabled entry'|t('migrate-from-wordpress')
     }) }}
 
-    {{ forms.lightSwitchField({
+	{{ forms.lightSwitchField({
         label: 'Migrate posts and pages with trash status'|t('migrate-from-wordpress'),
         id: 'migrateTrashStatus',
         name: 'migrateTrashStatus',
@@ -38,9 +38,18 @@
         tip: 'If enabled, trashed items are migrated to disabled entry'|t('migrate-from-wordpress')
     }) }}
 
-    <hr>
+	{{ forms.passwordField({
+        label: 'Password for password protected posts and pages'|t('migrate-from-wordpress'),
+        id: 'protectedItemsPasswords',
+        name: 'protectedItemsPasswords',
+        value: settings.protectedItemsPasswords,
+        errors: settings.getErrors('protectedItemsPasswords'),
+        tip: 'Password for password-protected posts and pages. If the password does not match, we return an empty paragraph',
+    }) }}
 
-    {{ forms.lightSwitchField({
+	<hr>
+
+	{{ forms.lightSwitchField({
         label: 'Add excerpt to body content too'|t('migrate-from-wordpress'),
         id: 'addExcerptToBody',
         name: 'addExcerptToBody',
@@ -49,21 +58,21 @@
         errors: settings.getErrors('addExcerptToBody'),
     }) }}
 
-    <hr>
+	<hr>
 
-    {{ forms.textField({
-        label: 'WordPress item limit'|t('migrate-from-wordpress'),
+	{{ forms.textField({
+        label: 'REST item limit'|t('migrate-from-wordpress'),
         instructions: 'How many WordPress items process on each feed processing step, e.g., 10'|t('migrate-from-wordpress'),
-        id: 'limit',
-        name: 'limit',
-        value: settings.limit,
-        errors: settings.getErrors('limit'),
+        id: 'restItemLimit',
+        name: 'restItemLimit',
+        value: settings.restItemLimit,
+        errors: settings.getErrors('restItemLimit'),
         required: true 
     }) }}
 
-    <hr>
+	<hr>
 
-    {{ forms.textField({
+	{{ forms.textField({
         label: 'Category base'|t('migrate-from-wordpress'),
         id: 'categoryBase',
         name: 'categoryBase',
@@ -74,7 +83,7 @@
         tip: 'Check the optional section of wp-admin/options-permalink.php on WordPress Site for category base. Leave it as default if it is empty'
     }) }}
 
-    {{ forms.textField({
+	{{ forms.textField({
         label: 'Tag base'|t('migrate-from-wordpress'),
         id: 'tagBase',
         name: 'tagBase',
@@ -85,18 +94,18 @@
         tip: 'Check the optional section of wp-admin/options-permalink.php on WordPress Site for category base. Leave it as default if it is empty.'
     }) }}
 
-    <hr>
+	<hr>
 
-    {{ forms.textField({
+	{{ forms.textField({
         label: 'WordPress upload path'|t('migrate-from-wordpress'),
-        id: 'wordpressUpploadPath',
+        id: 'wordpressUploadPath',
         name: 'wordpressUploadPath',
         value: settings.wordpressUploadPath,
         errors: settings.getErrors('wordpressUploadPath'),
         required: true 
     }) }}
 
-    {{ forms.lightSwitchField({
+	{{ forms.lightSwitchField({
         label: 'Ignore wordpress upload path as folder path'|t('migrate-from-wordpress'),
         id: 'ignoreWordPressUploadPath',
         name: 'ignoreWordPressUploadPath',
@@ -107,18 +116,18 @@
         you can enable this option so /wp-content/uploads/ be ignored as folder path.'
     }) }}
 
-    {#
-    {{ forms.lightSwitchField({
-        label: 'Fetch Files by Asset Index'|t('migrate-from-wordpress'),
-        id: 'fetchFilesByAssetIndex',
-        name: 'fetchFilesByAssetIndex',
-        on : settings.fetchFilesByAssetIndex ?? '0',
-        value: '1',
-        errors: settings.getErrors('fetchFilesByAssetIndex'),
-        tip: 'If you are going to migrate WordPress files by uploading them to server and using asset index utility, select this option
-        so this plugin apply needed settings later'
-    }) }}
-    #}
-    
-    {% endnamespace %}
+	{#
+	    {{ forms.lightSwitchField({
+	        label: 'Fetch Files by Asset Index'|t('migrate-from-wordpress'),
+	        id: 'fetchFilesByAssetIndex',
+	        name: 'fetchFilesByAssetIndex',
+	        on : settings.fetchFilesByAssetIndex ?? '0',
+	        value: '1',
+	        errors: settings.getErrors('fetchFilesByAssetIndex'),
+	        tip: 'If you are going to migrate WordPress files by uploading them to server and using asset index utility, select this option
+	        so this plugin apply needed settings later'
+	    }) }}
+	    #}
+
+	{% endnamespace %}
 </div>
