@@ -117,7 +117,7 @@ class FileItem
      */
     private function _attributes(object $fileItem, array &$content = null, int $gettingFields)
     {
-        if (isset($fileItem->id) && isset($fileItem->guid->rendered)) {
+        if (isset($fileItem->id) && isset($fileItem->guid->rendered) && isset($fileItem->source_url)) {
             $content['fields']['wordpressUUID']['value'] = $fileItem->guid->rendered;
             $content['fields']['wordpressUUID']['config']['type'] = 'text';
             $content['fields']['wordpressUUID']['config']['label'] = 'uuid';
@@ -194,7 +194,7 @@ class FileItem
             $fileIds[$url] = $fileItem->id;
             Craft::$app->cache->set('migrate-from-wordpress-files-id-and-url', json_encode($fileIds), 0, new TagDependency(['tags' => ['migrate-from-wordpress']]));
         } else {
-            throw new ServerErrorHttpException('file item without id or guid property was founded');
+            throw new ServerErrorHttpException('file item without id, guid or source_url property was founded');
         }
     }
 

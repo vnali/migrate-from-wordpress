@@ -136,7 +136,7 @@ class NavigationsController extends Controller
 
         $variables['navs'][] = ['value' => '', 'label' => Craft::t('migrate-from-wordpress', 'select one')];
         if (Craft::$app->plugins->isPluginEnabled('navigation')) {
-            foreach (NavigationPlugin::getInstance()->navs->getAllNavs() as $nav) {
+            foreach (NavigationPlugin::$plugin->getNavs()->getAllNavs() as $nav) {
                 $navs = [];
                 $navs['value'] = $nav->id;
                 $navs['label'] = $nav->name;
@@ -335,7 +335,7 @@ class NavigationsController extends Controller
                 $tabs[] = $tab;
             }
         } elseif ($navId) {
-            $nav = NavigationPlugin::getInstance()->navs->getNavById($navId);
+            $nav = NavigationPlugin::$plugin->getNavs()->getNavById($navId);
             $fieldLayout = $nav->getFieldLayout();
             $tabs = $fieldLayout->getTabs();
             if (count($tabs) == 0) {
@@ -418,7 +418,7 @@ class NavigationsController extends Controller
             $fieldLayout = Craft::$app->getFields()->createLayout($layoutModel);
             $fieldLayout->type = NodeElement::class;
             $nav->setFieldLayout($fieldLayout);
-            NavigationPlugin::$plugin->navs->saveNav($nav);
+            NavigationPlugin::$plugin->getNavs()->saveNav($nav);
         } else {
             $cache->set('migrate-from-wordpress-navigation-field-layout-' . $navigationId, $fieldItems);
         }

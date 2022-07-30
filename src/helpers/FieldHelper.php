@@ -732,6 +732,7 @@ class FieldHelper
 
                 if ($tableHandle) {
                     if (isset($table) && isset($col)) {
+                        /** @var Table $table */
                         $finalFieldHandle = $table->columns[$col]['handle'];
                     } else {
                         throw new ServerErrorHttpException('table and col var is not defined');
@@ -772,7 +773,7 @@ class FieldHelper
                     $targetBlockTypeId = 'new1';
                 }
                 $blockTypesArray[$targetBlockTypeId] = $targetBlockType;
-
+                /** @var Matrix $matrix */
                 $matrix->setBlockTypes($blockTypesArray);
 
                 if (!Craft::$app->getFields()->saveField($matrix)) {
@@ -817,7 +818,7 @@ class FieldHelper
                 $columnFinded = false;
                 $tableHandle = $container1[0];
                 $table = Craft::$app->fields->getFieldByHandle($tableHandle);
-                /** @var Table $table */
+                /** @var Table|null $table */
                 if ($table) {
                     $tableColumns = $table->columns;
                     $maxCol = 0;
@@ -1245,7 +1246,11 @@ class FieldHelper
                                 $response = Curl::sendToRestAPI($restApiAddress . '/categories/' . $val);
                                 $response = json_decode($response);
                                 if (isset($response->taxonomy) && $response->taxonomy == 'category') {
-                                    $value[] = $response->link;
+                                    if (isset($response->link)) {
+                                        $value[] = $response->link;
+                                    } else {
+                                        craft::dd('response for category '. $val . ' has not link');
+                                    }
                                 } else {
                                     // TODO: show logs to users
                                     craft::dd('rest api does not return category for' . $val);
@@ -1266,7 +1271,11 @@ class FieldHelper
                                 $response = Curl::sendToRestAPI($restApiAddress . '/tags/' . $val);
                                 $response = json_decode($response);
                                 if (isset($response->taxonomy) && $response->taxonomy == 'post_tag') {
-                                    $value[] = $response->link;
+                                    if (isset($response->link)) {
+                                        $value[] = $response->link;
+                                    } else {
+                                        craft::dd('response for tag '. $val . ' has not link');
+                                    }
                                 } else {
                                     // TODO: show logs to users
                                     craft::dd('rest api does not return tag for' . $val);
@@ -1413,7 +1422,7 @@ class FieldHelper
         foreach ($fieldDefinitions as $fieldDefinition) {
             $label = '<font color=green>' . $fieldDefinition['label'] . '</font>';
 
-            Craft::$app->view->hook($fieldDefinition['wordpressHandle'], function() use ($label) {
+            Craft::$app->view->hook($fieldDefinition['wordpressHandle'], function () use ($label) {
                 return $label;
             });
         }
