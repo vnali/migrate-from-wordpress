@@ -238,8 +238,8 @@ class GeneralHelper
             case 'text':
                 $convertTo = [
                     '' => 'select one',
-                    'craft\ckeditor\Field' => 'ckeditor',
                     'craft\fields\PlainText' => 'plain text',
+                    'craft\ckeditor\Field' => 'ckeditor',
                     'craft\redactor\Field' => 'redactor',
                 ];
                 break;
