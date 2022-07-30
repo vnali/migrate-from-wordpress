@@ -118,7 +118,8 @@ class FileItem
     private function _attributes(object $fileItem, array &$content = null, int $gettingFields)
     {
         if (isset($fileItem->id) && isset($fileItem->guid->rendered) && isset($fileItem->source_url)) {
-            $content['fields']['wordpressUUID']['value'] = $fileItem->guid->rendered;
+            $url = $fileItem->guid->rendered;
+            $content['fields']['wordpressUUID']['value'] = $url;
             $content['fields']['wordpressUUID']['config']['type'] = 'text';
             $content['fields']['wordpressUUID']['config']['label'] = 'uuid';
             $content['fields']['wordpressSiteId']['value'] = MigrateFromWordPressPlugin::$plugin->settings->wordpressURL;
@@ -130,7 +131,7 @@ class FileItem
             $content['fields']['lang']['value'] = 'en';
             $content['fields']['lang']['config']['type'] = 'text';
             $content['fields']['lang']['config']['label'] = 'Lang';
-            $content['fields']['wordpressLink']['value'] = $fileItem->guid->rendered;
+            $content['fields']['wordpressLink']['value'] = $url;
             $content['fields']['wordpressLink']['config']['type'] = 'text';
             $content['fields']['wordpressLink']['config']['label'] = 'WordPress link';
 
@@ -164,15 +165,8 @@ class FileItem
                 $content['fields']['uploaderUUID']['value'] = $fileItem->author;
             }
 
-            $url = $fileItem->source_url;
-
-            // For some files like .txt, file attribute is not available in REST Api
-            if (isset($fileItem->media_details->file)) {
-                $uri = $fileItem->media_details->file;
-            } else {
-                $urlParts = explode(MigrateFromWordPressPlugin::$plugin->settings->wordpressUploadPath, $url);
-                $uri = $urlParts[1];
-            }
+            $urlParts = explode(MigrateFromWordPressPlugin::$plugin->settings->wordpressUploadPath, $url);
+            $uri = $urlParts[1];
 
             list($folder, $filename) = GeneralHelper::analyzeWordPressUri($uri);
 
