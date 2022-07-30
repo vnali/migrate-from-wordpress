@@ -1141,7 +1141,7 @@ class FieldHelper
                                         // TODO: show logs to users
                                         craft::dd('rest api does not return media for' . $val);
                                     }
-                                } else {
+                                } elseif ($val) {
                                     // TODO: show logs to users
                                     craft::dd('media id is not integer. probably ' . $fieldname . ' can not be converted to asset field');
                                 }
@@ -1156,7 +1156,7 @@ class FieldHelper
                                     // TODO: show logs to users
                                     craft::dd('rest api does not return media for ' . $fieldItem['value']);
                                 }
-                            } else {
+                            } elseif ($fieldItem['value']) {
                                 // TODO: show logs to users
                                 craft::dd('media id is not integer. probably ' . $fieldname . ' can not be converted to asset field');
                             }

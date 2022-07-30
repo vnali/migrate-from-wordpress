@@ -3,6 +3,11 @@
 ## Unreleased
 ### Added
 - Added support for importing password protected posts and pages
+- Added support for importing sticky, ping, and comment status
+
+### Fixed
+- Fixed a bug related to generating media URL
+- Fixed a bug when importing featured media
 
 ## 0.3.0 - 2022-07-29
 ### Added

@@ -184,6 +184,26 @@ class PostItem
                 $content['fields']['wordpressUUID']['config']['type'] = 'text';
                 $content['fields']['wordpressUUID']['config']['label'] = 'WordPress UUID';
             }
+            // Sticky
+            if (isset($postItem->sticky)) {
+                $content['fields']['sticky']['value'] = $postItem->sticky;
+                $content['fields']['sticky']['config']['type'] = 'boolean';
+                $content['fields']['sticky']['config']['label'] = 'Sticky';
+            }
+            // Comment status
+            if (isset($postItem->comment_status)) {
+                $content['fields']['comment-status']['value'] = $postItem->comment_status;
+                $content['fields']['comment-status']['config']['type'] = 'text';
+                $content['fields']['comment-status']['config']['label'] = 'Comment status';
+                $content['fields']['comment-status']['config']['translatable'] = 'yes';
+            }
+            // Ping status
+            if (isset($postItem->ping_status)) {
+                $content['fields']['ping-status']['value'] = $postItem->ping_status;
+                $content['fields']['ping-status']['config']['type'] = 'text';
+                $content['fields']['ping-status']['config']['label'] = 'Ping status';
+                $content['fields']['ping-status']['config']['translatable'] = 'yes';
+            }
             $content['fields']['lang']['value'] = 'en';
 
             if ($gettingFields == 0) {
@@ -286,12 +306,15 @@ class PostItem
             $content['fields']['categories']['config']['label'] = 'categories';
         }
 
-        if (isset($postItem->featured_media) && $postItem->featured_media) {
-            $response = Curl::sendToRestAPI($this->_restApiAddress . '/media/' . $postItem->featured_media);
-            $response = json_decode($response);
-            $content['fields']['featuredMedia']['value'] = $response->guid->rendered;
+        if (isset($postItem->featured_media)) {
             $content['fields']['featuredMedia']['config']['type'] = 'file';
-            $content['fields']['featuredMedia']['config']['label'] = 'file';
+            $content['fields']['featuredMedia']['config']['label'] = 'Featured Media';
+        }
+
+        if (isset($postItem->featured_media) && $postItem->featured_media) {
+            $content['fields']['featuredMedia']['value'] = $postItem->featured_media;
+        } else {
+            $content['fields']['featuredMedia']['value'] = null; 
         }
 
         if (isset($postItem->acf) && $postItem->acf) {
