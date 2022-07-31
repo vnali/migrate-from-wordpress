@@ -15,7 +15,7 @@ class Curl
     public static function sendToRestAPI(string $address): string
     {
         $user = MigrateFromWordPressPlugin::$plugin->settings->wordpressAccountUsername;
-        $password = MigrateFromWordPressPlugin::$plugin->settings->wordpressAccountPassword;
+        $password = MigrateFromWordPressPlugin::$plugin->settings->wordpressPassword;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_POST, 0);
         curl_setopt($ch, CURLOPT_URL, $address);

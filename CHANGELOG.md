@@ -5,6 +5,9 @@
 ### Added
 - Added support for importing user's email
 
+### Fixed
+- Fixed application password validation
+
 ## 0.4.0 - 2022-07-31
 
 ### Added

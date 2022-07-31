@@ -61,13 +61,14 @@
         }) }}
 
         {{ forms.passwordField({
-            label: 'WordPress account password'|t('migrate-from-wordpress'),
+            label: 'WordPress password'|t('migrate-from-wordpress'),
             instructions: 'e.g. password'|t('migrate-from-wordpress'),
-            id: 'wordpressAccountPassword',
-            name: 'wordpressAccountPassword',
-            value: settings.wordpressAccountPassword,
-            errors: settings.getErrors('wordpressAccountPassword'),
-            required: true          
+            id: 'wordpressPassword',
+            name: 'wordpressPassword',
+            value: settings.wordpressPassword,
+            errors: settings.getErrors('wordpressPassword'),
+            required: true,
+            tip: 'It can be the user\'s password or application password.'       
         }) }}
 
         <hr>

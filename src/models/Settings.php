@@ -5,6 +5,7 @@ namespace vnali\migratefromwordpress\models;
 use Craft;
 use craft\base\Model;
 
+use vnali\migratefromwordpress\helpers\Curl;
 use vnali\migratefromwordpress\MigrateFromWordPress as MigrateFromWordPressPlugin;
 
 class Settings extends Model
@@ -142,7 +143,7 @@ class Settings extends Model
     /**
      * @var string
      */
-    public $wordpressAccountPassword;
+    public $wordpressPassword;
 
     /**
      * @var string
@@ -153,7 +154,7 @@ class Settings extends Model
      * @var array|string
      */
     public $wordpressLanguageSettings;
-    
+
     /**
      * @var string
      */
@@ -217,27 +218,19 @@ class Settings extends Model
                 }
             }, 'skipOnEmpty' => false],
             */
-            [['wordpressAccountPassword'], function ($attribute, $params, $validator) {
-                $user = $this->wordpressAccountUsername;
-                $password = $this->wordpressAccountPassword;
+            [['wordpressPassword'], function ($attribute, $params, $validator) {
                 $address = $this->wordpressURL . '/' . $this->wordpressRestApiEndpoint . '/settings';
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_POST, 0);
-                curl_setopt($ch, CURLOPT_URL, $address);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
-                curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-                curl_setopt($ch, CURLOPT_HTTPGET, 1);
-                curl_setopt($ch, CURLOPT_USERPWD, $user . ':' . $password);
-                curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-                $response = trim(curl_exec($ch));
+                $response = Curl::sendToRestAPI($address);
                 $response = json_decode($response);
                 if (isset($response->code) && $response->code == 'rest_forbidden') {
                     $this->addError($attribute, 'rest request is forbidden. make sure basic auth is enabled');
                 } elseif (isset($response->error)) {
+                    // Error for basic auth
                     $this->addError($attribute, $response->error_description ?? $response->error);
+                    // Error for application password
+                } elseif (isset($response->data->status) && $response->data->status == 401) {
+                    $this->addError($attribute, $response->message ?? '401');
                 }
-                curl_close($ch);
             }, 'skipOnEmpty' => false],
             [['wordpressLanguageSettings'], function ($attribute, $params, $validator) {
                 $wordpressLanguageSettings = $this->wordpressLanguageSettings;
@@ -270,7 +263,7 @@ class Settings extends Model
                                 $this->addError($attribute, 'WordPress URL can not be HTTP. We pass the admin\'s password to the WordPress site. If your WordPress site is on local, override allowHttpWordPressSite to true.');
                             }
                             $user = $this->wordpressAccountUsername;
-                            $password = $this->wordpressAccountPassword;
+                            $password = $this->wordpressPassword;
                             $address = $wordpressLanguageURL . '/' . $this->wordpressRestApiEndpoint . '/settings';
                             $ch = curl_init();
                             curl_setopt($ch, CURLOPT_POST, 0);
@@ -291,6 +284,8 @@ class Settings extends Model
                                 $this->addError($attribute, 'rest request is forbidden. make sure basic auth is enabled');
                             } elseif (isset($response->error)) {
                                 $this->addError($attribute, $response->error_description ?? $response->error);
+                            } elseif (isset($response->data->status) && $response->data->status == 401) {
+                                $this->addError($attribute, $response->message ?? '401');
                             }
                             curl_close($ch);
                         }
