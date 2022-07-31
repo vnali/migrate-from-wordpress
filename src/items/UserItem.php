@@ -152,9 +152,15 @@ class UserItem
         // TODO: also migrate user's name to a text field
         $content['fields']['name']['value'] = $userItem->name;
         $content['fields']['name']['config']['isAttribute'] = true;
+        
+        $emailAttribute = MigrateFromWordPressPlugin::$plugin->settings->emailAttribute;
 
-        // TODO: get email from WordPress.
-        $content['fields']['email']['value'] = $username . '@craftcms.test';
+        if (isset($userItem->{$emailAttribute})) {
+            $email = $userItem->{$emailAttribute};
+        } else {
+            $email = $username . '@craftcms.test';
+        }
+        $content['fields']['email']['value'] = $email;
         $content['fields']['email']['config']['isAttribute'] = true;
 
         $content['fields']['wordpressLink']['value'] = $userItem->link;

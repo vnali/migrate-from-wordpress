@@ -25,6 +25,11 @@ class Settings extends Model
     public $allowReusingToken = false;
 
     /**
+     * @var int
+     */
+    public $cacheFeedValuesSeconds = 0;
+
+    /**
      * @var string
      */
     public $categoryBase = 'category';
@@ -75,14 +80,9 @@ class Settings extends Model
     public $deleteAllVolumes;
 
     /**
-     * @var int
-     */
-    public $cacheFeedValuesSeconds = 0;
-
-    /**
      * @var string
      */
-    public $wordpressUploadPath = '/wp-content/uploads/';
+    public $emailAttribute = 'email';
 
     /**
      * @var bool
@@ -130,6 +130,11 @@ class Settings extends Model
     public $restItemLimit = 10;
 
     /**
+     * @var int
+     */
+    public $step = 1;
+
+    /**
      * @var string
      */
     public $tagBase = 'tag';
@@ -148,6 +153,11 @@ class Settings extends Model
      * @var array|string
      */
     public $wordpressLanguageSettings;
+    
+    /**
+     * @var string
+     */
+    public $wordpressRestApiEndpoint = 'wp-json/wp/v2';
 
     /**
      * @var string
@@ -157,17 +167,12 @@ class Settings extends Model
     /**
      * @var string
      */
-    public $wordpressURL;
+    public $wordpressUploadPath = '/wp-content/uploads/';
 
     /**
      * @var string
      */
-    public $wordpressRestApiEndpoint = 'wp-json/wp/v2';
-
-    /**
-     * @var int
-     */
-    public $step = 1;
+    public $wordpressURL;
 
     public function rules(): array
     {
@@ -175,7 +180,7 @@ class Settings extends Model
             [['addExcerptToBody', 'ignoreWordPressUploadPath', 'migrateNotPublicStatus', 'migrateTrashStatus'], 'in', 'range' => ['0', '1']],
             [['categoryBase', 'protectedItemsPasswords', 'tagBase', 'wordpressUploadPath'], 'string', 'max' => 255],
             [['restItemLimit'], 'integer', 'min' => 1, 'max' => 50],
-            [['wordpressURL'], function($attribute, $params, $validator) {
+            [['wordpressURL'], function ($attribute, $params, $validator) {
                 if ((!Craft::$app->plugins->isPluginInstalled('feed-me') || !Craft::$app->plugins->isPluginEnabled('feed-me'))) {
                     $this->addError($attribute, 'Make sure the Feedme plugin is installed and enabled.');
                 } elseif (parse_url($this->wordpressURL, PHP_URL_SCHEME) == 'http' && !MigrateFromWordPressPlugin::$plugin->getSettings()->allowHttpWordPressSite) {
@@ -191,7 +196,7 @@ class Settings extends Model
                     curl_close($handle);
                 }
             }, 'skipOnEmpty' => false],
-            [['wordpressRestApiEndpoint'], function($attribute, $params, $validator) {
+            [['wordpressRestApiEndpoint'], function ($attribute, $params, $validator) {
                 // Check for rest api endpoint only if WordPress url is specified
                 if ($this->wordpressURL) {
                     $handle = curl_init($this->wordpressURL . '/' . $this->wordpressRestApiEndpoint);
@@ -212,7 +217,7 @@ class Settings extends Model
                 }
             }, 'skipOnEmpty' => false],
             */
-            [['wordpressAccountPassword'], function($attribute, $params, $validator) {
+            [['wordpressAccountPassword'], function ($attribute, $params, $validator) {
                 $user = $this->wordpressAccountUsername;
                 $password = $this->wordpressAccountPassword;
                 $address = $this->wordpressURL . '/' . $this->wordpressRestApiEndpoint . '/settings';
@@ -234,7 +239,7 @@ class Settings extends Model
                 }
                 curl_close($ch);
             }, 'skipOnEmpty' => false],
-            [['wordpressLanguageSettings'], function($attribute, $params, $validator) {
+            [['wordpressLanguageSettings'], function ($attribute, $params, $validator) {
                 $wordpressLanguageSettings = $this->wordpressLanguageSettings;
                 if (is_array($wordpressLanguageSettings)) {
                     $enableForMigration = false;
