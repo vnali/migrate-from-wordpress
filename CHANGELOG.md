@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0 - 2022-07-31
 ### Added
 - Added support for importing password protected posts and pages
 - Added support for importing sticky, ping, and comment status
