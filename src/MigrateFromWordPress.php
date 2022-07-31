@@ -383,6 +383,7 @@ class MigrateFromWordPress extends Plugin
                                 break;
                             case 'media-title':
                                 if ($event->feedData['mediaTitle/value']) {
+                                    // TODO: rest return &#8211 for -
                                     $event->element['title'] = $event->feedData['mediaTitle/value'];
                                 }
                                 break;
