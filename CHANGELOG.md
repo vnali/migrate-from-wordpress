@@ -8,6 +8,7 @@
 ### Fixed
 - Fixed application password validation
 - Fixed route to REST API for WordPress site with plain URL format
+- Fixed a bug where all feeds were deleted when "Clear feeds created by this plugin" was selected
 
 ## 0.4.0 - 2022-07-31
 
@@ -17,7 +18,7 @@
 
 ### Fixed
 - Fixed a bug related to generating media URL
-- Fixed a bug when importing featured media
+- Fixed a bug where importing featured media
 
 ## 0.3.0 - 2022-07-29
 
@@ -25,7 +26,7 @@
 - Added support for migrating navigation
 
 ### Fixed
-- Fixed a bug when elements were found by WordPress Id
+- Fixed a bug where elements were found by WordPress Id
 
 ## 0.2.0 - 2022-07-29
 

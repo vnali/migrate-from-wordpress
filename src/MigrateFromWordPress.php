@@ -449,7 +449,7 @@ class MigrateFromWordPress extends Plugin
                     $feedRecords = FeedRecord::find()->all();
                     foreach ($feedRecords as $feedRecord) {
                         /** @var FeedRecord $feedRecord */
-                        if (strpos('Migrate from Wordpress - ', $feedRecord->name) == 0) {
+                        if (strpos($feedRecord->name, 'Migrate from WordPress - ') === 0) {
                             $feedRecord->delete();
                         }
                     }
