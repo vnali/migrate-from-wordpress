@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.0 - 2022-08-01
 
 ### Added
 - Added support for importing user's email
