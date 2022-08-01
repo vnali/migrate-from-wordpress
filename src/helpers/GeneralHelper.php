@@ -554,7 +554,7 @@ class GeneralHelper
         $address = $wordpressRestApiURL;
         $response = Curl::sendToRestAPI($address . '/settings');
         $response = json_decode($response);
-        if (!$response || isset($response->error) ||(isset($response->data->status) && $response->data->status == 401) || (isset($response->code) && $response->code == 'rest_forbidden')) {
+        if (!$response || isset($response->error) || (isset($response->data->status) && $response->data->status == 401) || (isset($response->code) && $response->code == 'rest_forbidden')) {
             return false;
         }
         return true;
