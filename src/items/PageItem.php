@@ -63,6 +63,10 @@ class PageItem
             $wordpressURL = MigrateFromWordPressPlugin::$plugin->settings->wordpressLanguageSettings[$contentLanguage]['wordpressURL'];
         }
         $wordpressRestApiEndpoint = MigrateFromWordPressPlugin::$plugin->settings->wordpressRestApiEndpoint;
+        $separator = '?';
+        if (strpos($wordpressRestApiEndpoint, '?rest_route=') === 0) {
+            $separator = '&';
+        }
         $this->_restApiAddress = $wordpressURL . '/' . $wordpressRestApiEndpoint;
         // Create status query string
         $status = '';
@@ -86,14 +90,14 @@ class PageItem
             $protectedItemsPasswords = '&password=' . $protectedItemsPasswords;
         }
         //
-        $address = $this->_restApiAddress . '/pages?per_page=' . $limit . '&page=' . $page . $status . $protectedItemsPasswords;
+        $address = $this->_restApiAddress . '/pages' . $separator . 'per_page=' . $limit . '&page=' . $page . $status . $protectedItemsPasswords;
         $response = Curl::sendToRestAPI($address);
         $response = json_decode($response);
         $this->_pageItems = $response;
 
         // Check if there is next item
         $page = $page + 1;
-        $address = $this->_restApiAddress . '/pages?per_page=' . $limit . '&page=' . $page . $status . $protectedItemsPasswords;
+        $address = $this->_restApiAddress . '/pages' . $separator . 'per_page=' . $limit . '&page=' . $page . $status . $protectedItemsPasswords;
         $response = Curl::sendToRestAPI($address);
         $response = json_decode($response);
         if (is_array($response) && isset($response[0]->id)) {

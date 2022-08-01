@@ -191,7 +191,7 @@ class Settings extends Model
                     curl_setopt($handle,  CURLOPT_RETURNTRANSFER, true);
                     $response = curl_exec($handle);
                     $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-                    if (!$httpCode || $httpCode == 404) {
+                    if (!$httpCode || $httpCode != 200) {
                         $this->addError($attribute, 'URL is not accessible');
                     }
                     curl_close($handle);
@@ -205,7 +205,7 @@ class Settings extends Model
                     curl_setopt($handle,  CURLOPT_RETURNTRANSFER, true);
                     $response = curl_exec($handle);
                     $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-                    if (!$httpCode || $httpCode == 404) {
+                    if (!$httpCode || $httpCode != 200) {
                         $this->addError($attribute, 'REST API URL is not accessible.');
                     }
                     curl_close($handle);
@@ -277,7 +277,7 @@ class Settings extends Model
                             $response = trim(curl_exec($ch));
                             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                             $response = json_decode($response);
-                            if (!$httpCode || $httpCode == 404) {
+                            if (!$httpCode || $httpCode != 200) {
                                 $this->addError($attribute, $wordpressLanguageSetting['wordpressURL'] . ' REST API is not accessible');
                                 $this->wordpressLanguageSettings[$key]['error']['wordpressURL'] = 1;
                             } elseif (isset($response->code) && $response->code == 'rest_forbidden') {

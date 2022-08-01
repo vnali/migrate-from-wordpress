@@ -44,13 +44,17 @@ class FileItem
     {
         $wordpressURL = MigrateFromWordPressPlugin::$plugin->settings->wordpressURL;
         $wordpressRestApiEndpoint = MigrateFromWordPressPlugin::$plugin->settings->wordpressRestApiEndpoint;
-        $address = $wordpressURL . '/' . $wordpressRestApiEndpoint . '/media?per_page=' . $limit . '&page=' . $page;
+        $separator = '?';
+        if (strpos($wordpressRestApiEndpoint, '?rest_route=') === 0) {
+            $separator = '&';
+        }
+        $address = $wordpressURL . '/' . $wordpressRestApiEndpoint . '/media' . $separator . 'per_page=' . $limit . '&page=' . $page;
         $response = Curl::sendToRestAPI($address);
         $response = json_decode($response);
         $this->_fileItems = $response;
         // Check if there is next item
         $page = $page + 1;
-        $address = $wordpressURL . '/' . $wordpressRestApiEndpoint . '/media?per_page=' . $limit . '&page=' . $page;
+        $address = $wordpressURL . '/' . $wordpressRestApiEndpoint . '/media' . $separator . 'per_page=' . $limit . '&page=' . $page;
         $response = Curl::sendToRestAPI($address);
         $response = json_decode($response);
         if (is_array($response) && isset($response[0]->id)) {

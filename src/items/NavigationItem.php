@@ -53,7 +53,11 @@ class NavigationItem
         $this->_contentLanguage = $contentLanguage;
         $wordpressURL = MigrateFromWordPressPlugin::$plugin->settings->wordpressURL;
         $wordpressRestApiEndpoint = MigrateFromWordPressPlugin::$plugin->settings->wordpressRestApiEndpoint;
-        $address = $wordpressURL . '/' . $wordpressRestApiEndpoint . '/navigation/' . $navigationId . "?per_page=" . $limit . "&page=" . $page;
+        $separator = '?';
+        if (strpos($wordpressRestApiEndpoint, '?rest_route=') === 0) {
+            $separator = '&';
+        }
+        $address = $wordpressURL . '/' . $wordpressRestApiEndpoint . '/navigation/' . $navigationId . $separator . 'per_page=' . $limit . '&page=' . $page;
         $response = Curl::sendToRestAPI($address);
         $response = json_decode($response);
         //

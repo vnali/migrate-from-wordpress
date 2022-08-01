@@ -7,6 +7,7 @@
 
 ### Fixed
 - Fixed application password validation
+- Fixed route to REST API for WordPress site with plain URL format
 
 ## 0.4.0 - 2022-07-31
 

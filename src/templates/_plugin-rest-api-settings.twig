@@ -30,7 +30,7 @@
 
         {{ forms.textField({
             label: 'WordPress REST API Endpoint'|t('migrate-from-wordpress'),
-            instructions: 'Default is wp-json/wp/v2'|t('migrate-from-wordpress'),
+            instructions: 'Default is wp-json/wp/v2 or use ?rest_route=/wp/v2 when url format at permalink setting is Plain'|t('migrate-from-wordpress'),
             id: 'wordpressRestApiEndpoint',
             name: 'wordpressRestApiEndpoint',
             value: settings.wordpressRestApiEndpoint,
