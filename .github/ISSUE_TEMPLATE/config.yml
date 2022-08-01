@@ -6,9 +6,9 @@ contact_links:
   - name: Documentation
     url: https://github.com/vnali/migrate-from-wordpress-plugin-docs
     about: Read the documentation
-  - name: send an email
-    url: #
-    about: send an email to vnali.dev@gmail.com
+  - name: Send an email
+    url: https://github.com/vnali/migrate-from-wordpress-plugin-docs
+    about: Send an email to vnali.dev@gmail.com
   - name: Craft Discord
     url: https://craftcms.com/discord
     about: Contact me on the Discord vnali -vnali#8759-
