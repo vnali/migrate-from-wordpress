@@ -62,21 +62,23 @@ class NavigationItem
         $response = json_decode($response);
         //
         $blocks = [];
-        $crawler = new Crawler($response->content->rendered);
-        foreach ($crawler->filter('html body')->children() as $domElement) {
-            $html = $domElement->ownerDocument->saveHTML($domElement);
-            $blocks[] = $html;
-        }
-        foreach ($blocks as $block) {
-            $crawler = new Crawler($block);
-            $c = $crawler->filter('html body a');
-            $href = $c->attr('href');
-            $c = $crawler->filter('html body span');
-            $text = $c->text();
-            $navigationItem = new stdClass();
-            $navigationItem->url = $href;
-            $navigationItem->title = $text;
-            $this->_navigationItems[] = $navigationItem;
+        if ($response->content->rendered) {
+            $crawler = new Crawler($response->content->rendered);
+            foreach ($crawler->filter('html body')->children() as $domElement) {
+                $html = $domElement->ownerDocument->saveHTML($domElement);
+                $blocks[] = $html;
+            }
+            foreach ($blocks as $block) {
+                $crawler = new Crawler($block);
+                $c = $crawler->filter('html body a');
+                $href = $c->attr('href');
+                $c = $crawler->filter('html body span');
+                $text = $c->text();
+                $navigationItem = new stdClass();
+                $navigationItem->url = $href;
+                $navigationItem->title = $text;
+                $this->_navigationItems[] = $navigationItem;
+            }
         }
         //
         $this->_hasNext = false;
