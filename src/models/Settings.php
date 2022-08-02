@@ -198,6 +198,8 @@ class Settings extends Model
                 }
             }, 'skipOnEmpty' => false],
             [['wordpressRestApiEndpoint'], function($attribute, $params, $validator) {
+                // it seems on some environment we get errors when checking rest api is called without username and password
+                /*
                 // Check for rest api endpoint only if WordPress url is specified
                 if ($this->wordpressURL) {
                     $handle = curl_init($this->wordpressURL . '/' . $this->wordpressRestApiEndpoint);
@@ -205,31 +207,33 @@ class Settings extends Model
                     curl_setopt($handle,  CURLOPT_RETURNTRANSFER, true);
                     $response = curl_exec($handle);
                     $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-                    if (!$httpCode || $httpCode != 200) {
+                    $response = json_decode($response);
+                    if (isset($response->error)) {
+                        $error = $response->description ?? $response->error_description;
+                        $this->addError($attribute, $error);
+                    } elseif (!$httpCode || $httpCode != 200) {
                         $this->addError($attribute, 'REST API URL is not accessible.');
                     }
                     curl_close($handle);
                 }
+                */
             }, 'skipOnEmpty' => false],
-            /*
-            [['wordpressSystemPath'], function ($attribute, $params, $validator) {
-                if (!is_dir($this->wordpressSystemPath)) {
-                    $this->addError($attribute, 'System path don\'t exists.');
-                }
-            }, 'skipOnEmpty' => false],
-            */
             [['wordpressPassword'], function($attribute, $params, $validator) {
                 $address = $this->wordpressURL . '/' . $this->wordpressRestApiEndpoint . '/settings';
                 $response = Curl::sendToRestAPI($address);
                 $response = json_decode($response);
-                if (isset($response->code) && $response->code == 'rest_forbidden') {
+                if (isset($response->code) && $response->code == 'rest_no_route') {
+                    $this->addError('wordpressRestApiEndpoint', 'No route was found matching the URL and request method');
+                } elseif (isset($response->code) && $response->code == 'rest_forbidden') {
                     $this->addError($attribute, 'rest request is forbidden. make sure basic auth is enabled');
                 } elseif (isset($response->error)) {
                     // Error for basic auth
                     $this->addError($attribute, $response->error_description ?? $response->error);
-                // Error for application password
                 } elseif (isset($response->data->status) && $response->data->status == 401) {
+                    // Error for application password
                     $this->addError($attribute, $response->message ?? '401');
+                } elseif (!isset($response->title)) {
+                    $this->addError($attribute, 'Data from specified Rest API is not valid');
                 }
             }, 'skipOnEmpty' => false],
             [['wordpressLanguageSettings'], function($attribute, $params, $validator) {
