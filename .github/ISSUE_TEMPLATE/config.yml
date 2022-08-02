@@ -6,6 +6,9 @@ contact_links:
   - name: Documentation
     url: https://github.com/vnali/migrate-from-wordpress-plugin-docs
     about: Read the documentation
+  - name: Q&A
+    url: https://github.com/vnali/migrate-from-wordpress/discussions/new?category=q-a
+    about: Ask a question
   - name: Send an email
     url: https://github.com/vnali/migrate-from-wordpress-plugin-docs
     about: Send an email to vnali.dev@gmail.com
