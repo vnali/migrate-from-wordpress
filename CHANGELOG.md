@@ -4,6 +4,7 @@
 
 ### Fixed
 - Fixed a bug when processing empty navigation
+- Fixed an error that could occur when menu and navigation were not available for older WordPress versions 
 
 ## 0.5.0 - 2022-08-01
 

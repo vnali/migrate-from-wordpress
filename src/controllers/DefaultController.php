@@ -59,10 +59,12 @@ class DefaultController extends Controller
                 $response = json_decode($response);
                 $variables['navigations'] = [];
                 foreach ($response as $navigation) {
-                    $item = [];
-                    $item['value'] = $navigation->id;
-                    $item['label'] = $navigation->title->rendered;
-                    $variables['navigations'][$navigation->id] = $item;
+                    if (isset($navigation->id) && isset($navigation->title->rendered)) {
+                        $item = [];
+                        $item['value'] = $navigation->id;
+                        $item['label'] = $navigation->title->rendered;
+                        $variables['navigations'][$navigation->id] = $item;
+                    }
                 }
                 $cache->set(
                     'migrate-from-wordpress-available-navigation-types',
@@ -76,10 +78,12 @@ class DefaultController extends Controller
                 $response = json_decode($response);
                 $variables['menus'] = [];
                 foreach ($response as $menu) {
-                    $item = [];
-                    $item['value'] = $menu->id;
-                    $item['label'] = $menu->name;
-                    $variables['menus'][$menu->id] = $item;
+                    if (isset($menu->id) && isset($menu->name)) {
+                        $item = [];
+                        $item['value'] = $menu->id;
+                        $item['label'] = $menu->name;
+                        $variables['menus'][$menu->id] = $item;
+                    }
                 }
                 $cache->set(
                     'migrate-from-wordpress-available-menu-types',
