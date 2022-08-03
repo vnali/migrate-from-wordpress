@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Feature Request
+    url: https://github.com/vnali/migrate-from-wordpress/discussions/new?category=ideas
+    about: Start a new discussion about your idea
+  - name: Documentation
+    url: https://github.com/vnali/migrate-from-wordpress-plugin-docs
+    about: Read the documentation
+  - name: Q&A
+    url: https://github.com/vnali/migrate-from-wordpress/discussions/new?category=q-a
+    about: Ask a question
+  - name: Send an email
+    url: https://github.com/vnali/migrate-from-wordpress-plugin-docs
+    about: Send an email to vnali.dev@gmail.com
+  - name: Craft Discord
+    url: https://craftcms.com/discord
+    about: Contact me on the Discord vnali -vnali#8759-
