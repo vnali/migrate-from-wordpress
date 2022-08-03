@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.1 - 2022-08-03
 
 ### Fixed
 - Fixed a bug when processing empty navigation
