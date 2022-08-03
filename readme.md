@@ -13,7 +13,9 @@ This is a free plugin under the MIT License.
 If this plugin was useful to you, saved your time, and made the migration process easier for you, you can donate via [this link](https://github.com/vnali/migrate-from-wordpress-plugin-docs/blob/main/donate.md) soon.
 
 ## Installation
-You can install the latest pre-release version of this plugin manually using composer. The plugin will be submitted to the Craft CMS plugin store soon.
+The plugin is available on [Craft CMS plugin store](https://plugins.craftcms.com/migrate-from-wordpress?craft4).
+
+Also, you can manually install the latest pre-release version of this plugin using composer. 
 
 ```shell
 composer require vnali/migrate-from-wordpress:v0.x-dev
