@@ -197,7 +197,7 @@ class FieldHelper
             } elseif (isset($container0Type) && $container0Type == 'SuperTable') {
                 $superTableField = Craft::$app->fields->getFieldByHandle($container0Handle);
                 if ($superTableField) {
-                    $blocks = SuperTable::$plugin->service->getBlockTypesByFieldId($superTableField->id);
+                    $blocks = SuperTable::$plugin->getService()->getBlockTypesByFieldId($superTableField->id);
                     if (isset($blocks[0])) {
                         $fieldLayout = $blocks[0]->getFieldLayout();
                         $superTableFields = $fieldLayout->getCustomFields();
@@ -922,7 +922,7 @@ class FieldHelper
                         throw new ServerErrorHttpException('super table couldn\'t save.' . '-' . json_encode($superTable->getErrors()));
                     }
                 } else {
-                    $blocks = SuperTable::$plugin->service->getBlockTypesByFieldId($superTable->id);
+                    $blocks = SuperTable::$plugin->getService()->getBlockTypesByFieldId($superTable->id);
                     if (isset($blocks[0])) {
                         $superModel = $blocks[0];
                         $superTableFields = $superModel->getCustomFields();
@@ -1043,10 +1043,6 @@ class FieldHelper
                             $config['typesettings'] = $superTableField->getSettings();
                             unset($config['settings']);
                             $targetBlockType['fields'][$superTableField->id] = $config;
-                        }
-                        
-                        if (!isset($field)) {
-                            throw new ServerErrorHttpException('field is not defined');
                         }
 
                         // Create field config

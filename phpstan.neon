@@ -23,4 +23,7 @@ parameters:
     -   '#Access to property \$handle on an unknown class verbb\\supertable\\fields\\SuperTableField#'
     -   '#Access to property \$id on an unknown class verbb\\supertable\\fields\\SuperTableField.#'
     -   '#Access to property \$name on an unknown class verbb\\supertable\\fields\\SuperTableField.#'
+    -   '#Call to static method find\(\) on an unknown class verbb\\navigation\\elements\\Node.#'
+    -   '#Access to static property \$plugin on an unknown class verbb\\navigation\\Navigation.#'
+    -   '#Class verbb\\navigation\\elements\\Node not found.#'
     reportUnmatchedIgnoredErrors: false

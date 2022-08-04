@@ -133,7 +133,7 @@ class GeneralHelper
             }
         }
         elseif (get_class($field) == 'verbb\supertable\fields\SuperTableField') {
-            $blockTypes = SuperTable::$plugin->service->getBlockTypesByFieldId($field->id);
+            $blockTypes = SuperTable::$plugin->getService()->getBlockTypesByFieldId($field->id);
             foreach ($blockTypes as $key => $blockType) {
                 $blockTypeFields = $blockType->getCustomFields();
                 $containers[] = ['value' => $field->handle . '-SuperTable|', 'label' => $field->name . '(ST)'];

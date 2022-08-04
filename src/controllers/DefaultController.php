@@ -293,7 +293,7 @@ class DefaultController extends Controller
         $field = Craft::$app->fields->getFieldByHandle($fieldHandle);
         if ($field) {
             if (Craft::$app->plugins->isPluginInstalled('supertable') && Craft::$app->plugins->isPluginEnabled('supertable')) {
-                $blocks = SuperTable::$plugin->service->getBlockTypesByFieldId($field->id);
+                $blocks = SuperTable::$plugin->getService()->getBlockTypesByFieldId($field->id);
                 if (isset($blocks[0])) {
                     $fieldLayout = $blocks[0]->getFieldLayout();
                     foreach ($fieldLayout->fields as $field) {
