@@ -198,8 +198,7 @@ class Settings extends Model
                 }
             }, 'skipOnEmpty' => false],
             [['wordpressRestApiEndpoint'], function($attribute, $params, $validator) {
-                // it seems on some environment we get errors when checking rest api is called without username and password
-                /*
+                // It seems on some environment we get errors when checking rest api is called without username and password
                 // Check for rest api endpoint only if WordPress url is specified
                 if ($this->wordpressURL) {
                     $handle = curl_init($this->wordpressURL . '/' . $this->wordpressRestApiEndpoint);
@@ -208,15 +207,12 @@ class Settings extends Model
                     $response = curl_exec($handle);
                     $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
                     $response = json_decode($response);
-                    if (isset($response->error)) {
-                        $error = $response->description ?? $response->error_description;
-                        $this->addError($attribute, $error);
-                    } elseif (!$httpCode || $httpCode != 200) {
+                    // Check only if URL is founded
+                    if (!$httpCode || $httpCode == 404) {
                         $this->addError($attribute, 'REST API URL is not accessible.');
                     }
                     curl_close($handle);
                 }
-                */
             }, 'skipOnEmpty' => false],
             [['wordpressPassword'], function($attribute, $params, $validator) {
                 $address = $this->wordpressURL . '/' . $this->wordpressRestApiEndpoint . '/settings';
