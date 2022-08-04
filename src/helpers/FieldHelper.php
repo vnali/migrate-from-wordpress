@@ -6,7 +6,6 @@ use Craft;
 
 use craft\base\FieldInterface;
 use craft\elements\User;
-use craft\fieldlayoutelements\CustomField;
 use craft\fields\Matrix;
 use craft\fields\Table;
 use craft\helpers\ArrayHelper;
@@ -15,7 +14,6 @@ use craft\models\FieldLayoutTab;
 use craft\models\MatrixBlockType;
 
 use verbb\supertable\fields\SuperTableField;
-use verbb\supertable\models\SuperTableBlockTypeModel;
 use verbb\supertable\SuperTable;
 use vnali\migratefromwordpress\MigrateFromWordPress as MigrateFromWordPressPlugin;
 use yii\caching\TagDependency;
@@ -902,7 +900,7 @@ class FieldHelper
                 if (isset($container2[0]) && isset($container2[1]) && $container2[1] == 'Table') {
                     $tableHandle = $container2[0];
                     $tableFinded = false;
-                   // $tableHandle = StringHelper::camelCase($superTableHandle . '_' . $tableHandle);
+                    // $tableHandle = StringHelper::camelCase($superTableHandle . '_' . $tableHandle);
                     $containerStr = $superTableHandle . '-Matrix|' . $tableHandle . '-Table';
                 }
                 $fieldDefinitions[$key]['containerTarget'] = $containerStr;
@@ -1412,7 +1410,7 @@ class FieldHelper
         foreach ($fieldDefinitions as $fieldDefinition) {
             $label = '<font color=green>' . $fieldDefinition['label'] . '</font>';
 
-            Craft::$app->view->hook($fieldDefinition['wordpressHandle'], function () use ($label) {
+            Craft::$app->view->hook($fieldDefinition['wordpressHandle'], function() use ($label) {
                 return $label;
             });
         }

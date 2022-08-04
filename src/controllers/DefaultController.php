@@ -5,13 +5,13 @@ namespace vnali\migratefromwordpress\controllers;
 use Craft;
 use craft\web\Controller;
 
+use verbb\supertable\SuperTable;
 use vnali\migratefromwordpress\helpers\Curl;
 use vnali\migratefromwordpress\helpers\FieldHelper;
 use vnali\migratefromwordpress\helpers\GeneralHelper;
 use vnali\migratefromwordpress\helpers\SiteHelper;
-use vnali\migratefromwordpress\MigrateFromWordPress as MigrateFromWordPressPlugin;
 
-use verbb\supertable\SuperTable;
+use vnali\migratefromwordpress\MigrateFromWordPress as MigrateFromWordPressPlugin;
 
 use Yii;
 use yii\caching\TagDependency;
@@ -281,7 +281,7 @@ class DefaultController extends Controller
         );
     }
 
-        /**
+    /**
      * Get super table's tables
      *
      * @param string $fieldHandle
