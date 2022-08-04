@@ -89,9 +89,6 @@ class GeneralHelper
                 }
             }
 
-            // TODO: add super table support
-            /* @phpstan-ignore-next-line */
-            /*
             if (($containerTypes == 'all' || $containerTypes == 'verbb\\supertable\\fields\\SuperTableField') && get_class($field) == 'verbb\\supertable\\fields\\SuperTableField') {
                 if ($onlyContainer) {
                     $containers[] = ['value' => $field->handle, 'label' => $field->name];
@@ -102,7 +99,6 @@ class GeneralHelper
                     }
                 }
             }
-            */
 
             if (($containerTypes == 'all' || $containerTypes == 'craft\fields\Table') && get_class($field) == 'craft\fields\Table') {
                 if ($onlyContainer) {
@@ -136,7 +132,6 @@ class GeneralHelper
                 }
             }
         }
-        /*
         elseif (get_class($field) == 'verbb\supertable\fields\SuperTableField') {
             $blockTypes = SuperTable::$plugin->service->getBlockTypesByFieldId($field->id);
             foreach ($blockTypes as $key => $blockType) {
@@ -149,7 +144,6 @@ class GeneralHelper
                 }
             }
         }
-        */
         return $containers;
     }
 

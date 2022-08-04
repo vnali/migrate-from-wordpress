@@ -64,13 +64,11 @@ function container(limit) {
                     value: 'new matrix',
                     text: 'New Matrix'
                 });
-                /*
-                // TODO: Create new super table on fly
+                
                 sel.selectize.addOption({
                     value: 'new super table',
                     text: 'New Super Table'
                 });
-                */
                 sel.selectize.addOption({
                     value: 'new table',
                     text: 'New Table'

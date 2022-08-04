@@ -200,7 +200,7 @@ class FieldHelper
                     $blocks = SuperTable::$plugin->service->getBlockTypesByFieldId($superTableField->id);
                     if (isset($blocks[0])) {
                         $fieldLayout = $blocks[0]->getFieldLayout();
-                        $superTableFields = $fieldLayout->fields;
+                        $superTableFields = $fieldLayout->getCustomFields();
                         foreach ($superTableFields as $key => $fieldItem) {
                             if (isset($container1Type) && $container1Type == 'Table') {
                                 if (get_class($fieldItem) == 'craft\fields\Table' && $fieldItem->handle == $container1Handle) {
@@ -626,11 +626,11 @@ class FieldHelper
                 $matrixHandle = StringHelper::camelCase($container1[0]);
                 $blockTypeFields = [];
                 if (!isset($container2[0])) {
-                    throw new ServerErrorHttpException('container index 2 is not sets');
+                    throw new ServerErrorHttpException('Block type is not set');
                 }
                 $blockTypeHandle = StringHelper::camelCase($container2[0]);
                 $containerStr = $matrixHandle . '-' . 'Matrix|' . $blockTypeHandle . '-BlockType';
-                if (isset($container3[0]) && $container3[1] == 'Table') {
+                if (isset($container3[0]) && isset($container3[1]) && $container3[1] == 'Table') {
                     $tableHandle = $container3[0];
                     $tableFinded = false;
                     $tableHandle = StringHelper::camelCase($matrixHandle . '_' . $tableHandle);
@@ -887,22 +887,31 @@ class FieldHelper
                 $fieldMap[$tableHandle]['fields'][$col]['handle'] = $fieldHandle;
                 $fieldMap[$tableHandle]['fields'][$col]['type'] = $tableColumnType;
                 $fieldMap[$tableHandle]['fields'][$col]['node'] = $handle . '/value';
-            }
-            /*
-            elseif ($container1[1] == 'SuperTable') {
+            } elseif ($container1[1] == 'SuperTable') {
                 $superTableHandle = $container1[0];
                 $tableHandle = null;
+                $targetBlockTypeId = null;
+                $superTableFields = [];
 
                 if (isset($container2[0]) && $container2[0] != '') {
                     $tableHandle = $container2[0];
-                    $tableHandle = $superTableHandle . '_' . $tableHandle;
+                    //$tableHandle = $superTableHandle . '_' . $tableHandle;
                 }
+
+                $containerStr = $superTableHandle . '-Matrix';
+                if (isset($container2[0]) && isset($container2[1]) && $container2[1] == 'Table') {
+                    $tableHandle = $container2[0];
+                    $tableFinded = false;
+                   // $tableHandle = StringHelper::camelCase($superTableHandle . '_' . $tableHandle);
+                    $containerStr = $superTableHandle . '-Matrix|' . $tableHandle . '-Table';
+                }
+                $fieldDefinitions[$key]['containerTarget'] = $containerStr;
 
                 $superTable = Craft::$app->fields->getFieldByHandle($superTableHandle);
                 $tableFinded = false;
 
                 if (!$superTable) {
-                    //create super table
+                    // Create super table
                     $superTable = new SuperTableField([
                         'name' => $superTableHandle,
                         'handle' => $superTableHandle,
@@ -910,21 +919,17 @@ class FieldHelper
                         'fieldLayout' => 'row',
                     ]);
                     if (!Craft::$app->getFields()->saveField($superTable)) {
-                        Craft::error('super table couldn\'t save.' . '-' . json_encode($superTable->getErrors()), __METHOD__);
                         throw new ServerErrorHttpException('super table couldn\'t save.' . '-' . json_encode($superTable->getErrors()));
                     }
-                    $superModel = new SuperTableBlockTypeModel();
-                    $superModel->fieldId = $superTable->id;
-                    $superModel->uid = StringHelper::UUID();
                 } else {
                     $blocks = SuperTable::$plugin->service->getBlockTypesByFieldId($superTable->id);
                     if (isset($blocks[0])) {
                         $superModel = $blocks[0];
-                        $superTableFields = $superModel->fields;
+                        $superTableFields = $superModel->getCustomFields();
+                        $targetBlockTypeId = $superModel->id;
                     }
                     if ($tableHandle) {
-                        if (isset($blocks[0]) && isset($superModel)) {
-                            $superTableFields = $superModel->fields;
+                        if (isset($blocks[0])) {
                             foreach ($superTableFields as $key => $superTableField) {
                                 if ($superTableField->handle == $tableHandle) {
                                     $table = $superTableField;
@@ -936,51 +941,25 @@ class FieldHelper
                     }
                 }
 
-                if ($tableHandle && isset($superModel)) {
+                if ($tableHandle) {
                     $col = null;
                     if (!$tableFinded) {
                         $table = new Table();
                         $table->handle = $tableHandle;
                         $table->name = $tableHandle;
-                        //$table->groupId = 1;
-                        //$table->translationMethod = 'site';
                         $col = "col1";
                         $table->columns[$col]['heading'] = $fieldHandle;
                         $table->columns[$col]['handle'] = $fieldHandle;
                         $table->columns[$col]['width'] = "";
                         $table->columns[$col]['type'] = TableHelper::fieldType2ColumnType($convertTo);
-                        if ($convertTo == 'craft\fields\Dropdown') {
-                            if (isset($options)) {
-                                $table->columns[$col]['options'] = $options;
-                            }
-                        }
+                        /*
                         if (!Craft::$app->getFields()->saveField($table)) {
                             Craft::error('Can not save table: ' . json_encode($table->getErrors()), __METHOD__);
                             throw new ServerErrorHttpException('Can not save table: ' . json_encode($table->getErrors()));
                         }
                         $field = Craft::$app->fields->getFieldByHandle($tableHandle);
-                        $superTableFields[] = $field;
-                        //3.5
-                        $fieldLayout = $superModel->getFieldLayout();
-                        if (($fieldLayoutTab = $fieldLayout->getTabs()[0] ?? null) === null) {
-                            $fieldLayoutTab = new FieldLayoutTab();
-                            $fieldLayoutTab->name = 'Content';
-                            $fieldLayoutTab->sortOrder = 1;
-                            $fieldLayout->setTabs([$fieldLayoutTab]);
-                        }
-                        $fieldLayoutTab->elements[] = Craft::createObject([
-                            'class' => CustomField::class,
-                            'required' => 0,
-                            'width' => 100,
-                        ], [
-                            $field,
-                        ]);
-                        //
-                        $superModel->setFields($superTableFields);
-                        if (!SuperTable::$plugin->service->saveBlockType($superModel)) {
-                            Craft::error('super model couldn\'t save.' . '-' . json_encode($superModel->getErrors()), __METHOD__);
-                            throw new ServerErrorHttpException('super model couldn\'t save.' . '-' . json_encode($superModel->getErrors()));
-                        }
+                        */
+                        $field = $table;
                     } elseif (isset($table)) {
                         $tableColumns = $table->columns;
                         $columnFinded = false;
@@ -1011,80 +990,96 @@ class FieldHelper
                                     $table->columns[$col]['options'] = $options;
                                 }
                             }
-
-                            $fieldLayout = $superModel->getFieldLayout();
-                            $fieldLayoutTab = $fieldLayout->getTabs()[0];
-                            $superTableFields = $superModel->fields;
-                            $newSupertableFields = [];
-                            $fieldLayoutTab->elements = [];
-                            foreach ($superTableFields as $superTableField) {
-                                if ($superTableField->handle == $table->handle) {
-                                    $newSupertableFields[] = $table;
-                                    $superTableField = $table;
-                                } else {
-                                    $newSupertableFields[] = $superTableField;
-                                }
-                                $fieldLayoutTab->elements[] = Craft::createObject([
-                                    'class' => CustomField::class,
-                                    'required' => 0,
-                                    'width' => 100,
-                                ], [
-                                    $superTableField,
-                                ]);
-                            }
-                            $superModel->setFields($newSupertableFields);
-                            SuperTable::$plugin->service->saveBlockType($superModel);
                         }
                     }
+
+                    foreach ($superTableFields as $superTableField) {
+                        $config = Craft::$app->fields->createFieldConfig($superTableField);
+                        $config['typesettings'] = $superTableField->getSettings();
+                        unset($config['settings']);
+                        $targetBlockType['fields'][$superTableField->id] = $config;
+                    }
+                    
+                    if (!isset($field)) {
+                        throw new ServerErrorHttpException('field is not defined');
+                    }
+
+                    // Create field config
+                    $config = Craft::$app->fields->createFieldConfig($field);
+                    $config['typesettings'] = $field->getSettings();
+                    unset($config['settings']);
+
+                    $targetBlockType['fields']['new1'] = $config;
+
+                    if (!$targetBlockTypeId) {
+                        $targetBlockTypeId = 'new';
+                    }
+                    $blockTypesArray[$targetBlockTypeId] = $targetBlockType;
+
+                    $superTable->setBlockTypes($blockTypesArray);
+                    if (!Craft::$app->getFields()->saveField($superTable)) {
+                        $error = json_encode($superTable->getErrors());
+                        Craft::warning("$error");
+                        return false;
+                    }
+
+                    $finalFieldHandle = $table->columns[$col]['handle'];
+
                     $fieldMap[$superTableHandle]['field'] = 'verbb\supertable\fields\SuperTableField';
-                    $fieldMap[$superTableHandle]['blockTypeId'] = $superModel->id;
+                    $fieldMap[$superTableHandle]['blockTypeId'] = 1;
 
                     $fieldMap[$superTableHandle]['fields'][$tableHandle]['field'] = 'craft\fields\Table';
                     $fieldMap[$superTableHandle]['fields'][$tableHandle]['fields'][$col]['handle'] = $fieldHandle;
                     $fieldMap[$superTableHandle]['fields'][$tableHandle]['fields'][$col]['type'] = TableHelper::fieldType2ColumnType($convertTo);
                     $fieldMap[$superTableHandle]['fields'][$tableHandle]['fields'][$col]['node'] = $handle . '/value';
-                } elseif (isset($superModel)) {
+                } else {
                     if (empty($matchedFields)) {
                         if (!isset($field)) {
                             throw new ServerErrorHttpException('field is not defined');
                         }
-                        if (!Craft::$app->getFields()->saveField($field)) {
-                            Craft::error('Can not save field: ' . json_encode($field->getErrors()), __METHOD__);
-                            throw new ServerErrorHttpException('Can not save field: ' . json_encode($field->getErrors()));
-                        }
-                        $field = Craft::$app->fields->getFieldByHandle($fieldHandle);
-                        $superTableFields[] = $field;
 
-                        //3.5
-                        $fieldLayout = $superModel->getFieldLayout();
-                        if (($fieldLayoutTab = $fieldLayout->getTabs()[0] ?? null) === null) {
-                            $fieldLayoutTab = new FieldLayoutTab();
-                            $fieldLayoutTab->name = 'Content';
-                            $fieldLayoutTab->sortOrder = 1;
-                            $fieldLayout->setTabs([$fieldLayoutTab]);
+                        foreach ($superTableFields as $superTableField) {
+                            $config = Craft::$app->fields->createFieldConfig($superTableField);
+                            $config['typesettings'] = $superTableField->getSettings();
+                            unset($config['settings']);
+                            $targetBlockType['fields'][$superTableField->id] = $config;
                         }
-                        $fieldLayoutTab->elements[] = Craft::createObject([
-                            'class' => CustomField::class,
-                            'required' => 0,
-                            'width' => 100,
-                        ], [
-                            $field,
-                        ]);
-                        //
+                        
+                        if (!isset($field)) {
+                            throw new ServerErrorHttpException('field is not defined');
+                        }
 
-                        $superModel->setFields($superTableFields);
-                        SuperTable::$plugin->service->saveBlockType($superModel);
+                        // Create field config
+                        $config = Craft::$app->fields->createFieldConfig($field);
+                        $config['typesettings'] = $field->getSettings();
+                        unset($config['settings']);
+
+                        $targetBlockType['fields']['new1'] = $config;
+
+                        if (!$targetBlockTypeId) {
+                            $targetBlockTypeId = 'new';
+                        }
+                        $blockTypesArray[$targetBlockTypeId] = $targetBlockType;
+
+                        $superTable->setBlockTypes($blockTypesArray);
+                        if (!Craft::$app->getFields()->saveField($superTable)) {
+                            $error = json_encode($superTable->getErrors());
+                            Craft::warning("$error");
+                            return false;
+                        }
+
+                        $finalFieldHandle = $fieldHandle;
                     }
 
                     $fieldMap[$superTableHandle]['field'] = 'verbb\supertable\fields\SuperTableField';
-                    $fieldMap[$superTableHandle]['blockTypeId'] = $superModel->id;
+                    $fieldMap[$superTableHandle]['blockTypeId'] = 1;
 
                     $fieldMap[$superTableHandle]['fields'][$fieldHandle]['field'] = $convertTo;
                     $fieldMap[$superTableHandle]['fields'][$fieldHandle]['default'] = '';
-                    $fieldMap[$superTableHandle]['fields'][$fieldHandle]['node'] = $handle . '/value';
+                    $fieldMap[$superTableHandle]['fields'][$fieldHandle]['node'] = $feedValue;
 
                     if ($convertTo == 'craft\fields\Categories' || $convertTo == 'craft\fields\Tags' || $convertTo == 'craft\fields\Entries') {
-                        //get exact name of column uuid
+                        // Get exact name of column uuid
                         $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUUID');
                         $uuidField = 'field_wordpressUUID_' . $uuidField->columnSuffix;
                         //
@@ -1094,7 +1089,6 @@ class FieldHelper
                 }
                 $fieldItem = $superTable;
             }
-            */
         }
 
         $fieldMappings = $fieldMap;
@@ -1422,7 +1416,7 @@ class FieldHelper
         foreach ($fieldDefinitions as $fieldDefinition) {
             $label = '<font color=green>' . $fieldDefinition['label'] . '</font>';
 
-            Craft::$app->view->hook($fieldDefinition['wordpressHandle'], function() use ($label) {
+            Craft::$app->view->hook($fieldDefinition['wordpressHandle'], function () use ($label) {
                 return $label;
             });
         }

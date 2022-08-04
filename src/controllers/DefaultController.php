@@ -11,6 +11,8 @@ use vnali\migratefromwordpress\helpers\GeneralHelper;
 use vnali\migratefromwordpress\helpers\SiteHelper;
 use vnali\migratefromwordpress\MigrateFromWordPress as MigrateFromWordPressPlugin;
 
+use verbb\supertable\SuperTable;
+
 use Yii;
 use yii\caching\TagDependency;
 use yii\helpers\ArrayHelper;
@@ -276,6 +278,34 @@ class DefaultController extends Controller
         }
         return $this->asJson(
             $tables
+        );
+    }
+
+        /**
+     * Get super table's tables
+     *
+     * @param string $fieldHandle
+     * @return Response
+     */
+    public function actionGetSupertableTables(string $fieldHandle): Response
+    {
+        $superTableBlocks = [];
+        $field = Craft::$app->fields->getFieldByHandle($fieldHandle);
+        if ($field) {
+            if (Craft::$app->plugins->isPluginInstalled('supertable') && Craft::$app->plugins->isPluginEnabled('supertable')) {
+                $blocks = SuperTable::$plugin->service->getBlockTypesByFieldId($field->id);
+                if (isset($blocks[0])) {
+                    $fieldLayout = $blocks[0]->getFieldLayout();
+                    foreach ($fieldLayout->fields as $field) {
+                        if (get_class($field) == 'craft\\fields\\Table') {
+                            $superTableBlocks[] = ['value' => $field->handle, 'label' => $field->name];
+                        }
+                    }
+                }
+            }
+        }
+        return $this->asJson(
+            $superTableBlocks
         );
     }
 }

@@ -78,7 +78,7 @@
                 };
                 $.ajax({
                     method: "GET",
-                    url: Craft.getUrl("migrate-from-wordpress/default/get-supertable-blocks" + "?=_" + new Date().getTime()),
+                    url: Craft.getUrl("migrate-from-wordpress/default/get-supertable-tables" + "?=_" + new Date().getTime()),
                     data: data,
                     dataType: 'json',
                     success: function (data) {
