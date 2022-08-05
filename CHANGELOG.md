@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0 - 2022-08-05
+
+### Added
+- Added support for Super Table field on mapping table
+
 ## 0.5.1 - 2022-08-03
 
 ### Fixed
