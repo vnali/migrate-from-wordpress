@@ -214,7 +214,7 @@ class FieldHelper
                                             }
                                         }
                                         if (!empty($field['handle'])) {
-                                            $fieldsArray[] = ['type' => 'column', 'table' => $fieldItem, 'column' => $field, 'value' => $field['handle'], 'label' => $field['handle']];
+                                            $fieldsArray[] = ['type' => 'column', 'column' => $field, 'value' => $field['handle'], 'label' => $field['handle'], 'table' => $fieldItem, 'tableKey' => $key];
                                         }
                                     }
                                     break;
@@ -629,9 +629,8 @@ class FieldHelper
                 $blockTypeHandle = StringHelper::camelCase($container2[0]);
                 $containerStr = $matrixHandle . '-' . 'Matrix|' . $blockTypeHandle . '-BlockType';
                 if (isset($container3[0]) && isset($container3[1]) && $container3[1] == 'Table') {
-                    $tableHandle = $container3[0];
+                    $tableHandle = StringHelper::camelCase($container3[0]);
                     $tableFinded = false;
-                    $tableHandle = StringHelper::camelCase($matrixHandle . '_' . $tableHandle);
                     $containerStr = $matrixHandle . '-' . 'Matrix|' . $blockTypeHandle . '-BlockType' . '|' . $tableHandle . '-Table';
                 }
                 $fieldDefinitions[$key]['containerTarget'] = $containerStr;
@@ -652,9 +651,9 @@ class FieldHelper
                                         $tableFinded = true;
                                         /** @var Table $blockTypeField */
                                         $tableColumns = $blockTypeField->columns;
-                                        foreach ($tableColumns as $key => $tableColumn) {
+                                        foreach ($tableColumns as $columnKey => $tableColumn) {
                                             if ($tableColumn['handle'] == $fieldHandle) {
-                                                $col = $key;
+                                                $col = $columnKey;
                                                 $columnFinded = true;
                                                 break;
                                             }
@@ -707,8 +706,8 @@ class FieldHelper
                     /** @var Table $table */
                     $tableColumns = $table->columns;
                     $maxCol = 0;
-                    foreach ($tableColumns as $key => $tableColumn) {
-                        $col = explode('col', $key);
+                    foreach ($tableColumns as $columnKey => $tableColumn) {
+                        $col = explode('col', $columnKey);
                         if ((int) $col[1] > $maxCol) {
                             $maxCol = (int) $col[1];
                         }
@@ -756,7 +755,6 @@ class FieldHelper
                 /** @var FieldInterface $blockTypeField */
                 foreach ($blockTypeFields as $blockTypeField) {
                     $config = Craft::$app->fields->createFieldConfig($blockTypeField);
-                    //$config['typesettings'] = $blockTypeField->settings;
                     $config['typesettings'] = $blockTypeField->getSettings();
                     unset($config['settings']);
                     $targetBlockType['fields'][$blockTypeField->id] = $config;
@@ -820,8 +818,8 @@ class FieldHelper
                 if ($table) {
                     $tableColumns = $table->columns;
                     $maxCol = 0;
-                    foreach ($tableColumns as $key => $tableColumn) {
-                        $column = explode('col', $key);
+                    foreach ($tableColumns as $columnKey => $tableColumn) {
+                        $column = explode('col', $columnKey);
                         if ($tableColumn['heading'] != $fieldHandle) {
                             if ((int) $column[1] > $maxCol) {
                                 $maxCol = (int) $column[1];
@@ -834,7 +832,11 @@ class FieldHelper
                     if (!$columnFinded) {
                         $col = "col" . ($maxCol + 1);
                     } else {
-                        $col = $key;
+                        if (isset($columnKey)) {
+                            $col = $columnKey;
+                        } else {
+                            throw new ServerErrorHttpException('column key is not set for ' . $table->handle);
+                        }
                     }
                 } else {
                     $table = new Table();
@@ -886,22 +888,16 @@ class FieldHelper
                 $fieldMap[$tableHandle]['fields'][$col]['type'] = $tableColumnType;
                 $fieldMap[$tableHandle]['fields'][$col]['node'] = $handle . '/value';
             } elseif ($container1[1] == 'SuperTable') {
-                $superTableHandle = $container1[0];
+                $superTableHandle = StringHelper::camelCase($container1[0]);
                 $tableHandle = null;
                 $targetBlockTypeId = null;
                 $superTableFields = [];
 
-                if (isset($container2[0]) && $container2[0] != '') {
-                    $tableHandle = $container2[0];
-                    //$tableHandle = $superTableHandle . '_' . $tableHandle;
-                }
-
-                $containerStr = $superTableHandle . '-Matrix';
+                $containerStr = $superTableHandle . '-SuperTable';
                 if (isset($container2[0]) && isset($container2[1]) && $container2[1] == 'Table') {
-                    $tableHandle = $container2[0];
+                    $tableHandle = StringHelper::camelCase($container2[0]);
                     $tableFinded = false;
-                    // $tableHandle = StringHelper::camelCase($superTableHandle . '_' . $tableHandle);
-                    $containerStr = $superTableHandle . '-Matrix|' . $tableHandle . '-Table';
+                    $containerStr = $superTableHandle . '-SuperTable|' . $tableHandle . '-Table';
                 }
                 $fieldDefinitions[$key]['containerTarget'] = $containerStr;
 
@@ -928,7 +924,7 @@ class FieldHelper
                     }
                     if ($tableHandle) {
                         if (isset($blocks[0])) {
-                            foreach ($superTableFields as $key => $superTableField) {
+                            foreach ($superTableFields as $superTableField) {
                                 if ($superTableField->handle == $tableHandle) {
                                     $table = $superTableField;
                                     $tableFinded = true;
@@ -950,20 +946,13 @@ class FieldHelper
                         $table->columns[$col]['handle'] = $fieldHandle;
                         $table->columns[$col]['width'] = "";
                         $table->columns[$col]['type'] = TableHelper::fieldType2ColumnType($convertTo);
-                        /*
-                        if (!Craft::$app->getFields()->saveField($table)) {
-                            Craft::error('Can not save table: ' . json_encode($table->getErrors()), __METHOD__);
-                            throw new ServerErrorHttpException('Can not save table: ' . json_encode($table->getErrors()));
-                        }
-                        $field = Craft::$app->fields->getFieldByHandle($tableHandle);
-                        */
                         $field = $table;
                     } elseif (isset($table)) {
                         $tableColumns = $table->columns;
                         $columnFinded = false;
                         $maxCol = 0;
-                        foreach ($tableColumns as $key => $tableColumn) {
-                            $col = explode('col', $key);
+                        foreach ($tableColumns as $columnKey => $tableColumn) {
+                            $col = explode('col', $columnKey);
                             if ($tableColumn['heading'] != $fieldHandle) {
                                 if ((int) $col[1] > $maxCol) {
                                     $maxCol = (int) $col[1];
@@ -976,7 +965,11 @@ class FieldHelper
                         if (!$columnFinded) {
                             $col = "col" . ($maxCol + 1);
                         } else {
-                            $col = $key;
+                            if (isset($columnKey)) {
+                                $col = $columnKey;
+                            } else {
+                                throw new ServerErrorHttpException('column key is not set for ' . $table->handle);
+                            }
                         }
                         if (!$columnFinded) {
                             $table->columns[$col]['heading'] = $fieldHandle;
@@ -997,7 +990,7 @@ class FieldHelper
                         unset($config['settings']);
                         $targetBlockType['fields'][$superTableField->id] = $config;
                     }
-                    
+
                     if (!isset($field)) {
                         throw new ServerErrorHttpException('field is not defined');
                     }
@@ -1013,18 +1006,23 @@ class FieldHelper
                         $targetBlockTypeId = 'new';
                     }
                     $blockTypesArray[$targetBlockTypeId] = $targetBlockType;
-
+                    /** @var SuperTableField $superTable */
                     $superTable->setBlockTypes($blockTypesArray);
                     if (!Craft::$app->getFields()->saveField($superTable)) {
                         $error = json_encode($superTable->getErrors());
                         Craft::warning("$error");
                         return false;
                     }
+                    $blocks = SuperTable::$plugin->getService()->getBlockTypesByFieldId($superTable->id);
 
-                    $finalFieldHandle = $table->columns[$col]['handle'];
+                    if (isset($table)) {
+                        $finalFieldHandle = $table->columns[$col]['handle'];
+                    } else {
+                        throw new ServerErrorHttpException('table is not defined');
+                    }
 
                     $fieldMap[$superTableHandle]['field'] = 'verbb\supertable\fields\SuperTableField';
-                    $fieldMap[$superTableHandle]['blockTypeId'] = 1;
+                    $fieldMap[$superTableHandle]['blockTypeId'] = $blocks[0]->id;
 
                     $fieldMap[$superTableHandle]['fields'][$tableHandle]['field'] = 'craft\fields\Table';
                     $fieldMap[$superTableHandle]['fields'][$tableHandle]['fields'][$col]['handle'] = $fieldHandle;
@@ -1054,7 +1052,7 @@ class FieldHelper
                             $targetBlockTypeId = 'new';
                         }
                         $blockTypesArray[$targetBlockTypeId] = $targetBlockType;
-
+                        /** @var SuperTableField $superTable */
                         $superTable->setBlockTypes($blockTypesArray);
                         if (!Craft::$app->getFields()->saveField($superTable)) {
                             $error = json_encode($superTable->getErrors());
@@ -1065,8 +1063,10 @@ class FieldHelper
                         $finalFieldHandle = $fieldHandle;
                     }
 
+                    $blocks = SuperTable::$plugin->getService()->getBlockTypesByFieldId($superTable->id);
+
                     $fieldMap[$superTableHandle]['field'] = 'verbb\supertable\fields\SuperTableField';
-                    $fieldMap[$superTableHandle]['blockTypeId'] = 1;
+                    $fieldMap[$superTableHandle]['blockTypeId'] = $blocks[0]->id;
 
                     $fieldMap[$superTableHandle]['fields'][$fieldHandle]['field'] = $convertTo;
                     $fieldMap[$superTableHandle]['fields'][$fieldHandle]['default'] = '';
@@ -1191,7 +1191,9 @@ class FieldHelper
                                 // TODO: it seems saved options here won't apply immediately so feed should be run two times
                                 Craft::$app->fields->saveField($field);
                             }
-                            $value = $fieldItem['value'];
+                            // We put field value in value[] array
+                            // If we don't do it, each item of multi select convert to one block -instead of one block with both values selected-
+                            $value[] = $fieldItem['value'];
                         } elseif (isset($fieldsArray[0]['table'])) {
                             $table = $fieldsArray[0]['table'];
                             $options = $fieldsArray[0]['column']['options'];
