@@ -58,7 +58,7 @@ class PostItem
         $this->_postType = $postType;
         $this->_contentLanguage = $contentLanguage;
         if (
-            !$this->_contentLanguage || $this->_contentLanguage == 'und' || $this->_contentLanguage == 'zxx' ||
+            !$this->_contentLanguage ||
             !isset(MigrateFromWordPressPlugin::$plugin->settings->wordpressLanguageSettings[$contentLanguage]['wordpressURL'])
         ) {
             $wordpressURL = MigrateFromWordPressPlugin::$plugin->settings->wordpressURL;
@@ -122,7 +122,7 @@ class PostItem
         } else {
             $this->_fieldDefinitions = null;
         }
-        Craft::$app->cache->set('migrate-from-wordpress-post-' . $this->_postType . '-fields', json_encode($this->_fieldDefinitions));
+        Craft::$app->cache->set('migrate-from-wordpress-post-' . $this->_postType . '-fields', json_encode($this->_fieldDefinitions), 0, new TagDependency(['tags' => 'migrate-from-wordpress']));
         return $this->_fieldDefinitions;
     }
 
@@ -272,8 +272,10 @@ class PostItem
         }
 
         $gutenbergSettings = Craft::$app->getCache()->get('migrate-from-wordpress-post-gutenberg-' . $this->_postType);
-        if (!isset($gutenbergSettings) || $gutenbergSettings['migrate'] == 0) {
-            throw new ServerErrorHttpException('missing gutenberg settings' . json_encode($gutenbergSettings));
+        if (!$gutenbergSettings) {
+            // Currently it happens when use troubleshoot utility before migrate
+            $gutenbergSettings['migrate'] = true;
+            //throw new ServerErrorHttpException('You should migrate post items once');
         }
         $migrateGutenbergBlocks = $gutenbergSettings['migrate'];
         if (isset($postItem->content->rendered)) {
@@ -329,5 +331,15 @@ class PostItem
         $contentIds = json_decode(Craft::$app->cache->get('migrate-from-wordpress-pages-posts-id-and-url'), true);
         $contentIds[$postItem->link] = $postItem->id;
         Craft::$app->cache->set('migrate-from-wordpress-pages-posts-id-and-url', json_encode($contentIds), 0, new TagDependency(['tags' => ['migrate-from-wordpress']]));
+    }
+
+    /**
+     * Return post items
+     *
+     * @return array
+     */
+    public function getPostItems(): array
+    {
+        return $this->_postItems;
     }
 }

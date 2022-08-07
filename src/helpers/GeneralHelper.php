@@ -458,7 +458,7 @@ class GeneralHelper
         $wordpressUUID = Craft::$app->fields->getFieldByHandle('wordpressUUID');
 
         // Navigation item has not object
-        if (isset($item->object) && ($item->object == 'category' || $item->object == 'post' || $item->object == 'page')) {
+        if ($wordpressUUID && isset($item->object) && ($item->object == 'category' || $item->object == 'post' || $item->object == 'page')) {
             // Search for item link in entries and categories
             $elementTypes = ['craft\elements\Category', 'craft\elements\Entry'];
             foreach ($elementTypes as $key => $elementType) {

@@ -9,6 +9,8 @@ use vnali\migratefromwordpress\helpers\FieldHelper;
 use vnali\migratefromwordpress\helpers\GeneralHelper;
 use vnali\migratefromwordpress\MigrateFromWordPress as MigrateFromWordPressPlugin;
 
+use yii\caching\TagDependency;
+
 class MenuItem
 {
     public const MIGRATE_FROM_WORDPRESS = "Migrate from WordPress - ";
@@ -84,7 +86,7 @@ class MenuItem
         } else {
             $this->_fieldDefinitions = null;
         }
-        Craft::$app->cache->set('migrate-from-wordpress-menu-' . $this->_menuId . '-fields', json_encode($this->_fieldDefinitions));
+        Craft::$app->cache->set('migrate-from-wordpress-menu-' . $this->_menuId . '-fields', json_encode($this->_fieldDefinitions), 0, new TagDependency(['tags' => 'migrate-from-wordpress']));
         return $this->_fieldDefinitions;
     }
 
@@ -171,5 +173,15 @@ class MenuItem
         } else {
             $content['fields']['parent']['value'] = null;
         }
+    }
+
+    /**
+     * Return menu items
+     *
+     * @return array
+     */
+    public function getMenuItems(): array
+    {
+        return $this->_menuItems;
     }
 }

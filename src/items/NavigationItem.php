@@ -10,6 +10,8 @@ use vnali\migratefromwordpress\helpers\FieldHelper;
 use vnali\migratefromwordpress\helpers\GeneralHelper;
 use vnali\migratefromwordpress\MigrateFromWordPress as MigrateFromWordPressPlugin;
 
+use yii\caching\TagDependency;
+
 class NavigationItem
 {
     public const MIGRATE_FROM_WORDPRESS = "Migrate from WordPress - ";
@@ -33,6 +35,11 @@ class NavigationItem
      * @var array
      */
     private $_navigationItems;
+
+    /**
+     * @var array
+     */
+    private $_navigationItemsProcessed;
 
     /**
      * @var string
@@ -60,6 +67,7 @@ class NavigationItem
         $address = $wordpressURL . '/' . $wordpressRestApiEndpoint . '/navigation/' . $navigationId . $separator . 'per_page=' . $limit . '&page=' . $page;
         $response = Curl::sendToRestAPI($address);
         $response = json_decode($response);
+        $this->_navigationItems[] = $response;
         //
         $blocks = [];
         if ($response->content->rendered) {
@@ -77,7 +85,7 @@ class NavigationItem
                 $navigationItem = new stdClass();
                 $navigationItem->url = $href;
                 $navigationItem->title = $text;
-                $this->_navigationItems[] = $navigationItem;
+                $this->_navigationItemsProcessed[] = $navigationItem;
             }
         }
         //
@@ -91,14 +99,14 @@ class NavigationItem
      */
     public function getFieldDefinitions()
     {
-        if (isset($this->_navigationItems[0])) {
+        if (isset($this->_navigationItemsProcessed[0])) {
             $content = [];
-            $this->_content($this->_navigationItems[0], $content, 1);
+            $this->_content($this->_navigationItemsProcessed[0], $content, 1);
             $this->_fieldDefinitions = FieldHelper::fieldOptions($content, 'navigation-' . $this->_navigationId, '');
         } else {
             $this->_fieldDefinitions = null;
         }
-        Craft::$app->cache->set('migrate-from-wordpress-navigation-' . $this->_navigationId . '-fields', json_encode($this->_fieldDefinitions));
+        Craft::$app->cache->set('migrate-from-wordpress-navigation-' . $this->_navigationId . '-fields', json_encode($this->_fieldDefinitions), 0, new TagDependency(['tags' => 'migrate-from-wordpress']));
         return $this->_fieldDefinitions;
     }
 
@@ -111,7 +119,7 @@ class NavigationItem
     {
         $this->_fieldDefinitions = json_decode(Craft::$app->cache->get('migrate-from-wordpress-navigation-' . $this->_navigationId . '-fields'), true);
         $contents = [];
-        foreach ($this->_navigationItems as $navigationItem) {
+        foreach ($this->_navigationItemsProcessed as $navigationItem) {
             $content = null;
             $this->_content($navigationItem, $content, 0);
             if ($content !== null) {
@@ -175,5 +183,15 @@ class NavigationItem
         if (isset($navigationItem->title)) {
             $content['fields']['title']['value'] = $navigationItem->title;
         }
+    }
+
+    /**
+     * Return navigation items
+     *
+     * @return array
+     */
+    public function getNavigationItems(): array
+    {
+        return $this->_navigationItems;
     }
 }

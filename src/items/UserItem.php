@@ -84,7 +84,7 @@ class UserItem
         $content = [];
         $this->_content($this->_userItems[0], $content, 1);
         $this->_fieldDefinitions = FieldHelper::fieldOptions($content, 'user', '');
-        Craft::$app->getCache()->set('migrate-from-wordpress-user-fields', json_encode($this->_fieldDefinitions));
+        Craft::$app->getCache()->set('migrate-from-wordpress-user-fields', json_encode($this->_fieldDefinitions), 0, new TagDependency(['tags' => 'migrate-from-wordpress']));
         return $this->_fieldDefinitions;
     }
 
@@ -244,5 +244,15 @@ class UserItem
         if (!FeedmePlugin::$plugin->feeds->savefeed($model)) {
             throw new ServerErrorHttpException('user feed cannot be created');
         }
+    }
+
+    /**
+     * Return user items
+     *
+     * @return array
+     */
+    public function getUserItems(): array
+    {
+        return $this->_userItems;
     }
 }

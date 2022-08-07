@@ -8,6 +8,7 @@ use vnali\migratefromwordpress\helpers\FieldHelper;
 
 use vnali\migratefromwordpress\helpers\GeneralHelper;
 use vnali\migratefromwordpress\MigrateFromWordPress as MigrateFromWordPressPlugin;
+use yii\caching\TagDependency;
 use yii\web\ServerErrorHttpException;
 
 class TaxonomyItem
@@ -94,7 +95,7 @@ class TaxonomyItem
         } else {
             $this->_fieldDefinitions = null;
         }
-        Craft::$app->cache->set('migrate-from-wordpress-taxonomy-' . $this->_taxonomyId . '-fields', json_encode($this->_fieldDefinitions));
+        Craft::$app->cache->set('migrate-from-wordpress-taxonomy-' . $this->_taxonomyId . '-fields', json_encode($this->_fieldDefinitions), 0, new TagDependency(['tags' => 'migrate-from-wordpress']));
         return $this->_fieldDefinitions;
     }
 
@@ -182,5 +183,15 @@ class TaxonomyItem
                 $content = GeneralHelper::analyzeACF($taxonomyItem, $content);
             }
         }
+    }
+
+    /**
+     * Return taxonomy items
+     *
+     * @return array
+     */
+    public function getTaxonomyItems(): array
+    {
+        return $this->_taxonomyItems;
     }
 }

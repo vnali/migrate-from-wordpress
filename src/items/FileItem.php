@@ -76,7 +76,7 @@ class FileItem
         } else {
             $this->_fieldDefinitions = null;
         }
-        Craft::$app->cache->set('migrate-from-wordpress-file-fields', json_encode($this->_fieldDefinitions));
+        Craft::$app->cache->set('migrate-from-wordpress-file-fields', json_encode($this->_fieldDefinitions), 0, new TagDependency(['tags' => 'migrate-from-wordpress']));
         return $this->_fieldDefinitions;
     }
 
@@ -255,5 +255,15 @@ class FileItem
             Craft::error('feed model could not save.' . json_encode($model->getErrors()), __METHOD__);
             throw new ServerErrorHttpException('feed model could not save.' . json_encode($model->getErrors()));
         }
+    }
+
+    /**
+     * Return file items
+     *
+     * @return array
+     */
+    public function getFileItems(): array
+    {
+        return $this->_fileItems;
     }
 }

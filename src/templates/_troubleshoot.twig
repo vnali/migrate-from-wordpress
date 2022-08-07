@@ -1,0 +1,42 @@
+{% extends "/_layouts/cp" %}
+
+{% set title = 'Troubleshooting'|t('migrate-from-wordpress') %}
+
+{% block content %}
+    <div class="bg-teal-100 border-l-4 border-teal-500 border-solid text-teal-700 p-4" role="alert">
+        <div class="flex">
+            <div class="py-1">
+            {{ 'In case of any problems with this plugin, you can download a sample of Items in a zip file and send it only 
+            <a href="https://github.com/vnali/migrate-from-wordpress-plugin-docs#contact">via email</a>.'|t('migrate-from-wordpress')|raw }} 
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="bg-orange-100 border-l-4 border-orange-500 border-solid text-orange-700 p-4" role="alert">
+        <div class="flex">
+            <div class="py-1">
+            - {{ 'You should delete the generated file from the storage folder of your project after download.'|t('migrate-from-wordpress') }}  
+            <br>
+            - {{ 'Please try migrating a item before downloading that item. Otherwise, the value for that downloaded file is null'|t('migrate-from-wordpress') }}
+            </div>
+        </div>
+    </div>
+	{% import "_includes/forms" as forms %}
+
+	<form action="" method="post" accept-charset="UTF-8">
+		{% set address = 'migrate-from-wordpress/troubleshoot/index' %}
+		{{ redirectInput(address) }}
+		{{ csrfInput() }}
+		<input type="hidden" name="action" value="migrate-from-wordpress/troubleshoot/get-sample-data">
+		{{ forms.checkboxSelectField({
+            label: 'Items'|t('migrate-from-wordpress'),
+            id: 'items',
+            name: 'items',
+            options: items,          
+        }) }}
+
+		<input type="submit" class="btn submit" value='Download sample data'|t('migrate-from-wordpress') }}">
+	</form>
+    
+    {% do view.registerAssetBundle("vnali\\migratefromwordpress\\assetbundles\\SettingPageAsset") %}
+{% endblock %}

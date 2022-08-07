@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0 - 2022-08-07
+
+### Added
+- Added a troubleshooting tool that you can download sample data from REST API
+
 ## 0.6.0 - 2022-08-05
 
 ### Added

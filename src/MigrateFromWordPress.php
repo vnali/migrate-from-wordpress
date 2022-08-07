@@ -80,6 +80,8 @@ class MigrateFromWordPress extends Plugin
                 $event->rules['migrate-from-wordpress/default/get-entry-types'] = 'migrate-from-wordpress/default/get-entry-types';
                 $event->rules['migrate-from-wordpress/default/get-matrix-block-types'] = 'migrate-from-wordpress/default/get-matrix-block-types';
                 $event->rules['migrate-from-wordpress/default/get-matrix-tables'] = 'migrate-from-wordpress/default/get-matrix-tables';
+                $event->rules['migrate-from-wordpress/troubleshoot/index'] = 'migrate-from-wordpress/troubleshoot/index';
+                $event->rules['migrate-from-wordpress/troubleshoot/get-sample-data'] = 'migrate-from-wordpress/troubleshoot/get-sample-data';
                 $event->rules['migrate-from-wordpress/default/get-supertable-tables'] = 'migrate-from-wordpress/default/get-supertable-tables';
                 $event->rules['migrate-from-wordpress/default/index'] = 'migrate-from-wordpress/default/index';
                 $event->rules['migrate-from-wordpress/files/migrate'] = 'migrate-from-wordpress/files/migrate';

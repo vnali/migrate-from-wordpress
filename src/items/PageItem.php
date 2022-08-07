@@ -6,10 +6,10 @@ use Craft;
 use vnali\migratefromwordpress\helpers\Curl;
 use vnali\migratefromwordpress\helpers\FieldHelper;
 use vnali\migratefromwordpress\helpers\GeneralHelper;
-
 use vnali\migratefromwordpress\MigrateFromWordPress as MigrateFromWordPressPlugin;
+
 use yii\caching\TagDependency;
-use yii\web\ServerErrorHttpException;
+
 
 class PageItem
 {
@@ -119,7 +119,7 @@ class PageItem
         } else {
             $this->_fieldDefinitions = null;
         }
-        Craft::$app->cache->set('migrate-from-wordpress-page-' . $this->_pageType . '-fields', json_encode($this->_fieldDefinitions));
+        Craft::$app->cache->set('migrate-from-wordpress-page-' . $this->_pageType . '-fields', json_encode($this->_fieldDefinitions), 0, new TagDependency(['tags' => 'migrate-from-wordpress']));
         return $this->_fieldDefinitions;
     }
 
@@ -264,8 +264,10 @@ class PageItem
         }
 
         $gutenbergSettings = Craft::$app->getCache()->get('migrate-from-wordpress-page-gutenberg-' . $this->_pageType);
-        if (!isset($gutenbergSettings)) {
-            throw new ServerErrorHttpException('missing gutenberg settings');
+        if (!$gutenbergSettings) {
+            // Currently it happens when use troubleshoot utility before migrate
+            $gutenbergSettings['migrate'] = true;
+            //throw new ServerErrorHttpException('you should migrate page items once');
         }
         $migrateGutenbergBlocks = $gutenbergSettings['migrate'];
 
@@ -318,5 +320,15 @@ class PageItem
         $contentIds = json_decode(Craft::$app->cache->get('migrate-from-wordpress-pages-posts-id-and-url'), true);
         $contentIds[$pageItem->link] = $pageItem->id;
         Craft::$app->cache->set('migrate-from-wordpress-pages-posts-id-and-url', json_encode($contentIds), 0, new TagDependency(['tags' => ['migrate-from-wordpress']]));
+    }
+
+    /**
+     * Return page items
+     *
+     * @return array
+     */
+    public function getPageItems(): array
+    {
+        return $this->_pageItems;
     }
 }

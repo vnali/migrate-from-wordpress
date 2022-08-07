@@ -256,6 +256,19 @@ class PostsController extends Controller
             return null;
         }
 
+        // Get exact name of column uuid
+        $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUUID');
+        if (!$uuidField) {
+            $newField = new \craft\fields\PlainText([
+                "groupId" => 1,
+                "name" => 'wordpressUUID',
+                "handle" => 'wordpressUUID',
+            ]);
+            Craft::$app->fields->saveField($newField);
+            $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUUID');
+        }
+        //
+
         $fieldMappings = [];
         $fieldMappingsExtra = [];
 

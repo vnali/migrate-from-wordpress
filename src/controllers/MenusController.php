@@ -136,7 +136,7 @@ class MenusController extends Controller
         }
 
         $variables['navs'][] = ['value' => '', 'label' => Craft::t('migrate-from-wordpress', 'select one')];
-        if (Craft::$app->plugins->isPluginEnabled('navigation')) {
+        if (Craft::$app->plugins->isPluginInstalled('navigation') &&  Craft::$app->plugins->isPluginEnabled('navigation')) {
             foreach (NavigationPlugin::$plugin->getNavs()->getAllNavs() as $nav) {
                 $navs = [];
                 $navs['value'] = $nav->id;
