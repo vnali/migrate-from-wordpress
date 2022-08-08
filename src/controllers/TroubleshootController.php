@@ -18,6 +18,8 @@ use vnali\migratefromwordpress\items\UserItem;
 
 use Yii;
 use yii\web\Response;
+use yii\web\ServerErrorHttpException;
+
 use ZipArchive;
 
 class TroubleshootController extends Controller
@@ -316,8 +318,7 @@ class TroubleshootController extends Controller
                         }
                         break;
                     default:
-                        # code...
-                        break;
+                        throw new ServerErrorHttpException('not defined item ' . $item);
                 }
                 $itemRestData = null;
                 if (isset($itemsRestData[0])) {
