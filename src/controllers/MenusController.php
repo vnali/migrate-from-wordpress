@@ -386,21 +386,21 @@ class MenusController extends Controller
             }
         }
 
-        $notInTab = false;
         if ($fieldItems) {
             foreach ($fieldItems as $key => $fieldItem) {
+                $isInTab = false;
                 foreach ($tabs as $tab) {
                     foreach ($tab->elements as $element) {
                         if ($element instanceof CustomField) {
                             if ($element->attribute() == $fieldItem->handle) {
-                                $notInTab = true;
+                                $isInTab = true;
                                 break 2;
                             }
                         }
                     }
                 }
 
-                if (!$notInTab && !in_array($fieldItem->id, $parsedFields)) {
+                if (!$isInTab && !in_array($fieldItem->id, $parsedFields)) {
                     $parsedFields[] = $fieldItem->id;
                     $element = [
                         'type' => CustomField::class,
