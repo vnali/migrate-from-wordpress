@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.7.1 - 2022-08-08
 
 ### Fixed
 - Fixed a bug where fields weren't added to field layout
