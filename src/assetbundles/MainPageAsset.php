@@ -23,6 +23,8 @@ class MainPageAsset extends AssetBundle
 
         $this->css = [
             'css/tailwind3-custom.css',
+            'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@200..400',
+            'css/main-page.css',
         ];
 
         $this->js = [

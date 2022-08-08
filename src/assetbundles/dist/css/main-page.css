@@ -1,0 +1,22 @@
+.pulse {
+    animation: pulse 3s 3;
+}
+
+.pulse {
+    color: red;
+    font-weight: 300;
+}
+
+@keyframes pulse {
+    0% {
+        font-weight: 200;
+    }
+
+    50% {
+        font-weight: 400;
+    }
+
+    100% {
+        font-weight: 200;
+    }
+}
