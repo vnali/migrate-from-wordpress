@@ -306,7 +306,6 @@ class FieldHelper
             $feedValue = "$handle/value";
         }
 
-        $type = $fieldSettings['type'];
         $convertTo = $fieldSettings['convertTo'];
         $fieldHandle = $fieldSettings['craftField'];
         $craftField = explode('--', $fieldHandle);
@@ -403,9 +402,6 @@ class FieldHelper
                     break;
                 case 'craft\fields\PlainText':
                     $multiline = "";
-                    if ($type == "text_with_summary" || $type == "text_long") {
-                        $multiline = 1;
-                    }
                     $field = new \craft\fields\PlainText([
                         "groupId" => $groupId,
                         "name" => $label,
@@ -593,11 +589,6 @@ class FieldHelper
                 $fieldMap[$fieldHandle]['options']['match'] = $uuidField;
             } elseif ($convertTo == 'craft\fields\Checkboxes' || $convertTo == 'craft\fields\Dropdown') {
                 $fieldMap[$fieldHandle]['options']['match'] = 'value';
-            } elseif ($type == 'block_field' && $convertTo == 'craft\fields\Entries') {
-                // Get exact name of column uuid
-                $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUUID');
-                $uuidField = 'field_wordpressUUID_' . $uuidField->columnSuffix;
-                $fieldMap[$fieldHandle]['options']['match'] = $uuidField;
             } elseif ($convertTo == 'craft\fields\Users') {
                 // Get exact name of column uuid
                 $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUserId');
@@ -797,17 +788,13 @@ class FieldHelper
                     if ($convertTo == 'craft\fields\Assets') {
                         $fieldMap[$matrixHandle]['blocks'][$blockTypeHandle]['fields'][$fieldHandle]['options']['upload'] = "0";
                         $fieldMap[$matrixHandle]['blocks'][$blockTypeHandle]['fields'][$fieldHandle]['options']['conflict'] = "index";
-                    }
-                    if ($convertTo == 'craft\fields\Categories' || $convertTo == 'craft\fields\Tags' || $convertTo == 'craft\fields\Entries') {
+                    } elseif ($convertTo == 'craft\fields\Categories' || $convertTo == 'craft\fields\Tags' || $convertTo == 'craft\fields\Entries') {
                         // Get exact name of column uuid
                         $uuidField = Craft::$app->fields->getFieldByHandle('wordpressUUID');
                         $uuidField = 'field_wordpressUUID_' . $uuidField->columnSuffix;
                         //
                         $fieldMap[$matrixHandle]['blocks'][$blockTypeHandle]['fields'][$fieldHandle]['options']['create'] = "0";
                         $fieldMap[$matrixHandle]['blocks'][$blockTypeHandle]['fields'][$fieldHandle]['options']['match'] = $uuidField;
-                    }
-                    if ($type == 'block_field' && $convertTo == 'craft\fields\Entries') {
-                        $fieldMap[$matrixHandle]['blocks'][$blockTypeHandle]['fields'][$fieldHandle]['options']['match'] = "title";
                     }
                 }
             } elseif ($container1[1] == 'Table') {
@@ -854,9 +841,6 @@ class FieldHelper
                     $tableColumnType = TableHelper::fieldType2ColumnType($convertTo);
                     if (!$tableColumnType) {
                         throw new ServerErrorHttpException('not supported for table' . $convertTo);
-                    }
-                    if ($tableColumnType == 'singleline' && ($type == "text_with_summary" || $type == "text_long")) {
-                        $tableColumnType = 'multiline';
                     }
                     $table->columns[$col]['type'] = $tableColumnType;
                     if ($convertTo == 'craft\fields\Dropdown') {
