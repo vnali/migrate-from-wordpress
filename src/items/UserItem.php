@@ -156,7 +156,7 @@ class UserItem
         // TODO: also migrate user's name to a text field
         $content['fields']['name']['value'] = $userItem->name;
         $content['fields']['name']['config']['isAttribute'] = true;
-        
+
         $emailAttribute = MigrateFromWordPressPlugin::$plugin->settings->emailAttribute;
 
         if (isset($userItem->{$emailAttribute})) {
@@ -201,6 +201,11 @@ class UserItem
         // Process ACF fields
         if (isset($userItem->acf) && $userItem->acf) {
             $content = GeneralHelper::analyzeACF($userItem, $content);
+        }
+
+        // Yoast SEO Data
+        if (MigrateFromWordPressPlugin::$plugin->settings->yoastSEO && isset($userItem->yoast_head_json)) {
+            $content['fields']['yoastSEO']['value'] = $userItem->yoast_head_json;
         }
     }
 

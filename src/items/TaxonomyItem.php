@@ -179,8 +179,14 @@ class TaxonomyItem
                     $content['fields']['termParent']['config']['isAttribute'] = true;
                 }
             }
+
             if (isset($taxonomyItem->acf) && $taxonomyItem->acf) {
                 $content = GeneralHelper::analyzeACF($taxonomyItem, $content);
+            }
+
+            // Yoast SEO Data
+            if (MigrateFromWordPressPlugin::$plugin->settings->yoastSEO && isset($taxonomyItem->yoast_head_json)) {
+                $content['fields']['yoastSEO']['value'] = $taxonomyItem->yoast_head_json;
             }
         }
     }

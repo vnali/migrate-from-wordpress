@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Added a plugin setting to show Yoast SEO data in feed-me feed values
+
 ## 0.7.1 - 2022-08-08
 
 ### Fixed

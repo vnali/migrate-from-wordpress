@@ -187,6 +187,11 @@ class FileItem
                 $content = GeneralHelper::analyzeACF($fileItem, $content);
             }
 
+            // Yoast SEO Data
+            if (MigrateFromWordPressPlugin::$plugin->settings->yoastSEO && isset($fileItem->yoast_head_json)) {
+                $content['fields']['yoastSEO']['value'] = $fileItem->yoast_head_json;
+            }
+
             // Save uri in cache for later
             $fileIds = json_decode(Craft::$app->cache->get('migrate-from-wordpress-files-id-and-url'), true);
             $fileIds[$url] = $fileItem->id;

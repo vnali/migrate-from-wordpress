@@ -175,10 +175,15 @@ class Settings extends Model
      */
     public $wordpressURL;
 
+    /**
+     * @var bool
+     */
+    public $yoastSEO = false;
+
     public function rules(): array
     {
         return [
-            [['addExcerptToBody', 'ignoreWordPressUploadPath', 'migrateNotPublicStatus', 'migrateTrashStatus'], 'in', 'range' => ['0', '1']],
+            [['addExcerptToBody', 'ignoreWordPressUploadPath', 'migrateNotPublicStatus', 'migrateTrashStatus', 'yoastSEO'], 'in', 'range' => ['0', '1']],
             [['categoryBase', 'protectedItemsPasswords', 'tagBase', 'wordpressUploadPath'], 'string', 'max' => 255],
             [['restItemLimit'], 'integer', 'min' => 1, 'max' => 50],
             [['wordpressURL'], function($attribute, $params, $validator) {

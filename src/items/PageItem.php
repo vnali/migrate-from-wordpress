@@ -316,6 +316,11 @@ class PageItem
             $content = GeneralHelper::analyzeACF($pageItem, $content);
         }
 
+        // Yoast SEO Data
+        if (MigrateFromWordPressPlugin::$plugin->settings->yoastSEO && isset($pageItem->yoast_head_json)) {
+            $content['fields']['yoastSEO']['value'] = $pageItem->yoast_head_json;
+        }
+
         // Save uri in cache for later
         $contentIds = json_decode(Craft::$app->cache->get('migrate-from-wordpress-pages-posts-id-and-url'), true);
         $contentIds[$pageItem->link] = $pageItem->id;

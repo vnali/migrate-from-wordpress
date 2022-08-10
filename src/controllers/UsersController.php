@@ -73,6 +73,7 @@ class UsersController extends Controller
             unset($fieldDefinitions['wordpressUUID']);
             unset($fieldDefinitions['wordpressLink']);
             unset($fieldDefinitions['lang']);
+            unset($fieldDefinitions['yoastSEO']);
 
             $variables['fieldDefinitions'] = $fieldDefinitions;
             $variables['nameFields'] = FieldHelper::filterFieldsByType($fieldDefinitions, 'plain text');

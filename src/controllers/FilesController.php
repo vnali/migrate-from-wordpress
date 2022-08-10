@@ -90,6 +90,7 @@ class FilesController extends Controller
             unset($fieldDefinitions['uploaderUUID']);
             unset($fieldDefinitions['urlOrPath']);
             unset($fieldDefinitions['AssetId']);
+            unset($fieldDefinitions['yoastSEO']);
 
             $variables['fieldDefinitions'] = $fieldDefinitions;
 

@@ -94,6 +94,15 @@
         tip: 'Check the optional section of wp-admin/options-permalink.php on WordPress Site for category base. Leave it as default if it is empty.'
     }) }}
 
+    {{ forms.lightSwitchField({
+        label: 'Show Yoast SEO data in feed values'|t('migrate-from-wordpress'),
+        id: 'yoastSEO',
+        name: 'yoastSEO',
+        on : settings.yoastSEO ?? '0',
+        value: '1',
+        errors: settings.getErrors('yoastSEO')
+    }) }}
+
 	<hr>
 
 	{{ forms.textField({

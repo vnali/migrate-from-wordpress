@@ -117,6 +117,7 @@ class PagesController extends Controller
             unset($fieldDefinitions['status']);
             unset($fieldDefinitions['title']);
             unset($fieldDefinitions['wordpressLink']);
+            unset($fieldDefinitions['yoastSEO']);
 
             $variables['fieldDefinitions'] = $fieldDefinitions;
 

@@ -116,6 +116,7 @@ class PostsController extends Controller
             unset($fieldDefinitions['lang']);
             unset($fieldDefinitions['title']);
             unset($fieldDefinitions['wordpressLink']);
+            unset($fieldDefinitions['yoastSEO']);
 
             $variables['fieldDefinitions'] = $fieldDefinitions;
 

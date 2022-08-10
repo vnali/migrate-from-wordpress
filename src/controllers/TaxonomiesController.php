@@ -108,6 +108,7 @@ class TaxonomiesController extends Controller
             unset($fieldDefinitions['title']);
             //unset($fieldDefinitions['wordpressSourceLanguage']);
             unset($fieldDefinitions['wordpressLink']);
+            unset($fieldDefinitions['yoastSEO']);
 
             $variables['fieldDefinitions'] = $fieldDefinitions;
 
