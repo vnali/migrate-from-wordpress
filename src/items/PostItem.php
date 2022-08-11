@@ -229,7 +229,10 @@ class PostItem
             $content['fields']['lang']['config']['label'] = 'Lang';
 
             if (isset($postItem->date_gmt)) {
-                $content['fields']['created']['value'] = strtotime($postItem->date_gmt);
+                // We currently use date_gmt attribute and set timezone to GMT and feed-me import it with the correct timezone specified in the general setting
+                // But it seems date_gmt doesn't change if WordPress time zone setting change
+                // TODO: Maybe a better solution is to use the date attribute instead of date_gmt and ask the user what the WordPress time zone is.?
+                $content['fields']['created']['value'] = strtotime($postItem->date_gmt . ' GMT');
                 $content['fields']['created']['config']['isAttribute'] = true;
             }
 

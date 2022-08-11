@@ -220,7 +220,7 @@ class PageItem
             $content['fields']['lang']['config']['type'] = 'text';
             $content['fields']['lang']['config']['label'] = 'Lang';
             if (isset($pageItem->date_gmt)) {
-                $content['fields']['created']['value'] = strtotime($pageItem->date_gmt);
+                $content['fields']['created']['value'] = strtotime($pageItem->date_gmt . ' GMT');
                 $content['fields']['created']['config']['isAttribute'] = true;
             }
 

@@ -4,6 +4,7 @@
 
 ### Fixed
 - Fixed import author of posts and pages
+- Fixed a bug when imported posts and pages publish date was in the wrong time zone
 
 ## 0.8.0 - 2022-08-10
 
