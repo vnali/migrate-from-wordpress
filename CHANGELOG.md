@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.8.1 - 2022-08-11
 
 ### Fixed
 - Fixed import author of posts and pages
