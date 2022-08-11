@@ -259,6 +259,19 @@ class PostItem
 
         $content['fields']['title']['value'] = $postItem->title->rendered;
         $content['fields']['title']['config']['isAttribute'] = true;
+
+        // Author
+        if (isset($postItem->author)) {
+            $authorId = $postItem->author;
+            $address = $this->_restApiAddress . '/users/' . $authorId;
+            $response = Curl::sendToRestAPI($address);
+            $response = json_decode($response);
+            if (isset($response->link)) {
+                $content['fields']['authorId']['value'] = $response->link;
+            }
+        }
+        $content['fields']['authorId']['config']['isAttribute'] = true;
+
         $content['fields']['uuid']['value'] = $postItem->id;
         $content['fields']['uuid']['config']['isAttribute'] = true;
 

@@ -250,6 +250,19 @@ class PageItem
 
         $content['fields']['title']['value'] = $pageItem->title->rendered;
         $content['fields']['title']['config']['isAttribute'] = true;
+
+        // Author
+        if (isset($pageItem->author)) {
+            $authorId = $pageItem->author;
+            $address = $this->_restApiAddress . '/users/' . $authorId;
+            $response = Curl::sendToRestAPI($address);
+            $response = json_decode($response);
+            if (isset($response->link)) {
+                $content['fields']['authorId']['value'] = $response->link;
+            }
+        }
+        $content['fields']['authorId']['config']['isAttribute'] = true;
+
         $content['fields']['uuid']['value'] = $pageItem->id;
         $content['fields']['uuid']['config']['isAttribute'] = true;
 

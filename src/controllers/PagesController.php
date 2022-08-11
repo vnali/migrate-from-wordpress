@@ -323,6 +323,7 @@ class PagesController extends Controller
         $fieldMappings['authorId']['attribute'] = true;
         $fieldMappings['authorId']['node'] = 'authorId/value';
         $fieldMappings['authorId']['default'] = '';
+        $fieldMappings['authorId']['options']['match'] = $uuidField;
 
         $fields['wordpressPostId']['type'] = 'text';
         $fields['wordpressPostId']['convertTo'] = 'craft\fields\PlainText';
