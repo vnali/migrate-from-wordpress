@@ -238,7 +238,8 @@ class PostItem
 
             // Craft status
             $status = 0;
-            if (isset($postItem->status) && $postItem->status == 'publish') {
+            // Draft or need review future posts has no future status, so we can set the status of future posts to enable
+            if (isset($postItem->status) && ($postItem->status == 'publish' || $postItem->status == 'future')) {
                 $status = 1;
             }
             $content['fields']['status']['value'] = $status;

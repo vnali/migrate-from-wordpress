@@ -10,7 +10,6 @@ use vnali\migratefromwordpress\MigrateFromWordPress as MigrateFromWordPressPlugi
 
 use yii\caching\TagDependency;
 
-
 class PageItem
 {
     public const MIGRATE_FROM_WORDPRESS = "Migrate from WordPress - ";
@@ -226,7 +225,7 @@ class PageItem
 
             // Craft status
             $status = 0;
-            if (isset($pageItem->status) && $pageItem->status == 'publish') {
+            if (isset($pageItem->status) && ($pageItem->status == 'publish' || $pageItem->status == 'future')) {
                 $status = 1;
             }
             $content['fields']['status']['value'] = $status;

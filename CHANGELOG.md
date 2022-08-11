@@ -6,6 +6,9 @@
 - Fixed import author of posts and pages
 - Fixed a bug when imported posts and pages publish date was in the wrong time zone
 
+### Changed
+- Status of the imported future posts in Craft is enabled now
+
 ## 0.8.0 - 2022-08-10
 
 ### Added
