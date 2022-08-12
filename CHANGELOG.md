@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Initial support for importing Elementor content
+
 ## 0.8.1 - 2022-08-11
 
 ### Fixed

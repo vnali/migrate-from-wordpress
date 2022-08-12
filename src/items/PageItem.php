@@ -3,6 +3,7 @@
 namespace vnali\migratefromwordpress\items;
 
 use Craft;
+use Symfony\Component\DomCrawler\Crawler;
 use vnali\migratefromwordpress\helpers\Curl;
 use vnali\migratefromwordpress\helpers\FieldHelper;
 use vnali\migratefromwordpress\helpers\GeneralHelper;
@@ -289,9 +290,16 @@ class PageItem
                 if (MigrateFromWordPressPlugin::$plugin->settings->addExcerptToBody && isset($pageItem->excerpt->rendered)) {
                     $output = $pageItem->excerpt->rendered . $output;
                 }
-                $output = GeneralHelper::analyzeGutenberg($output, false);
+                $crawler = new Crawler($output);
+                $c = $crawler->filter('html body div section');
+                $node = $c->getNode(0);
+                if (!$node) {
+                    $output = GeneralHelper::analyzeGutenberg($output, false);
+                } else {
+                    $output = GeneralHelper::analyzeElementor($output, false);
+                }
                 $content['fields']['body'] = $output;
-                $content['fields']['body']['config']['type'] = 'gutenberg';
+                $content['fields']['body']['config']['type'] = 'gutenberg/elementor';
                 $content['fields']['body']['config']['label'] = 'body';
             } else {
                 $output = $pageItem->content->rendered;

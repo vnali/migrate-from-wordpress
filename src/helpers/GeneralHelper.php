@@ -254,7 +254,7 @@ class GeneralHelper
             case 'paragraph block':
             case 'quote block':
             case 'table block':
-            case 'unknown block':
+            case 'other blocks':
             case 'verse block':
                 $convertTo = [
                     '' => 'select one',
@@ -554,6 +554,127 @@ class GeneralHelper
     }
 
     /**
+     * Analyze Elementor body
+     *
+     * @param string $content
+     * @param bool $mergeSameBlocks
+     * @return array
+     */
+    public static function analyzeElementor(string $content, bool $mergeSameBlocks = false): array
+    {
+        $blocks = [];
+        $crawler = new Crawler($content);
+        foreach ($crawler->filter('html body div')->children() as $domElement) {
+            $html = $domElement->ownerDocument->saveHTML($domElement);
+            $blocks[] = $html;
+        }
+        $blockText = null;
+        $output = [];
+        $previousStartWith = null;
+        $value = [];
+        $blockTypes = [
+            'audio block', 'categories block', 'code block', 'embed block', 'heading block', 'image block', 'gallery block', 'list block',
+            'navigation block', 'paragraph block', 'post-term block', 'quote block', 'table block',
+            'tag-cloud block', 'other blocks', 'verse block', 'video block',
+        ];
+        $skip = false;
+        $blockIndex = 0;
+        foreach ($blocks as $block) {
+            if ($block != '') {
+                $block = trim($block);
+                $crawler = new Crawler($block);
+                $divColumn = $crawler->filter('html body section div')->children();
+                $nodeClasses = $divColumn->attr('class');
+                $nodeClassesArray = explode(' ', $nodeClasses);
+                if (in_array('elementor-col-100', $nodeClassesArray)) {
+                    $divColumn = $crawler->filter('html body section div div div')->children();
+                    $widgetType = $divColumn->attr('data-widget_type');
+                    if ($widgetType == 'heading.default') {
+                        if ($mergeSameBlocks && ($previousStartWith == 'heading block' || !$previousStartWith)) {
+                            $blockText = $blockText . '<br>' . $block;
+                            $skip = true;
+                        } else {
+                            $c = $crawler->filter('html body div h2');
+                            $block = $c->outerHtml();
+                            $skip = false;
+                        }
+                        $currentBlockType = 'heading block';
+                    } elseif ($widgetType == 'image.default') {
+                        $c = $crawler->filter('html body div img');
+                        $block = $c->attr('src');
+                        $skip = false;
+                        $currentBlockType = 'image block';
+                    } elseif ($widgetType == 'image-gallery.default' || $widgetType == 'image-carousel.default') {
+                        $block = $crawler->filter('html body div img')->each(function(Crawler $c) {
+                            return $c->attr('src');
+                        });
+                        $skip = false;
+                        $currentBlockType = 'gallery block';
+                    } elseif ($widgetType == 'icon-list.default') {
+                        if ($mergeSameBlocks && ($previousStartWith == 'list block' || !$previousStartWith)) {
+                            $blockText = $blockText . '<br>' . $block;
+                            $skip = true;
+                        } else {
+                            $c = $crawler->filter('html body div ul');
+                            $block = $c->outerHtml();
+                            $skip = false;
+                        }
+                        $currentBlockType = 'list block';
+                    } elseif ($widgetType == 'text-editor.default') {
+                        if ($mergeSameBlocks && ($previousStartWith == 'paragraph block' || !$previousStartWith)) {
+                            $blockText = $blockText . '<br>' . $block;
+                            $skip = true;
+                        } else {
+                            $c = $crawler->filter('html body div p');
+                            $block = $c->outerHtml();
+                            $skip = false;
+                        }
+                        $currentBlockType = 'paragraph block';
+                    } else {
+                        $skip = false;
+                        $currentBlockType = 'other blocks';
+                    }
+                } else {
+                    $skip = false;
+                    $currentBlockType = 'other blocks';
+                }
+                if (!$skip) {
+                    if (!$mergeSameBlocks) {
+                        foreach ($blockTypes as $blockType) {
+                            if ($blockType == $currentBlockType) {
+                                $blockIndex++;
+                                $value[$blockIndex][$blockType][] = $block;
+                            }
+                        }
+                    } else {
+                        foreach ($blockTypes as $blockType) {
+                            if ($blockType == $previousStartWith) {
+                                $value[$blockIndex][$blockType][] = $blockText;
+                                $blockIndex++;
+                            }
+                        }
+                    }
+                    $blockText = $block;
+                }
+                $previousStartWith = $currentBlockType;
+            }
+        }
+
+        if (isset($currentBlockType) && $mergeSameBlocks) {
+            $value[$blockIndex][$currentBlockType][] = $blockText;
+        }
+
+        foreach ($blockTypes as $key => $blockType) {
+            $output['fields'][$blockType]['config']['parent'] = 'body';
+            $output['fields'][$blockType]['config']['type'] = $blockType;
+            $output['fields'][$blockType]['config']['label'] = $blockType;
+        }
+        $output['value'] = $value;
+
+        return $output;
+    }
+
+    /**
      * Analyze Gutenberg body
      *
      * @param string $content
@@ -579,7 +700,7 @@ class GeneralHelper
         $blockTypes = [
             'audio block', 'categories block', 'code block', 'embed block', 'heading block', 'image block', 'gallery block', 'list block',
             'navigation block', 'paragraph block', 'post-term block', 'quote block', 'table block',
-            'tag-cloud block', 'unknown block', 'verse block', 'video block',
+            'tag-cloud block', 'other blocks', 'verse block', 'video block',
         ];
         $skip = false;
         $blockIndex = 0;
@@ -703,7 +824,7 @@ class GeneralHelper
                     $skip = false;
                     $currentBlockType = 'video block';
                 } elseif (str_starts_with($block, '<p>')) {
-                    if ($mergeSameBlocks && ($previousStartWith == 'paragraph' || !$previousStartWith)) {
+                    if ($mergeSameBlocks && ($previousStartWith == 'paragraph block' || !$previousStartWith)) {
                         $blockText = $blockText . '<br>' . $block;
                         $skip = true;
                     } else {
@@ -711,7 +832,7 @@ class GeneralHelper
                     }
                     $currentBlockType = 'paragraph block';
                 } elseif (str_starts_with($block, '<ul>')) {
-                    if ($mergeSameBlocks && ($previousStartWith == 'list' || !$previousStartWith)) {
+                    if ($mergeSameBlocks && ($previousStartWith == 'list block' || !$previousStartWith)) {
                         $blockText = $blockText . '<br>' . $block;
                         $skip = true;
                     } else {
@@ -720,7 +841,7 @@ class GeneralHelper
                     $currentBlockType = 'list block';
                 } else {
                     $skip = false;
-                    $currentBlockType = 'unknown block';
+                    $currentBlockType = 'other blocks';
                 }
                 if (!$skip) {
                     if (!$mergeSameBlocks) {

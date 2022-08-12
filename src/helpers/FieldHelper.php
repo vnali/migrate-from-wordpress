@@ -26,7 +26,7 @@ class FieldHelper
         'timestamp',
         'acf group',
         'acf link',
-        'gutenberg',
+        'gutenberg/elementor',
     ];
 
     /**
@@ -1280,7 +1280,7 @@ class FieldHelper
                         if (
                             in_array($fields[$fieldname]['config']['type'], self::$_parentFieldTypes)
                             // Gutenberg blocks are processed before so no need to process here
-                            && $fields[$fieldname]['config']['type'] != 'gutenberg'
+                            && $fields[$fieldname]['config']['type'] != 'gutenberg/elementor'
                         ) {
                             FieldHelper::analyzeFieldValues($fieldItem, $fieldValues, $level, $contentLanguage, null, $fields);
                         }

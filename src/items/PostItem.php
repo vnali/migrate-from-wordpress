@@ -3,13 +3,13 @@
 namespace vnali\migratefromwordpress\items;
 
 use Craft;
+use Symfony\Component\DomCrawler\Crawler;
 use vnali\migratefromwordpress\helpers\Curl;
 use vnali\migratefromwordpress\helpers\FieldHelper;
 use vnali\migratefromwordpress\helpers\GeneralHelper;
 
 use vnali\migratefromwordpress\MigrateFromWordPress as MigrateFromWordPressPlugin;
 use yii\caching\TagDependency;
-use yii\web\ServerErrorHttpException;
 
 class PostItem
 {
@@ -297,14 +297,21 @@ class PostItem
         $migrateGutenbergBlocks = $gutenbergSettings['migrate'];
         if (isset($postItem->content->rendered)) {
             if ($migrateGutenbergBlocks == 'true') {
-                // TODO: apply add excerpt to body setting
                 $output = $postItem->content->rendered;
                 if (MigrateFromWordPressPlugin::$plugin->settings->addExcerptToBody && isset($postItem->excerpt->rendered)) {
                     $output = $postItem->excerpt->rendered . $output;
                 }
-                $output = GeneralHelper::analyzeGutenberg($output, false);
+
+                $crawler = new Crawler($output);
+                $c = $crawler->filter('html body div section');
+                $node = $c->getNode(0);
+                if (!$node) {
+                    $output = GeneralHelper::analyzeGutenberg($output, false);
+                } else {
+                    $output = GeneralHelper::analyzeElementor($output, false);
+                }
                 $content['fields']['body'] = $output;
-                $content['fields']['body']['config']['type'] = 'gutenberg';
+                $content['fields']['body']['config']['type'] = 'gutenberg/elementor';
                 $content['fields']['body']['config']['label'] = 'body';
             } else {
                 $output = $postItem->content->rendered;
