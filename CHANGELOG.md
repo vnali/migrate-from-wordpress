@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.9.0 - 2022-08-13
 
 ### Added
 - Initial support for importing Elementor content
