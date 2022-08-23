@@ -10,7 +10,7 @@ Please visit [Documentation page](https://github.com/vnali/migrate-from-wordpres
 This is a free plugin under the MIT License.
 
 ## Donation
-If this plugin was useful to you, saved your time, and made the migration process easier for you, you can donate via [this link](https://github.com/vnali/migrate-from-wordpress-plugin-docs/blob/main/donate.md) soon.
+If this plugin was useful to you, saved your time, and made the migration process easier for you, you can donate via [this link](https://github.com/vnali/migrate-from-wordpress-plugin-docs/blob/main/donate.md).
 
 ## Installation
 The plugin is available on [Craft CMS plugin store](https://plugins.craftcms.com/migrate-from-wordpress?craft4).
